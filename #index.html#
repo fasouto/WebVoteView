@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+<style>
+
+/* CSS goes here. */
+.district { stroke: #ccc; fill: #FFF; stroke-linejoin: round;}
+
+.Yea.Federalist { stroke: #ccc; stroke-linejoin: round; fill: #0000FF }
+.Nay.Federalist { stroke: #ccc; stroke-linejoin: round; fill: #AAAAFF }
+.Yea.Democrat { stroke: #ccc; stroke-linejoin: round; fill: #0000FF }
+.Nay.Democrat { stroke: #ccc; stroke-linejoin: round; fill: #AAAAFF }
+.Yea.Farmer-Labor { stroke: #ccc; stroke-linejoin: round; fill: #0000FF }
+.Nay.Farmer-Labor { stroke: #ccc; stroke-linejoin: round; fill: #AAAAFF }
+.Yea.Progressive { stroke: #ccc; stroke-linejoin: round; fill: #0000FF }
+.Nay.Progressive { stroke: #ccc; stroke-linejoin: round; fill: #AAAAFF }
+
+.Yea.Republican { stroke: #ccc; stroke-linejoin: round; fill: #FF0000 }
+.Nay.Republican { stroke: #ccc; stroke-linejoin: round; fill: #FFAAAA }
+
+.Yea.Independent { stroke: #ccc; stroke-linejoin: round; fill: #FFDD00 }
+.Nay.Independent { stroke: #ccc; stroke-linejoin: round; fill: #FFDDAA }
+
+.Abs {  stroke: #ccc; stroke-linejoin: round; fill: #CCC }
+
+#memberimg { }
+#membertext { }
+
+button {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+}
+
+.state-boundary {
+  fill: none;
+  stroke: #FFF;
+  stroke-linejoin: round;
+}
+
+svg.map {
+    position: relative;
+    top: -25px;
+    left: 0px;
+    z-index: 0;
+    background: #EEEEEE;
+}
+
+svg.scatter {
+    position: relative;
+    top: -25px;
+    left: 0px;
+    z-index: 0;
+    background: #000;
+}
+
+.axis {
+    font-family:verdana;
+    font-size:9pt;
+}
+
+div.tooltip {
+  color: #222; 
+  background: #fff; 
+  padding: 0.2em; 
+  text-shadow: #f5f5f5 0 1px 0;
+  border-radius: 2px; 
+  box-shadow: 0px 0px 2px 0px #a6a6a6; 
+  opacity: 0.9; 
+  position: absolute;
+}
+
+line.cutline {
+    stroke-width: 3;
+    stroke: #FFF;
+}
+
+</style>
+
+<script src="js/d3.v3.min.js"></script>
+<script src="js/queue.v1.min.js"></script>
+<script src="js/topojson.v1.min.js"></script>
+<script src="js/sprintf.min.js"></script>
+</head>
+
+<body>
+<h1><span id="rollcall"></span></h1>
+<h2><span id="description"></span></h2>
+<h3><span id="date"></span></h3>
+
+<svg id="map"></svg>
+<svg id="scatter" xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <defs>
+    <clipPath id="scatterclip" x="0" y="0">
+    </clipPath>
+  </defs>
+</svg>
+
+<div class="tooltip" id="tooltip">
+<div style="float:left; vertical-align:top; padding-right:0.3em"><img id="memberimg"></img></div>
+<div style="float:left; vertical-align:top" id="membertext"></div>
+</div>
+
+<script>
+
+/* JavaScript goes here. */
+
+function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+// Map vote choices
+var yesnoabs = { '1':'Yea', '2':'Yea', '3':'Yea', '4':'Nay', '5':'Nay',
+                 '6':'Nay', '7':'Abs', '8':'Abs', '9':'Abs'};
+
+// Get some D3 DOM objects and create others
+var tooltip = d3.select("div#tooltip")
+var tooltiptext = d3.select("div#membertext");
+var tooltipimg = d3.select("img#memberimg");
+
+var width = 900,
+    height = 550;
+
+var projection = d3.geo.albersUsa();
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var svgmap = d3.select("svg#map")
+    .attr("width", width)
+    .attr("height", height);
+
+var svgscatter = d3.select("svg#scatter")
+    .attr("width", 650)
+    .attr("height", 650);
+
+var g = svgmap.append("g").attr("id","map-group");
+var sb = svgmap.append("g");
+var gg = svgscatter.append("g").attr("id","scatter-group");
+
+// Containers for data
+var themembers = {};  //dictionary of members
+var thevotes = {};    //dictionary of votes
+
+//set the member dictionary
+themembers2 = {};
+function setmembers(members) {
+  members.forEach( function(d,i) {
+      if (d.id in thevotes.votes) {
+         var dist = parseInt(d.districtCode) > 70 ? 0 : parseInt(d.districtCode);
+         themembers[sprintf("%s%02d",d.stateAbbr,dist)]=d;
+         if (dist == 1) {
+           themembers[sprintf("%s00",d.stateAbbr)]=d;
+         }
+         themembers2[d.id] = d;
+      }
+   })
+}
+
+// set the vote dictionary
+function setvote(votes) {
+   thevotes = votes;
+}
+
+// Do AJAX calls to load data and make the map
+function setmap(chamber,session,rcnum) {
+   queue()
+      .defer(d3.json,sprintf("json/districts%03d.json",session))
+      .defer(d3.json,sprintf("json/states%03d.json",session))
+      .defer(d3.json,sprintf("../voteview/getvote?id=%s%03d%04d",chamber,session,rcnum))
+      .defer(d3.json,sprintf("../voteview/getmemberslist?session=%d",session))
+   .await(drawWidgets);
+}
+
+function drawWidgets(error, districts, states, vote, members) {
+  drawmap(error, districts, states, vote, members);
+  drawscatter(error, districts, states, vote, members);
+  setdesc(vote);
+}
+
+function setdesc(vote) {
+    d3.select("span#rollcall").html(sprintf("Chamber %s/Congress %d/Rollcall %d", 
+                                             vote['chamber'],vote['session'],vote['rollnumber']));
+    d3.select("span#description").html(vote['description']);
+    d3.select("span#date").html(vote['date']);
+
+}
+
+// Function to render the tooltip
+function tooltiphtml(d) {
+   mem = themembers[d.id];
+   tooltipimg.attr('src',sprintf("http://leela.sscnet.ucla.edu/voteview_static/img/img%06ds.png",parseInt(mem.icpsr)))
+   return sprintf("%s<br /> %s %s", mem.fname, mem.partyname, mem.cqlabel);
+}
+
+// Function to render the tooltip
+function tooltiphtml2(d) {
+   mem = d;
+   tooltipimg.attr('src',sprintf("http://leela.sscnet.ucla.edu/voteview_static/img/img%06ds.png",parseInt(mem.icpsr)))
+   return sprintf("%s<br /> %s %s", mem.fname, mem.partyname, mem.cqlabel);
+}
+
+// Function to shade the districts
+function shadedistricts() {
+   g.selectAll(".district")
+     .attr('class',function(d,i) {
+       if (d.id in themembers) {
+         var m = themembers[d.id];
+         if (m.id in thevotes.votes) {
+            var yn = thevotes.votes[m.id];
+            return 'district ' + yesnoabs[yn] + ' '+  m.partyname;
+         }
+         else {
+            return 'district ' + m.partyname;
+         }
+       }
+       else {
+            return 'district';
+       }
+})
+}
+
+// Main function to draw the scatter plot after data load
+function drawscatter(error, districts, states, vote, members) {
+   setvote(vote);
+   var vn = vote['nominate'];
+
+   setmembers(members);
+   var scatterdata = [];
+   var scale = 0.0;
+   for (k in thevotes.votes) {
+      var dt = themembers2[k];
+      dt['vote'] = yesnoabs[ thevotes.votes[dt['id']]];
+      dt['namecqlabel'] = sprintf("%s %s",dt['fname'],dt['cqlabel']);
+      if (dt['nominate']['oneDimNominate'] != null) {
+         var dist = Math.sqrt( Math.pow(dt['nominate']['oneDimNominate'],2) + 
+                               Math.pow(dt['nominate']['twoDimNominate'],2) );
+         scale = scale > dist ? scale : dist;
+      }
+      scatterdata.push(dt);
+   } 
+   d3.select("clipPath#scatterclip")
+      .append("circle")
+      .attr("cx",350)
+      .attr("cy",300)
+      .attr("r",275)
+      
+   gg
+      .append("circle")
+      .attr("cx",350)
+      .attr("cy",300)
+      .attr("r",275)
+      .attr("style","stroke:#333;stroke-width:1;fill:#FFF");
+
+
+     // Hacky way to shade region where yea vote is expected...
+     var angle = -vn['zml'][1]/vn['zml'][0];
+     var cs = (angle>0?1:0) + 2*(vn['zml'][0]>0?1:0);
+     switch( cs ) {
+       case 0:
+          var polyData = [ [ 350+275*vn['x'][0]/scale,
+                             300-275*vn['y'][0]/scale ],
+                           [ 350+275*(vn['x'][0]+10)/scale,
+                             300-275*vn['y'][0]/scale ], 
+                           [ 350+275*(vn['x'][0]+10)/scale,
+                             300-275*(vn['y'][1]-10)/scale ], 
+                           [ 350+275*vn['x'][1]/scale,
+                             300-275*(vn['y'][1]-10)/scale ], 
+                           [ 350+275*vn['x'][1]/scale,
+                             300-275*vn['y'][1]/scale ] ]; 
+          break;
+       case 1:
+          var polyData = [ [ 350+275*vn['x'][0]/scale,
+                             300-275*vn['y'][0]/scale ],
+                           [ 350+275*(vn['x'][0])/scale,
+                             300-275*(vn['y'][1]-10)/scale ], 
+                           [ 350+275*(vn['x'][1]-10)/scale,
+                             300-275*(vn['y'][1]-10)/scale ], 
+                           [ 350+275*(vn['x'][1]-10)/scale,
+                             300-275*(vn['y'][1])/scale ], 
+                           [ 350+275*vn['x'][1]/scale,
+                             300-275*vn['y'][1]/scale ] ]; 
+          break;
+       case 2:
+          var polyData = [ [ 350+275*vn['x'][0]/scale,
+                             300-275*(vn['y'][0])/scale ],
+                           [ 350+275*(vn['x'][0])/scale,
+                             300-275*(vn['y'][0]-10)/scale ], 
+                           [ 350+275*(vn['x'][1]-10)/scale,
+                             300-275*(vn['y'][0]-10)/scale ],
+                           [ 350+275*(vn['x'][1]-10)/scale,
+                             300-275*(vn['y'][1])/scale ],
+                           [ 350+275*vn['x'][1]/scale,
+                             300-275*vn['y'][1]/scale ] ]; 
+          break;
+  
+       case 3:
+          var polyData = [ [ 350+275*vn['x'][0]/scale,
+                             300-275*vn['y'][0]/scale ],
+                           [ 350+275*(vn['x'][0])/scale,
+                             300-275*(vn['y'][0]+10)/scale ], 
+                           [ 350+275*(vn['x'][1]-10)/scale,
+                             300-275*(vn['y'][1]-10)/scale ], 
+                           [ 350+275*(vn['x'][1]-10)/scale,
+                             300-275*(vn['y'][1])/scale ], 
+                           [ 350+275*vn['x'][1]/scale,
+                             300-275*vn['y'][1]/scale ] ]; 
+          break;
+     }
+     if (isNaN(angle)) { polyData = [[0,0],[0,650],[650,650],[650,0]] };
+
+   gg.selectAll("polygon")
+      .data([polyData])
+      .enter()
+       .append('polygon')
+         .attr("points",function(d) {
+               return d.map( function(d) {
+                   return [d[0],d[1]].join(",") 
+               }).join(" ");
+          })
+       .attr("style","stroke:none; fill:#FFFFCC;clip-path:url(#scatterclip)");
+
+   gg
+      .append("circle")
+      .attr("cx",350)
+      .attr("cy",300)
+      .attr("r",275/scale)
+      .attr("style","stroke:#333;stroke-dasharray:3 4;stroke-width:0.5;fill:none");
+
+   gg
+     .append("line")
+     .attr("x1",275/scale*vn['x'][0]+350)
+     .attr("x2",275/scale*vn['x'][1]+350)
+     .attr("y1",300 - 275/scale*vn['y'][0])
+     .attr("y2",300 - 275/scale*vn['y'][1])
+     .attr("id","cutline")
+     .attr("style","stroke:#000; stroke-width:2; clip-path:url(#scatterclip)");
+
+   //Add yea and nay locations to the plot
+   if (vn["dl"][0] * vn['dl'][0] != 0) { // Only drawn if there is a cutline!
+     var ynpts =  [350 + 275/scale*(vn["dl"][0]+vn["zml"][0]/2),
+                   300 - 275/scale*(vn["dl"][1]+vn["zml"][1]/2),
+                   350 + 275/scale*(vn["dl"][0]-vn["zml"][0]/2),
+                   300 - 275/scale*(vn["dl"][1]-vn["zml"][1]/2)];
+     var angle =   57.295*Math.atan((vn["zml"][1])/(vn["zml"][0]));
+     var cs = (angle>0?1:0) + 2*(vn['zml'][0]>0?1:0);
+     switch( cs ) {
+       case 0:
+         angle = 90-angle;
+         break;
+       case 1:
+         angle = 90-angle;
+         break;
+       case 2:
+         angle = 270 - angle;
+         break;
+       case 3:
+         angle = -90 - angle;
+         break;
+     }
+    
+     gg.append('polyline')
+      .attr("class","yeanay")
+      .attr("points", ynpts.join(" "))
+      .attr("style","stroke:#999; stroke-dasharray:4 2;stroke-width:2; fill:none");
+
+     gg.append('text').text('Y')
+      .attr("class","yeanay")
+      .attr("x",ynpts[2])
+      .attr("y",ynpts[3])
+      .attr("transform",sprintf("rotate(%d %d %d)",angle,ynpts[2],ynpts[3]))
+      .attr("style","text-anchor:middle;font-size: 5em; fill:#999; font-family:verdana");
+
+     gg.append('text').text('N')
+      .attr("class","yeanay")
+      .attr("x",ynpts[0])
+      .attr("y",ynpts[1])
+      .attr("transform",sprintf("rotate(%d %d %d)", 180+angle,ynpts[0],ynpts[1]))
+      .attr("style","text-anchor:middle; font-size: 5em; fill:#999; font-family:verdana")
+   }
+   
+   // Main scatter plot
+   gg.selectAll(".scatter")
+   .data(scatterdata)
+   .enter()
+   .append("circle")
+      .attr("id",dt['id'])
+      .attr("cx", function(d) {
+        return 350+d['nominate']['oneDimNominate']*275/scale })
+      .attr("cy", function(d) {
+        return 300-d['nominate']['twoDimNominate']*275/scale })
+      .attr("r", 5)
+      .attr('class',function(d,i) {
+              return d['vote'] + ' ' + d['partyname']; 
+       })
+      .on("mousemove", function(d,i) {
+         var mouse = d3.mouse(svgscatter.node()).map( function(d) { return parseInt(d); } );
+         tooltip
+            .classed("hidden", false)
+            .attr("style", "left:"+(mouse[0]+25)+"px;top:"+(mouse[1]+775)+"px");
+         tooltiptext
+           .html( tooltiphtml2(d) )
+       })
+      .on("mouseout",  function(d,i) {
+          tooltip.classed("hidden", true)
+       })
+      .append("svgscatter:title").text(function(d) {return d['namecqlabel']});
+
+ 
+    // x-axis
+    gg.append('polyline')
+      .attr("class","axis")
+      .attr("points", "75 600  75 590  625 590  625 600")
+      .attr("style","stroke:#000; stroke-width:1; fill:none");
+    gg.append('text').text("Liberal")
+      .attr("class","axis")
+      .attr("x",175)
+      .attr("y",610)
+      .attr("style","text-anchor:middle")
+    gg.append('text').text("Conservative")
+      .attr("class","axis")
+      .attr("x",525)
+      .attr("y",610)
+      .attr("style","text-anchor:middle")
+    gg.append('text').text("DWNom 1: Economic/Redistribution")      
+      .attr("class","axis")
+      .attr("x",350)
+      .attr("y",630)
+      .attr("style","text-anchor:middle")
+
+    // y-axis
+    gg.append('polyline')
+      .attr("class","axis")
+      .attr("points", "40 25  50 25  50 575  40 575")
+      .attr("style","stroke:#000; stroke-width:1; fill:none");
+    gg.append('text').text("DWNom 2: Social/Race")
+      .attr("class","axis")
+      .attr("x",20)
+      .attr("y",300)
+      .attr("style","text-anchor:middle")
+      .attr("transform","rotate(-90 20 300)")
+    gg.append('text').text("Liberal")
+      .attr("class","axis")
+      .attr("x",40)
+      .attr("y",450)
+      .attr("style","text-anchor:middle")
+      .attr("transform","rotate(-90 40 450)")
+    gg.append('text').text("Conservative")
+      .attr("class","axis")
+      .attr("x",40)
+      .attr("y",125)
+      .attr("style","text-anchor:middle")
+      .attr("transform","rotate(-90 40 125)")
+} 
+
+// Main function to draw the map after data load
+function drawmap(error, districts, states, vote, members) {
+  setvote(vote);
+  setmembers(members);
+
+  g.selectAll(".district")
+      .data(topojson.feature(districts,districts.objects.districts).features).enter().append("path")
+      .attr("id", function(d) {  return d.id; } )
+      .attr("class","district")
+      .attr("d", path)
+      .on("mousemove", function(d,i) {
+         var mouse = d3.mouse(svgmap.node()).map( function(d) { return parseInt(d); } );
+          tooltip
+            .classed("hidden", false)
+            .attr("style", "left:"+(mouse[0]+25)+"px;top:"+mouse[1]+"px");
+          tooltiptext
+           .html( tooltiphtml(d) )
+         })
+        .on("mouseout",  function(d,i) {
+          tooltip.classed("hidden", true)
+        })
+       .append("svgmap:title").text(function(d) {
+                var st = d.id.substring(0,2);
+                 var dist = parseInt(d.id.substring(2,5));
+                 if (dist == -1) dist = "Indian Territory";
+                 if (dist ==  0) dist = "At Large";
+                 return st + "-" + dist });
+
+  //add state boundaries
+  sb.append("path")
+       .datum(topojson.mesh(states, states.objects.states, 
+           function(a, b) { return a.id != "AK" & a.id != "HI"}))
+       .attr("d", path)
+       .attr("class", "state-boundary");
+
+  shadedistricts();
+}; //end makemap
+
+
+// Function to zoom and move the map
+var zoom = d3.behavior.zoom()
+  .on("zoom", move)
+  .scaleExtent([1,25]);
+
+function move() {
+  var t = d3.event.translate;
+  var s = d3.event.scale;
+  zoom.translate(t);
+  g.style("stroke-width", 1 / s).attr("transform", "translate(" + t + ")scale(" + s + ")");
+  sb.style("stroke-width", 1.2 / s).attr("transform", "translate(" + t + ")scale(" + s + ")");
+} 
+
+svgmap.call(zoom);
+
+var rc =  getUrlVars()['id'];
+setmap(rc[0], parseInt(rc.substr(1,3)), parseInt(rc.substr(4,7)) );
+
+</script>
+
+</body>
+</html>
