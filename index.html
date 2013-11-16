@@ -4,24 +4,24 @@
 <style>
 
 /* CSS goes here. */
-.district { stroke: #ccc; fill: #FFF; stroke-linejoin: round;}
+.district { stroke: #fff; fill: #FFF; stroke-linejoin: round;}
 
-.Yea.Federalist { stroke: #ccc; stroke-linejoin: round; fill: #0000FF }
-.Nay.Federalist { stroke: #ccc; stroke-linejoin: round; fill: #AAAAFF }
-.Yea.Democrat { stroke: #ccc; stroke-linejoin: round; fill: #0000FF }
-.Nay.Democrat { stroke: #ccc; stroke-linejoin: round; fill: #AAAAFF }
-.Yea.Farmer-Labor { stroke: #ccc; stroke-linejoin: round; fill: #0000FF }
-.Nay.Farmer-Labor { stroke: #ccc; stroke-linejoin: round; fill: #AAAAFF }
-.Yea.Progressive { stroke: #ccc; stroke-linejoin: round; fill: #0000FF }
-.Nay.Progressive { stroke: #ccc; stroke-linejoin: round; fill: #AAAAFF }
+.Yea.Federalist { stroke: #fff; stroke-linejoin: round; fill: #0000FF; opacity:0.7 }
+.Nay.Federalist { stroke: #fff; stroke-linejoin: round; fill: #AAAAFF; opacity:0.7 }
+.Yea.Democrat { stroke: #fff; stroke-linejoin: round; fill: #0000FF; opacity:0.7 }
+.Nay.Democrat { stroke: #fff; stroke-linejoin: round; fill: #AAAAFF; opacity:0.7 }
+.Yea.Farmer-Labor { stroke: #fff; stroke-linejoin: round; fill: #0000FF; opacity:0.7 }
+.Nay.Farmer-Labor { stroke: #fff; stroke-linejoin: round; fill: #AAAAFF; opacity:0.7 }
+.Yea.Progressive { stroke: #fff; stroke-linejoin: round; fill: #0000FF; opacity:0.7 }
+.Nay.Progressive { stroke: #fff; stroke-linejoin: round; fill: #AAAAFF; opacity:0.7 }
 
-.Yea.Republican { stroke: #ccc; stroke-linejoin: round; fill: #FF0000 }
-.Nay.Republican { stroke: #ccc; stroke-linejoin: round; fill: #FFAAAA }
+.Yea.Republican { stroke: #fff; stroke-linejoin: round; fill: #FF0000; opacity:0.7 }
+.Nay.Republican { stroke: #fff; stroke-linejoin: round; fill: #FFAAAA; opacity:0.7 }
 
-.Yea.Independent { stroke: #ccc; stroke-linejoin: round; fill: #FFDD00 }
-.Nay.Independent { stroke: #ccc; stroke-linejoin: round; fill: #FFDDAA }
+.Yea.Independent { stroke: #fff; stroke-linejoin: round; fill: #FFDD00; opacity:0.7 }
+.Nay.Independent { stroke: #fff; stroke-linejoin: round; fill: #FFDDAA; opacity:0.7 }
 
-.Abs {  stroke: #ccc; stroke-linejoin: round; fill: #CCC }
+.Abs {  stroke: #FFF; stroke-linejoin: round; fill: #DDD; opacity:0.7 }
 
 #memberimg { }
 #membertext { }
@@ -92,6 +92,7 @@ line.cutline {
 <svg id="scatter" xmlns="http://www.w3.org/2000/svg" version="1.1">
   <defs>
     <clipPath id="scatterclip" x="0" y="0">
+     <circle r="275" cx="350" cy="300"></circle> 
     </clipPath>
   </defs>
 </svg>
@@ -242,12 +243,14 @@ function drawscatter(error, districts, states, vote, members) {
       dt['vote'] = yesnoabs[ thevotes.votes[dt['id']]];
       dt['namecqlabel'] = sprintf("%s %s",dt['fname'],dt['cqlabel']);
       if (dt['nominate']['oneDimNominate'] != null) {
-         var dist = Math.sqrt( Math.pow(dt['nominate']['oneDimNominate'],2) + 
+         var distance = Math.sqrt( Math.pow(dt['nominate']['oneDimNominate'],2) + 
                                Math.pow(dt['nominate']['twoDimNominate'],2) );
-         scale = scale > dist ? scale : dist;
+         scale = scale > distance ? scale : distance;
       }
       scatterdata.push(dt);
    } 
+   scale = scale < 1 ? 1.01 : scale;
+
    d3.select("clipPath#scatterclip")
       .append("circle")
       .attr("cx",350)
@@ -269,12 +272,12 @@ function drawscatter(error, districts, states, vote, members) {
        case 0:
           var polyData = [ [ 350+275*vn['x'][0]/scale,
                              300-275*vn['y'][0]/scale ],
-                           [ 350+275*(vn['x'][0]+10)/scale,
-                             300-275*vn['y'][0]/scale ], 
-                           [ 350+275*(vn['x'][0]+10)/scale,
-                             300-275*(vn['y'][1]-10)/scale ], 
-                           [ 350+275*vn['x'][1]/scale,
-                             300-275*(vn['y'][1]-10)/scale ], 
+                           [ 350+275*(vn['x'][0])/scale,
+                             300-275*(vn['y'][0]+10)/scale ], 
+                           [ 350+275*(vn['x'][1]+10)/scale,  
+                             300-275*(vn['y'][1]+10)/scale ], 
+                           [ 350+275*(vn['x'][1]+10)/scale,
+                             300-275*(vn['y'][1])/scale ], 
                            [ 350+275*vn['x'][1]/scale,
                              300-275*vn['y'][1]/scale ] ]; 
           break;
@@ -327,7 +330,7 @@ function drawscatter(error, districts, states, vote, members) {
                    return [d[0],d[1]].join(",") 
                }).join(" ");
           })
-       .attr("style","stroke:none; fill:#FFFFCC;clip-path:url(#scatterclip)");
+       .attr("style","stroke:none; fill:#FFFFED;clip-path:url(#scatterclip)");
 
    gg
       .append("circle")
@@ -386,6 +389,19 @@ function drawscatter(error, districts, states, vote, members) {
       .attr("y",ynpts[1])
       .attr("transform",sprintf("rotate(%d %d %d)", 180+angle,ynpts[0],ynpts[1]))
       .attr("style","text-anchor:middle; font-size: 5em; fill:#999; font-family:verdana")
+
+     // Fit box (only if cutline is displayed)
+     gg.append('text').text(sprintf("PRE: %4.2f",vn['pre']))
+       .attr("id","fitbox")
+       .attr("x", 550)
+       .attr("y", 580)
+       .attr("style","text-anchor:bottom;font-family:verdana;font-size:9pt")
+ 
+     gg.append('text').text(sprintf("Classified: %4.2f",vn['classified']))
+       .attr("id","fitbox")
+       .attr("x", 550)
+       .attr("y", 560)
+       .attr("style","text-anchor:bottom;font-family:verdana;font-size:9pt")
    }
    
    // Main scatter plot
@@ -511,7 +527,7 @@ function move() {
   var s = d3.event.scale;
   zoom.translate(t);
   g.style("stroke-width", 1 / s).attr("transform", "translate(" + t + ")scale(" + s + ")");
-  sb.style("stroke-width", 1.2 / s).attr("transform", "translate(" + t + ")scale(" + s + ")");
+  sb.style("stroke-width", 1.5 / s).attr("transform", "translate(" + t + ")scale(" + s + ")");
 } 
 
 svgmap.call(zoom);
