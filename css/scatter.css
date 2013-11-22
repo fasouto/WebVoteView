@@ -1,0 +1,7 @@
+svg.scatter {
+    position: relative;
+    top: -25px;
+    left: 0px;
+    z-index: 0;
+    background: #000;
+}
