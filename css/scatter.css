@@ -5,3 +5,9 @@ svg.scatter {
     z-index: 0;
     background: #000;
 }
+
+.axis {
+	stroke:#000; 
+	stroke-width:1; 
+	fill:none
+}

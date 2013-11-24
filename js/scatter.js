@@ -224,8 +224,7 @@ function drawScatter(error, districts, states, votation, members) {
     // X-axis
     gg.append('polyline')
       .attr("class","axis")
-      .attr("points", "50 600  50 590  625 590  625 600")
-      .attr("style","stroke:#000; stroke-width:1; fill:none");
+      .attr("points", sprintf("%d,%d %d,%d %d,%d %d,%d", margin, height-margin, margin, 590, width, 590, width, width-margin));
     gg.append('text').text("Liberal")
       .attr("x",175)
       .attr("y",610)
@@ -242,8 +241,7 @@ function drawScatter(error, districts, states, votation, members) {
     // Y-axis
     gg.append('polyline')
       .attr("class","axis")
-      .attr("points", "40 25  50 25  50 575  40 575")
-      .attr("style","stroke:#000; stroke-width:1; fill:none");
+      .attr("points", "40 25  50 25  50 575  40 575");
     gg.append('text').text("DWNom 2: Social/Race")
       .attr("x",20)
       .attr("y",300)
