@@ -53,7 +53,6 @@ function mapMembersVotes(members, votation) {
 function tooltipHTML(members) {
   var tooltipContent="";
    for (var index in members) {
-    console.log(members[index]);
      tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", staticUrl, parseInt(members[index]['icpsr']), members[index]['fname'], members[index]['partyname'], members[index]['cqlabel'], members[index]['vote']);
    }
    return tooltipContent;
