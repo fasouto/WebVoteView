@@ -221,40 +221,51 @@ function drawScatter(error, districts, states, votation, members) {
           tooltip.classed("hidden", true)
        });
 
+    var tickLength = 60;
     // X-axis
     gg.append('polyline')
       .attr("class","axis")
-      .attr("points", sprintf("%d,%d %d,%d %d,%d %d,%d", margin, height-margin, margin, 590, width, 590, width, width-margin));
+      .attr("points", sprintf("%d,%d %d,%d %d,%d %d,%d", 
+                              margin+15, width-margin, 
+                              margin+15, width-tickLength, 
+                              width-15, width-tickLength, 
+                              width-15, width-margin));
+
     gg.append('text').text("Liberal")
-      .attr("x",175)
-      .attr("y",610)
+      .attr("x", width/4)
+      .attr("y", height-margin+10)
       .attr("style","text-anchor:middle")
     gg.append('text').text("Conservative")
-      .attr("x",525)
-      .attr("y",610)
+      .attr("x", 3*width/4)
+      .attr("y", height-margin+10)
       .attr("style","text-anchor:middle")
     gg.append('text').text("DWNom 1: Economic/Redistribution")      
-      .attr("x",350)
-      .attr("y",630)
+      .attr("x", width/2)
+      .attr("y", height - 20)
       .attr("style","text-anchor:middle")
 
     // Y-axis
     gg.append('polyline')
       .attr("class","axis")
-      .attr("points", "40 25  50 25  50 575  40 575");
+      .attr("points", sprintf("%d,%d  %d,%d  %d,%d  %d,%d", 
+                              margin, margin, 
+                              tickLength, margin, 
+                              tickLength, height-margin-15, 
+                              margin, height-margin-15));
+      
+    gg.append('text').text("Liberal")
+      .attr("x", 40)
+      .attr("y", 3*height/4)
+      .attr("style","text-anchor:middle")
+      .attr("transform", sprintf("rotate(-90 40 %d)", 3*height/4))
+    gg.append('text').text("Conservative")
+      .attr("x", 40)
+      .attr("y", height/4)
+      .attr("style","text-anchor:middle")
+      .attr("transform", sprintf("rotate(-90 40 %d)", height/4))
     gg.append('text').text("DWNom 2: Social/Race")
       .attr("x",20)
-      .attr("y",300)
+      .attr("y", height/2)
       .attr("style","text-anchor:middle")
-      .attr("transform","rotate(-90 20 300)")
-    gg.append('text').text("Liberal")
-      .attr("x",40)
-      .attr("y",450)
-      .attr("style","text-anchor:middle")
-      .attr("transform","rotate(-90 40 450)")
-    gg.append('text').text("Conservative")
-      .attr("x",40)
-      .attr("y",125)
-      .attr("style","text-anchor:middle")
-      .attr("transform","rotate(-90 40 125)")
+      .attr("transform", sprintf("rotate(-90 20 %d)", height/2))
 } 
