@@ -5,6 +5,8 @@ var width = 650,
 var margin = 50;
 var radius = (width - 2 * margin) / 2;
 
+var bubbleRadius = 5;
+
 var svgscatter = d3.select("svg#scatter")
     .attr("width", width)
     .attr("height", height);
@@ -12,6 +14,7 @@ var svgscatter = d3.select("svg#scatter")
 var gg = svgscatter.append("g").attr("id","scatter-group");
 
 var membersByID = {};
+
 
 // Create an array with all the members indexed by id
 function setMembers(members, votation) {
@@ -164,36 +167,31 @@ function drawScatter(error, districts, states, votation, members) {
      }
     
      gg.append('polyline')
-      .attr("class","yeanay")
-      .attr("points", ynpts.join(" "))
-      .attr("style","stroke:#999; stroke-dasharray:4 2;stroke-width:2; fill:none");
+      .attr("class","yeanay-line")
+      .attr("points", ynpts.join(" "));
 
      gg.append('text').text('Y')
       .attr("class","yeanay")
       .attr("x",ynpts[2])
       .attr("y",ynpts[3])
-      .attr("transform",sprintf("rotate(%d %d %d)",angle,ynpts[2],ynpts[3]))
-      .attr("style","text-anchor:middle;font-size: 5em; fill:#999; font-family:verdana");
+      .attr("transform",sprintf("rotate(%d %d %d)",angle,ynpts[2],ynpts[3]));
 
      gg.append('text').text('N')
       .attr("class","yeanay")
       .attr("x",ynpts[0])
       .attr("y",ynpts[1])
-      .attr("transform",sprintf("rotate(%d %d %d)", 180+angle,ynpts[0],ynpts[1]))
-      .attr("style","text-anchor:middle; font-size: 5em; fill:#999; font-family:verdana")
+      .attr("transform",sprintf("rotate(%d %d %d)", 180+angle,ynpts[0],ynpts[1]));
 
      // Fit box (only if cutline is displayed)
      gg.append('text').text(sprintf("PRE: %4.2f",vn['pre']))
-       .attr("id","fitbox")
-       .attr("x", 550)
-       .attr("y", 580)
-       .attr("style","text-anchor:bottom;font-family:verdana;font-size:9pt")
+       .attr("class","fitbox")
+       .attr("x", width - 100)
+       .attr("y", height - 70);
  
      gg.append('text').text(sprintf("Classified: %4.2f",vn['classified']))
-       .attr("id","fitbox")
-       .attr("x", 550)
-       .attr("y", 560)
-       .attr("style","text-anchor:bottom;font-family:verdana;font-size:9pt")
+       .attr("class","fitbox")
+       .attr("x", width - 100)
+       .attr("y", height - 90);
    }
    
    // Main scatter plot
@@ -203,12 +201,12 @@ function drawScatter(error, districts, states, votation, members) {
    .append("circle")
       .attr("id",dt['id'])
       .attr("cx", function(d) {
-        return 350+d['nominate']['oneDimNominate']*275/scale })
+        return 350 + d['nominate']['oneDimNominate'] * radius/scale })
       .attr("cy", function(d) {
-        return 300-d['nominate']['twoDimNominate']*275/scale })
-      .attr("r", 5)
+        return 300 - d['nominate']['twoDimNominate'] * radius/scale })
+      .attr("r", bubbleRadius)
       .attr('class',function(d,i) {
-              return d['vote'] + ' ' + d['partyname']; 
+        return d['vote'] + ' ' + d['partyname']; 
        })
       .on("mousemove", function(d) {
         tooltip
@@ -252,7 +250,7 @@ function drawScatter(error, districts, states, votation, members) {
                               tickLength, margin, 
                               tickLength, height-margin-15, 
                               margin, height-margin-15));
-      
+
     gg.append('text').text("Liberal")
       .attr("x", 40)
       .attr("y", 3*height/4)
