@@ -5,7 +5,7 @@ function webVoteView(options) {
   //  - Calls the widgets
   //  - Connect both charts (to be done)
 
-  var DEFAULTS = {
+  var defaults = {
     showDescription: true,
     chamber: 'H',
     session: 89,
@@ -13,7 +13,7 @@ function webVoteView(options) {
   }
 
   // Compose Settings Object
-  var settings = $.extend(DEFAULTS, options);
+  var settings = $.extend(defaults, options);
 
   // Initialise
   init();
@@ -45,7 +45,12 @@ function webVoteView(options) {
                                             'states': states,
                                             'votation': votation,
                                             'members': members
-                                          });
+                                          },
+                                          {
+                                            'height': 200,
+                                            'width': 500
+                                          }
+                                          );
     }
     if (settings.scatter != undefined) {
       var scatterChart = new webVoteScatter("#scatter", {

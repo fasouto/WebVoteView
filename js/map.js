@@ -1,10 +1,16 @@
 function webVoteMap(element, data, options) {
 
   // Configurable variables
-  var width = 860,  // default width
-      height = 500, // default height
-      centered;
-  var aspect = width / height;
+  var defaults_map = {
+    width: 860,
+    height: 500
+  } 
+
+  // Compose Settings Object
+  var settings = $.extend(defaults_map, options);
+
+  var centered;
+  var aspect = settings.width / settings.height;
 
   var staticUrl = "http://leela.sscnet.ucla.edu/voteview_static/";  // URL where the static content is stored(images...)
 
@@ -22,7 +28,7 @@ function webVoteMap(element, data, options) {
   var themembers = {};  // Dictionary of members
 
   // Initialise
-  chart(element, data, options);
+  chart(element, data);
 
   // Set the member dictionary
   function mapMembersVotes(members, votation) {
@@ -79,8 +85,8 @@ function webVoteMap(element, data, options) {
       k = 10;
       centered = d;
     } else {
-      x = width / 2;
-      y = height / 2;
+      x = settings.width / 2;
+      y = settings.height / 2;
       k = 1;
       centered = null;
     }
@@ -90,7 +96,7 @@ function webVoteMap(element, data, options) {
 
     g.transition()
         .duration(750)
-        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+        .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
         .style("stroke-width", 1.5 / k + "px");
 
     sb.selectAll("path")
@@ -98,7 +104,7 @@ function webVoteMap(element, data, options) {
 
     sb.transition()
         .duration(750)
-        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+        .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
         .style("stroke-width", 1.5 / k + "px");
   }
 
@@ -110,12 +116,12 @@ function webVoteMap(element, data, options) {
   };
 
   // Main function to draw the map after data load
-  function chart(element, data, options) {
+  function chart(element, data) {
 
     svgmap = d3.select(element)
       .attr("xmlns", "http://www.w3.org/2000/svg")
-      .attr("width", width)
-      .attr("height", height)
+      .attr("width", settings.width)
+      .attr("height", settings.height)
       .attr("viewBox", "0 0 860 500")
       .attr("preserveAspectRatio", "xMidYMid");
 
