@@ -47,8 +47,8 @@ function webVoteView(options) {
                                             'members': members
                                           },
                                           {
-                                            'height': 200,
-                                            'width': 500
+                                            'height': 800,
+                                            'width': 1000
                                           }
                                           );
     }
@@ -68,20 +68,6 @@ function webVoteView(options) {
                                                vote['chamber'],vote['session'],vote['rollnumber']));
       d3.select("#wvv-description").html(vote['description']);
       d3.select("#wvv-date").html(vote['date']);
-  }
-
-  // Blend an array of colors
-  function blendColors(colors) {
-    var r = 0, g = 0 , b = 0;
-    for (var i=0; i<colors.length; i++){
-      r = r + colors[i].r;
-      g = g + colors[i].g;
-      b = b + colors[i].b; 
-    }
-    r = r / colors.length;
-    g = g / colors.length;
-    b = b / colors.length;
-    return d3.rgb(r,g,b);
   }
 
 }
