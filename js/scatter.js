@@ -13,8 +13,11 @@ function webVoteScatter(element, data, options) {
 
   var membersByID = {};
 
-  var voteChoices = {'1':'Yea', '2':'Yea', '3':'Yea', '4':'Nay', '5':'Nay',
-                     '6':'Nay', '7':'Abs', '8':'Abs', '9':'Abs'};
+  var voteChoices = {
+    "1":'Yea', "2":"Yea", "3":"Yea", 
+    "4":"Nay", "5":"Nay", "6":'Nay', 
+    "7":"Abs", "8":"Abs", "9":"Abs"
+  }
 
   // Initialise the chart
   chart(element, data, options);
