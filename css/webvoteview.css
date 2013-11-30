@@ -19,9 +19,6 @@
 
 .AtLarge {  stroke: #FFF; stroke-linejoin: round; fill: #336600; opacity:0.7 }
 
-#memberimg { }
-#membertext { }
-
 button {
   position: absolute;
   right: 30px;
@@ -63,9 +60,6 @@ line.cutline {
 
 .wvv-tooltip img {
   float:left;
-}
-
-.wvv-tooltip p {
 }
 
 .wvv-tooltip.hidden {
