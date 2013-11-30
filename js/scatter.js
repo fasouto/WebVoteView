@@ -1,269 +1,281 @@
+function webVoteScatter(element, data, options) {
 
-var width = 650,
-    height = 650;
+  var width = 650,
+      height = 650;
 
-var margin = 50;
-var radius = (width - 2 * margin) / 2;
+  var margin = 50;
+  var radius = (width - 2 * margin) / 2;
 
-var bubbleRadius = 5;
+  var bubbleRadius = 5;  // Radius of the small bubbles that represent members
+  var marginCircle = 25; // Distance of the main circle to the axis
 
-var svgscatter = d3.select("svg#scatter")
-    .attr("width", width)
-    .attr("height", height);
+  var circleCenterX = (width - margin) / 2 + marginCircle
 
-var gg = svgscatter.append("g").attr("id","scatter-group");
+  var membersByID = {};
 
-var membersByID = {};
+  var voteChoices = {'1':'Yea', '2':'Yea', '3':'Yea', '4':'Nay', '5':'Nay',
+                     '6':'Nay', '7':'Abs', '8':'Abs', '9':'Abs'};
+
+  // Initialise the chart
+  chart(element, data, options);
+
+  // Create an array with all the members indexed by id
+  function setMembers(members, votation) {
+    members.forEach( function(d,i) {
+        if (d.id in votation.votes) {
+           d["vote"] = votation.votes[d.id];
+           membersByID[d.id] = d;
+        }
+     })
+  }
+
+  // Main function to draw the scatter plot
+  function chart(element, data, options) {
+
+     var svgscatter = d3.select(element)
+          .attr("width", width)
+          .attr("height", height);
+
+     var gg = svgscatter.append("g").attr("id","scatter-group");
 
 
-// Create an array with all the members indexed by id
-function setMembers(members, votation) {
-  members.forEach( function(d,i) {
-      if (d.id in votation.votes) {
-         d["vote"] = votation.votes[d.id];
-         membersByID[d.id] = d;
-      }
-   })
-}
+     var vn = data.votation['nominate'];
 
-// Main function to draw the scatter plot after data load
-function drawScatter(error, districts, states, votation, members) {
-   var vn = votation['nominate'];
+     setMembers(data.members, data.votation);
 
-   setMembers(members, votation);
+     var scatterdata = [];
+     var scale = 0.0;
+     for (k in data.votation.votes) {
+        var dt = membersByID[k];
+        dt['vote'] = voteChoices[ data.votation.votes[dt['id']]];
+        dt['namecqlabel'] = sprintf("%s %s",dt['fname'],dt['cqlabel']);
+        if (dt['nominate']['oneDimNominate'] != null) {
+           var distance = Math.sqrt( Math.pow(dt['nominate']['oneDimNominate'],2) + 
+                                 Math.pow(dt['nominate']['twoDimNominate'],2) );
+           scale = scale > distance ? scale : distance;
+        }
+        scatterdata.push(dt);
+     } 
+     scale = scale < 1 ? 1.01 : scale;
 
-   var scatterdata = [];
-   var scale = 0.0;
-   for (k in votation.votes) {
-      var dt = membersByID[k];
-      dt['vote'] = voteChoices[ votation.votes[dt['id']]];
-      dt['namecqlabel'] = sprintf("%s %s",dt['fname'],dt['cqlabel']);
-      if (dt['nominate']['oneDimNominate'] != null) {
-         var distance = Math.sqrt( Math.pow(dt['nominate']['oneDimNominate'],2) + 
-                               Math.pow(dt['nominate']['twoDimNominate'],2) );
-         scale = scale > distance ? scale : distance;
-      }
-      scatterdata.push(dt);
-   } 
-   scale = scale < 1 ? 1.01 : scale;
+     d3.select("clipPath#scatterclip")
+        .append("circle")
+        .attr("cx", 350)
+        .attr("cy", 300)
+        .attr("r", radius)
+       
+     gg
+        .append("circle")
+        .attr("cx", 350)
+        .attr("cy", 300)
+        .attr("r", radius)
+        .attr("style","stroke:#333;stroke-width:1;fill:#FFF");
 
-   d3.select("clipPath#scatterclip")
-      .append("circle")
-      .attr("cx", 350)
-      .attr("cy", 300)
-      .attr("r", radius)
-     
-   gg
-      .append("circle")
-      .attr("cx", 350)
-      .attr("cy", 300)
-      .attr("r", radius)
-      .attr("style","stroke:#333;stroke-width:1;fill:#FFF");
-
-     // Hacky way to shade region where yea vote is expected...
-     var angle = -vn['zml'][1]/vn['zml'][0];
-     var cs = (angle>0?1:0) + 2*(vn['zml'][0]>0?1:0);
-     switch( cs ) {
-       case 0:
-          var polyData = [ [ 350+radius*vn['x'][0]/scale,
-                             300-radius*vn['y'][0]/scale ],
-                           [ 350+radius*(vn['x'][0])/scale,
-                             300-radius*(vn['y'][0]+10)/scale ], 
-                           [ 350+radius*(vn['x'][1]+10)/scale,  
-                             300-radius*(vn['y'][1]+10)/scale ], 
-                           [ 350+radius*(vn['x'][1]+10)/scale,
-                             300-radius*(vn['y'][1])/scale ], 
-                           [ 350+radius*vn['x'][1]/scale,
-                             300-radius*vn['y'][1]/scale ] ]; 
-          break;
-       case 1:
-          var polyData = [ [ 350+radius*vn['x'][0]/scale,
-                             300-radius*vn['y'][0]/scale ],
-                           [ 350+radius*(vn['x'][0])/scale,
-                             300-radius*(vn['y'][1]-10)/scale ], 
-                           [ 350+radius*(vn['x'][1]-10)/scale,
-                             300-radius*(vn['y'][1]-10)/scale ], 
-                           [ 350+radius*(vn['x'][1]-10)/scale,
-                             300-radius*(vn['y'][1])/scale ], 
-                           [ 350+radius*vn['x'][1]/scale,
-                             300-radius*vn['y'][1]/scale ] ]; 
-          break;
-       case 2:
-          var polyData = [ [ 350+radius*vn['x'][0]/scale,
-                             300-radius*(vn['y'][0])/scale ],
-                           [ 350+radius*(vn['x'][0])/scale,
-                             300-radius*(vn['y'][0]-10)/scale ], 
-                           [ 350+radius*(vn['x'][1]-10)/scale,
-                             300-radius*(vn['y'][0]-10)/scale ],
-                           [ 350+radius*(vn['x'][1]-10)/scale,
-                             300-radius*(vn['y'][1])/scale ],
-                           [ 350+radius*vn['x'][1]/scale,
-                             300-radius*vn['y'][1]/scale ] ]; 
-          break;
-  
-       case 3:
-          var polyData = [ [ 350+radius*vn['x'][0]/scale,
-                             300-radius*vn['y'][0]/scale ],
-                           [ 350+radius*(vn['x'][0])/scale,
-                             300-radius*(vn['y'][0]+10)/scale ], 
-                           [ 350+radius*(vn['x'][1]-10)/scale,
-                             300-radius*(vn['y'][1]-10)/scale ], 
-                           [ 350+radius*(vn['x'][1]-10)/scale,
-                             300-radius*(vn['y'][1])/scale ], 
-                           [ 350+radius*vn['x'][1]/scale,
-                             300-radius*vn['y'][1]/scale ] ]; 
-          break;
-     }
-     if (isNaN(angle)) { polyData = [[0,0],[0,height],[width,height],[width,0]] };
-
-   gg.selectAll("polygon")
-      .data([polyData])
-      .enter()
-       .append('polygon')
-         .attr("points",function(d) {
-               return d.map( function(d) {
-                   return [d[0], d[1]].join(",")
-               }).join(" ");
-          })
-       .attr("style","stroke:none; fill:#FFFFED;clip-path:url(#scatterclip)");
-
-   gg
-      .append("circle")
-      .attr("cx", 350)
-      .attr("cy", 300)
-      .attr("r", radius/scale)
-      .attr("style","stroke:#333;stroke-dasharray:3 4;stroke-width:0.5;fill:none");
-
-   gg
-     .append("line")
-     .attr("x1",radius/scale*vn['x'][0]+350)
-     .attr("x2",radius/scale*vn['x'][1]+350)
-     .attr("y1",300 - radius/scale*vn['y'][0])
-     .attr("y2",300 - radius/scale*vn['y'][1])
-     .attr("id","cutline")
-     .attr("style","stroke:#000; stroke-width:2; clip-path:url(#scatterclip)");
-
-   // Add yea and nay locations to the plot
-   if (vn["dl"][0] * vn['dl'][0] != 0) { // Only drawn if there is a cutline!
-     var ynpts =  [350 + radius/scale*(vn["dl"][0]+vn["zml"][0]/2),
-                   300 - radius/scale*(vn["dl"][1]+vn["zml"][1]/2),
-                   350 + radius/scale*(vn["dl"][0]-vn["zml"][0]/2),
-                   300 - radius/scale*(vn["dl"][1]-vn["zml"][1]/2)];
-     var angle =   57.295*Math.atan((vn["zml"][1])/(vn["zml"][0]));
-     var cs = (angle>0?1:0) + 2*(vn['zml'][0]>0?1:0);
-     switch( cs ) {
-       case 0:
-         angle = 90-angle;
-         break;
-       case 1:
-         angle = 90-angle;
-         break;
-       case 2:
-         angle = 270 - angle;
-         break;
-       case 3:
-         angle = -90 - angle;
-         break;
-     }
+       // Hacky way to shade region where yea vote is expected...
+       var angle = -vn['zml'][1]/vn['zml'][0];
+       var cs = (angle>0?1:0) + 2*(vn['zml'][0]>0?1:0);
+       switch( cs ) {
+         case 0:
+            var polyData = [ [ 350+radius*vn['x'][0]/scale,
+                               300-radius*vn['y'][0]/scale ],
+                             [ 350+radius*(vn['x'][0])/scale,
+                               300-radius*(vn['y'][0]+10)/scale ], 
+                             [ 350+radius*(vn['x'][1]+10)/scale,  
+                               300-radius*(vn['y'][1]+10)/scale ], 
+                             [ 350+radius*(vn['x'][1]+10)/scale,
+                               300-radius*(vn['y'][1])/scale ], 
+                             [ 350+radius*vn['x'][1]/scale,
+                               300-radius*vn['y'][1]/scale ] ]; 
+            break;
+         case 1:
+            var polyData = [ [ 350+radius*vn['x'][0]/scale,
+                               300-radius*vn['y'][0]/scale ],
+                             [ 350+radius*(vn['x'][0])/scale,
+                               300-radius*(vn['y'][1]-10)/scale ], 
+                             [ 350+radius*(vn['x'][1]-10)/scale,
+                               300-radius*(vn['y'][1]-10)/scale ], 
+                             [ 350+radius*(vn['x'][1]-10)/scale,
+                               300-radius*(vn['y'][1])/scale ], 
+                             [ 350+radius*vn['x'][1]/scale,
+                               300-radius*vn['y'][1]/scale ] ]; 
+            break;
+         case 2:
+            var polyData = [ [ 350+radius*vn['x'][0]/scale,
+                               300-radius*(vn['y'][0])/scale ],
+                             [ 350+radius*(vn['x'][0])/scale,
+                               300-radius*(vn['y'][0]-10)/scale ], 
+                             [ 350+radius*(vn['x'][1]-10)/scale,
+                               300-radius*(vn['y'][0]-10)/scale ],
+                             [ 350+radius*(vn['x'][1]-10)/scale,
+                               300-radius*(vn['y'][1])/scale ],
+                             [ 350+radius*vn['x'][1]/scale,
+                               300-radius*vn['y'][1]/scale ] ]; 
+            break;
     
-     gg.append('polyline')
-      .attr("class","yeanay-line")
-      .attr("points", ynpts.join(" "));
+         case 3:
+            var polyData = [ [ 350+radius*vn['x'][0]/scale,
+                               300-radius*vn['y'][0]/scale ],
+                             [ 350+radius*(vn['x'][0])/scale,
+                               300-radius*(vn['y'][0]+10)/scale ], 
+                             [ 350+radius*(vn['x'][1]-10)/scale,
+                               300-radius*(vn['y'][1]-10)/scale ], 
+                             [ 350+radius*(vn['x'][1]-10)/scale,
+                               300-radius*(vn['y'][1])/scale ], 
+                             [ 350+radius*vn['x'][1]/scale,
+                               300-radius*vn['y'][1]/scale ] ]; 
+            break;
+       }
+       if (isNaN(angle)) { polyData = [[0,0],[0,height],[width,height],[width,0]] };
 
-     gg.append('text').text('Y')
-      .attr("class","yeanay")
-      .attr("x",ynpts[2])
-      .attr("y",ynpts[3])
-      .attr("transform",sprintf("rotate(%d %d %d)",angle,ynpts[2],ynpts[3]));
+     gg.selectAll("polygon")
+        .data([polyData])
+        .enter()
+         .append('polygon')
+           .attr("points",function(d) {
+                 return d.map( function(d) {
+                     return [d[0], d[1]].join(",")
+                 }).join(" ");
+            })
+         .attr("style","stroke:none; fill:#FFFFED;clip-path:url(#scatterclip)");
 
-     gg.append('text').text('N')
-      .attr("class","yeanay")
-      .attr("x",ynpts[0])
-      .attr("y",ynpts[1])
-      .attr("transform",sprintf("rotate(%d %d %d)", 180+angle,ynpts[0],ynpts[1]));
+     gg
+        .append("circle")
+        .attr("cx", 350)
+        .attr("cy", 300)
+        .attr("r", radius/scale)
+        .attr("style","stroke:#333;stroke-dasharray:3 4;stroke-width:0.5;fill:none");
 
-     // Fit box (only if cutline is displayed)
-     gg.append('text').text(sprintf("PRE: %4.2f",vn['pre']))
-       .attr("class","fitbox")
-       .attr("x", width - 100)
-       .attr("y", height - 70);
- 
-     gg.append('text').text(sprintf("Classified: %4.2f",vn['classified']))
-       .attr("class","fitbox")
-       .attr("x", width - 100)
-       .attr("y", height - 90);
-   }
+     gg
+       .append("line")
+       .attr("x1",radius/scale*vn['x'][0]+350)
+       .attr("x2",radius/scale*vn['x'][1]+350)
+       .attr("y1",300 - radius/scale*vn['y'][0])
+       .attr("y2",300 - radius/scale*vn['y'][1])
+       .attr("id","cutline")
+       .attr("style","stroke:#000; stroke-width:2; clip-path:url(#scatterclip)");
+
+     // Add yea and nay locations to the plot
+     if (vn["dl"][0] * vn['dl'][0] != 0) { // Only drawn if there is a cutline!
+       var ynpts =  [350 + radius/scale*(vn["dl"][0]+vn["zml"][0]/2),
+                     300 - radius/scale*(vn["dl"][1]+vn["zml"][1]/2),
+                     350 + radius/scale*(vn["dl"][0]-vn["zml"][0]/2),
+                     300 - radius/scale*(vn["dl"][1]-vn["zml"][1]/2)];
+       var angle =   57.295*Math.atan((vn["zml"][1])/(vn["zml"][0]));
+       var cs = (angle>0?1:0) + 2*(vn['zml'][0]>0?1:0);
+       switch( cs ) {
+         case 0:
+           angle = 90-angle;
+           break;
+         case 1:
+           angle = 90-angle;
+           break;
+         case 2:
+           angle = 270 - angle;
+           break;
+         case 3:
+           angle = -90 - angle;
+           break;
+       }
+      
+       gg.append('polyline')
+        .attr("class","yeanay-line")
+        .attr("points", ynpts.join(" "));
+
+       gg.append('text').text('Y')
+        .attr("class","yeanay")
+        .attr("x",ynpts[2])
+        .attr("y",ynpts[3])
+        .attr("transform",sprintf("rotate(%d %d %d)",angle,ynpts[2],ynpts[3]));
+
+       gg.append('text').text('N')
+        .attr("class","yeanay")
+        .attr("x",ynpts[0])
+        .attr("y",ynpts[1])
+        .attr("transform",sprintf("rotate(%d %d %d)", 180+angle,ynpts[0],ynpts[1]));
+
+       // Fit box (only if cutline is displayed)
+       gg.append('text').text(sprintf("PRE: %4.2f",vn['pre']))
+         .attr("class","fitbox")
+         .attr("x", width - 100)
+         .attr("y", height - 70);
    
-   // Main scatter plot
-   gg.selectAll(".scatter")
-   .data(scatterdata)
-   .enter()
-   .append("circle")
-      .attr("id",dt['id'])
-      .attr("cx", function(d) {
-        return 350 + d['nominate']['oneDimNominate'] * radius/scale })
-      .attr("cy", function(d) {
-        return 300 - d['nominate']['twoDimNominate'] * radius/scale })
-      .attr("r", bubbleRadius)
-      .attr('class',function(d,i) {
-        return d['vote'] + ' ' + d['partyname']; 
-       })
-      .on("mousemove", function(d) {
-        tooltip
-          .classed("hidden", false)
-          .style("left", d3.event.pageX + 10 + "px")
-          .style("top", d3.event.pageY + 5 + "px")
-          .html(tooltipHTML([d]));
-      })
-      .on("mouseout",  function() {
-          tooltip.classed("hidden", true)
-       });
+       gg.append('text').text(sprintf("Classified: %4.2f",vn['classified']))
+         .attr("class","fitbox")
+         .attr("x", width - 100)
+         .attr("y", height - 90);
+     }
+     
+     // Main scatter plot
+     gg.selectAll(".scatter")
+     .data(scatterdata)
+     .enter()
+     .append("circle")
+        .attr("id",dt['id'])
+        .attr("cx", function(d) {
+          return 350 + d['nominate']['oneDimNominate'] * radius/scale })
+        .attr("cy", function(d) {
+          return 300 - d['nominate']['twoDimNominate'] * radius/scale })
+        .attr("r", bubbleRadius)
+        .attr('class',function(d,i) {
+          return d['vote'] + ' ' + d['partyname']; 
+         })
+        .on("mousemove", function(d) {
+          tooltip
+            .classed("hidden", false)
+            .style("left", d3.event.pageX + 10 + "px")
+            .style("top", d3.event.pageY + 5 + "px")
+            .html(tooltipHTML([d]));
+        })
+        .on("mouseout",  function() {
+            tooltip.classed("hidden", true)
+         });
 
-    var tickLength = 60;
-    // X-axis
-    gg.append('polyline')
-      .attr("class","axis")
-      .attr("points", sprintf("%d,%d %d,%d %d,%d %d,%d", 
-                              margin+15, width-margin, 
-                              margin+15, width-tickLength, 
-                              width-15, width-tickLength, 
-                              width-15, width-margin));
+      var tickLength = 60;
+      // X-axis
+      gg.append('polyline')
+        .attr("class","axis")
+        .attr("points", sprintf("%d,%d %d,%d %d,%d %d,%d", 
+                                margin+15, width-margin, 
+                                margin+15, width-tickLength, 
+                                width-15, width-tickLength, 
+                                width-15, width-margin));
 
-    gg.append('text').text("Liberal")
-      .attr("x", width/4)
-      .attr("y", height-margin+10)
-      .attr("style","text-anchor:middle")
-    gg.append('text').text("Conservative")
-      .attr("x", 3*width/4)
-      .attr("y", height-margin+10)
-      .attr("style","text-anchor:middle")
-    gg.append('text').text("DWNom 1: Economic/Redistribution")      
-      .attr("x", width/2)
-      .attr("y", height - 20)
-      .attr("style","text-anchor:middle")
+      gg.append('text').text("Liberal")
+        .attr("x", width/4)
+        .attr("y", height-margin+10)
+        .attr("style","text-anchor:middle")
+      gg.append('text').text("Conservative")
+        .attr("x", 3*width/4)
+        .attr("y", height-margin+10)
+        .attr("style","text-anchor:middle")
+      gg.append('text').text("DWNom 1: Economic/Redistribution")      
+        .attr("x", width/2)
+        .attr("y", height - 20)
+        .attr("style","text-anchor:middle")
 
-    // Y-axis
-    gg.append('polyline')
-      .attr("class","axis")
-      .attr("points", sprintf("%d,%d  %d,%d  %d,%d  %d,%d", 
-                              margin, margin, 
-                              tickLength, margin, 
-                              tickLength, height-margin-15, 
-                              margin, height-margin-15));
+      // Y-axis
+      gg.append('polyline')
+        .attr("class","axis")
+        .attr("points", sprintf("%d,%d  %d,%d  %d,%d  %d,%d", 
+                                margin, margin, 
+                                tickLength, margin, 
+                                tickLength, height-margin-15, 
+                                margin, height-margin-15));
 
-    gg.append('text').text("Liberal")
-      .attr("x", 40)
-      .attr("y", 3*height/4)
-      .attr("style","text-anchor:middle")
-      .attr("transform", sprintf("rotate(-90 40 %d)", 3*height/4))
-    gg.append('text').text("Conservative")
-      .attr("x", 40)
-      .attr("y", height/4)
-      .attr("style","text-anchor:middle")
-      .attr("transform", sprintf("rotate(-90 40 %d)", height/4))
-    gg.append('text').text("DWNom 2: Social/Race")
-      .attr("x",20)
-      .attr("y", height/2)
-      .attr("style","text-anchor:middle")
-      .attr("transform", sprintf("rotate(-90 20 %d)", height/2))
-} 
+      gg.append('text').text("Liberal")
+        .attr("x", 40)
+        .attr("y", 3*height/4)
+        .attr("style","text-anchor:middle")
+        .attr("transform", sprintf("rotate(-90 40 %d)", 3*height/4))
+      gg.append('text').text("Conservative")
+        .attr("x", 40)
+        .attr("y", height/4)
+        .attr("style","text-anchor:middle")
+        .attr("transform", sprintf("rotate(-90 40 %d)", height/4))
+      gg.append('text').text("DWNom 2: Social/Race")
+        .attr("x",20)
+        .attr("y", height/2)
+        .attr("style","text-anchor:middle")
+        .attr("transform", sprintf("rotate(-90 20 %d)", height/2))
+  } 
+}
