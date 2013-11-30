@@ -1,4 +1,4 @@
-.district { stroke: #fff; fill: #FFF; stroke-linejoin: round;}
+.district { stroke: #fff; fill: #FFF; stroke-linejoin: round; opacity: 0.7}
 
 .Yea.Federalist { stroke: #fff; stroke-linejoin: round; fill: #0000FF; opacity:0.7 }
 .Nay.Federalist { stroke: #fff; stroke-linejoin: round; fill: #AAAAFF; opacity:0.7 }
