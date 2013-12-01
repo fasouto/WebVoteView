@@ -3,7 +3,8 @@ function webVoteMap(element, data, options) {
   // Configurable variables
   var defaults_map = {
     width: 860,
-    height: 500
+    height: 500,
+    staticUrl: "http://leela.sscnet.ucla.edu/voteview_static/" // URL where the static content is stored(images...)
   } 
 
   // Compose Settings Object
@@ -11,8 +12,6 @@ function webVoteMap(element, data, options) {
 
   var centered;
   var aspect = settings.width / settings.height;
-
-  var staticUrl = "http://leela.sscnet.ucla.edu/voteview_static/";  // URL where the static content is stored(images...)
 
   // Get some D3 DOM objects and create others
   var projection = d3.geo.albersUsa();
@@ -78,7 +77,7 @@ function webVoteMap(element, data, options) {
   function tooltipHTML(members) {
     var tooltipContent="";
      for (var index in members) {
-       tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", staticUrl, parseInt(members[index]['icpsr']), members[index]['fname'], members[index]['partyname'], members[index]['cqlabel'], members[index]['vote']);
+       tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", settings.staticUrl, parseInt(members[index]['icpsr']), members[index]['fname'], members[index]['partyname'], members[index]['cqlabel'], members[index]['vote']);
      }
      return tooltipContent;
   }
@@ -110,7 +109,6 @@ function webVoteMap(element, data, options) {
   // Zoom on click
   function clicked(d) {
     var x, y, k, stroke;
-
     if (d && centered !== d) {
       var centroid = path.centroid(d);
       x = centroid[0];
