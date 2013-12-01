@@ -1,10 +1,6 @@
 function webVoteView(options) {
-  // This is the main file
-  //  - It loads the neccesary data
-  //  - Hold common functions
-  //  - Calls the widgets
-  //  - Connect both charts (to be done)
 
+  // Default values
   var defaults = {
     showDescription: true,
     chamber: 'H',
@@ -12,7 +8,7 @@ function webVoteView(options) {
     rcnum: 2
   }
 
-  // Compose Settings Object
+  // Compose settings object
   var settings = $.extend(defaults, options);
 
   // Initialise
@@ -30,8 +26,8 @@ function webVoteView(options) {
       .defer(d3.json, sprintf("json/states%03d.json", session))
       .defer(d3.json,sprintf("../voteview/getvote?id=%s%03d%04d", chamber, session, rcnum))
       .defer(d3.json,sprintf("../voteview/getmemberslist?session=%d", session))
-      // .defer(d3.json,sprintf("../voteview/getvote/%s%03d%04d", chamber, session, rcnum))
-      // .defer(d3.json,sprintf("../voteview/getmemberslist/%d", session))
+      // .defer(d3.json, sprintf("../voteview/getvote/%s%03d%04d", chamber, session, rcnum))
+      // .defer(d3.json, sprintf("../voteview/getmemberslist/%d", session))
       .await(drawWidgets);
   }
 
@@ -65,7 +61,7 @@ function webVoteView(options) {
   // Write to the description ids the name, description and date of the votation
   function setDescription(vote) {
       d3.select("#wvv-rollcall").html(sprintf("Chamber %s/Congress %d/Rollcall %d", 
-                                               vote['chamber'],vote['session'],vote['rollnumber']));
+                                               vote['chamber'], vote['session'], vote['rollnumber']));
       d3.select("#wvv-description").html(vote['description']);
       d3.select("#wvv-date").html(vote['date']);
   }

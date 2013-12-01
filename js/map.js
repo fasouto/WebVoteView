@@ -35,17 +35,24 @@ function webVoteMap(element, data, options) {
   var partyColors = {
     "YeaFederalist": "#0000FF",
     "NayFederalist": "#AAAAFF",
+    "AbsFederalist": "#DDD",
     "YeaDemocrat": "#0000FF",
     "NayDemocrat": "#AAAAFF",
+    "AbsDemocrat": "#DDD",
     "YeaFarmer-Labor": "#0000FF",
     "NayFarmer-Labor": "#AAAAFF",
+    "AbsFarmer-Labor": "#DDD",
     "YeaProgressive": "#0000FF",
     "NayProgressive": "#AAAAFF",
+    "AbsProgressive": "#DDD",
     "YeaRepublican": "#FF0000",
     "NayRepublican": "#FFAAAA",
+    "AbsRepublican": "#DDD",
     "YeaIndependent": "#FFDD00",
-    "NayIndependent": "#FFDDAA"
+    "NayIndependent": "#FFDDAA",
+    "AbsIndependent": "#DDD"
   }
+
 
 
   // Initialise
@@ -102,7 +109,7 @@ function webVoteMap(element, data, options) {
 
   // Zoom on click
   function clicked(d) {
-    var x, y, k;
+    var x, y, k, stroke;
 
     if (d && centered !== d) {
       var centroid = path.centroid(d);
@@ -110,11 +117,13 @@ function webVoteMap(element, data, options) {
       y = centroid[1];
       k = 10;
       centered = d;
+      stroke = 0.15;
     } else {
       x = settings.width / 2;
       y = settings.height / 2;
       k = 1;
       centered = null;
+      stroke = 1;
     }
 
     g.selectAll("path")
@@ -123,7 +132,7 @@ function webVoteMap(element, data, options) {
     g.transition()
         .duration(750)
         .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-        .style("stroke-width", 1.5 / k + "px");
+        .style("stroke-width", stroke + "px");
 
     sb.selectAll("path")
         .classed("active", centered && function(d) { return d === centered; });
@@ -131,7 +140,7 @@ function webVoteMap(element, data, options) {
     sb.transition()
         .duration(750)
         .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-        .style("stroke-width", 1.5 / k + "px");
+        .style("stroke-width", stroke + "px");
   }
 
   // Blend an array of colors

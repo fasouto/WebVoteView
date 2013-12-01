@@ -1,28 +1,7 @@
-.district { stroke: #fff; fill: #FFF; stroke-linejoin: round; opacity: 0.7}
-
-.Yea.Federalist { stroke: #fff; stroke-linejoin: round; fill: #0000FF; opacity:0.7 }
-.Nay.Federalist { stroke: #fff; stroke-linejoin: round; fill: #AAAAFF; opacity:0.7 }
-.Yea.Democrat { stroke: #fff; stroke-linejoin: round; fill: #0000FF; opacity:0.7 }
-.Nay.Democrat { stroke: #fff; stroke-linejoin: round; fill: #AAAAFF; opacity:0.7 }
-.Yea.Farmer-Labor { stroke: #fff; stroke-linejoin: round; fill: #0000FF; opacity:0.7 }
-.Nay.Farmer-Labor { stroke: #fff; stroke-linejoin: round; fill: #AAAAFF; opacity:0.7 }
-.Yea.Progressive { stroke: #fff; stroke-linejoin: round; fill: #0000FF; opacity:0.7 }
-.Nay.Progressive { stroke: #fff; stroke-linejoin: round; fill: #AAAAFF; opacity:0.7 }
-
-.Yea.Republican { stroke: #fff; stroke-linejoin: round; fill: #FF0000; opacity:0.7 }
-.Nay.Republican { stroke: #fff; stroke-linejoin: round; fill: #FFAAAA; opacity:0.7 }
-
-.Yea.Independent { stroke: #fff; stroke-linejoin: round; fill: #FFDD00; opacity:0.7 }
-.Nay.Independent { stroke: #fff; stroke-linejoin: round; fill: #FFDDAA; opacity:0.7 }
-
-.Abs {  stroke: #FFF; stroke-linejoin: round; fill: #DDD; opacity:0.7 }
-
-.AtLarge {  stroke: #FFF; stroke-linejoin: round; fill: #336600; opacity:0.7 }
-
-button {
-  position: absolute;
-  right: 30px;
-  top: 30px;
+.district {
+  stroke: #fff; 
+  stroke-linejoin: round; 
+  opacity: 0.7
 }
 
 #map-container {
