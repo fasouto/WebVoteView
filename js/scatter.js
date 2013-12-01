@@ -1,17 +1,24 @@
 function webVoteScatter(element, data, options) {
 
-  var width = 650,
-      height = 650;
+  // Configurable variables
+  var defaults_map = {
+    width: 650,
+    height: 650,
+    staticUrl: "http://leela.sscnet.ucla.edu/voteview_static/" // URL where the static content is stored(images...)
+  } 
+
+  // Compose Settings Object
+  var settings = $.extend(defaults_map, options);
 
   var margin = 50;
-  var radius = (width - 2 * margin) / 2;
+  var radius = (settings.width - 2 * margin) / 2;
 
   var bubbleRadius = 5;  // Radius of the small bubbles that represent members
   var marginCircle = 25; // Distance of the main circle to the axis
 
   var staticUrl = "http://leela.sscnet.ucla.edu/voteview_static/";  // URL where the static content is stored(images...)
 
-  var circleCenterX = (width - margin) / 2 + marginCircle
+  var circleCenterX = (settings.width - margin) / 2 + marginCircle
   var tooltip = d3.select("body").append("div") .attr("class", "wvv-tooltip");
 
   var membersByID = {};
@@ -44,12 +51,13 @@ function webVoteScatter(element, data, options) {
      return tooltipContent;
   }
 
+
   // Main function to draw the scatter plot
   function chart(element, data, options) {
 
      var svgscatter = d3.select(element)
-          .attr("width", width)
-          .attr("height", height);
+          .attr("width", settings.width)
+          .attr("height", settings.height);
 
      var gg = svgscatter.append("g").attr("id","scatter-group");
 
@@ -140,7 +148,7 @@ function webVoteScatter(element, data, options) {
                                300-radius*vn['y'][1]/scale ] ]; 
             break;
        }
-       if (isNaN(angle)) { polyData = [[0,0],[0,height],[width,height],[width,0]] };
+       if (isNaN(angle)) { polyData = [[0,0 ], [0, settings.height],[settings.width, settings.height],[settings.width, 0]] };
 
      gg.selectAll("polygon")
         .data([polyData])
@@ -211,13 +219,13 @@ function webVoteScatter(element, data, options) {
        // Fit box (only if cutline is displayed)
        gg.append('text').text(sprintf("PRE: %4.2f",vn['pre']))
          .attr("class","fitbox")
-         .attr("x", width - 100)
-         .attr("y", height - 70);
+         .attr("x", settings.width - 100)
+         .attr("y", settings.height - 70);
    
        gg.append('text').text(sprintf("Classified: %4.2f",vn['classified']))
          .attr("class","fitbox")
-         .attr("x", width - 100)
-         .attr("y", height - 90);
+         .attr("x", settings.width - 100)
+         .attr("y", settings.height - 90);
      }
      
      // Main scatter plot
@@ -234,6 +242,7 @@ function webVoteScatter(element, data, options) {
         .attr('class',function(d,i) {
           return d['vote'] + ' ' + d['partyname']; 
          })
+        .on("click", clicked) // zoom
         .on("mousemove", function(d) {
           tooltip
             .classed("hidden", false)
@@ -250,22 +259,22 @@ function webVoteScatter(element, data, options) {
       gg.append('polyline')
         .attr("class","axis")
         .attr("points", sprintf("%d,%d %d,%d %d,%d %d,%d", 
-                                margin+15, width-margin, 
-                                margin+15, width-tickLength, 
-                                width-15, width-tickLength, 
-                                width-15, width-margin));
+                                margin+15, settings.width-margin, 
+                                margin+15, settings.width-tickLength, 
+                                settings.width-15, settings.width-tickLength, 
+                                settings.width-15, settings.width-margin));
 
       gg.append('text').text("Liberal")
-        .attr("x", width/4)
-        .attr("y", height-margin+10)
+        .attr("x", settings.width/4)
+        .attr("y", settings.height-margin+10)
         .attr("style","text-anchor:middle")
       gg.append('text').text("Conservative")
-        .attr("x", 3*width/4)
-        .attr("y", height-margin+10)
+        .attr("x", 3*settings.width/4)
+        .attr("y", settings.height-margin+10)
         .attr("style","text-anchor:middle")
       gg.append('text').text("DWNom 1: Economic/Redistribution")      
-        .attr("x", width/2)
-        .attr("y", height - 20)
+        .attr("x", settings.width/2)
+        .attr("y", settings.height - 20)
         .attr("style","text-anchor:middle")
 
       // Y-axis
@@ -274,23 +283,51 @@ function webVoteScatter(element, data, options) {
         .attr("points", sprintf("%d,%d  %d,%d  %d,%d  %d,%d", 
                                 margin, margin, 
                                 tickLength, margin, 
-                                tickLength, height-margin-15, 
-                                margin, height-margin-15));
+                                tickLength, settings.height-margin-15, 
+                                margin, settings.height-margin-15));
 
       gg.append('text').text("Liberal")
         .attr("x", 40)
-        .attr("y", 3*height/4)
+        .attr("y", 3*settings.height/4)
         .attr("style","text-anchor:middle")
-        .attr("transform", sprintf("rotate(-90 40 %d)", 3*height/4))
+        .attr("transform", sprintf("rotate(-90 40 %d)", 3*settings.height/4))
       gg.append('text').text("Conservative")
         .attr("x", 40)
-        .attr("y", height/4)
+        .attr("y", settings.height/4)
         .attr("style","text-anchor:middle")
-        .attr("transform", sprintf("rotate(-90 40 %d)", height/4))
+        .attr("transform", sprintf("rotate(-90 40 %d)", settings.height/4))
       gg.append('text').text("DWNom 2: Social/Race")
         .attr("x",20)
-        .attr("y", height/2)
+        .attr("y", settings.height/2)
         .attr("style","text-anchor:middle")
-        .attr("transform", sprintf("rotate(-90 20 %d)", height/2))
+        .attr("transform", sprintf("rotate(-90 20 %d)", settings.height/2))
+
+
+    // Zoom on click
+    var centered;
+    function clicked(d) {
+      var x, y, k, stroke;
+      console.log(d);
+      if (d && centered !== d) {
+        x = d3.mouse(this)[0];
+        y = d3.mouse(this)[1];
+        k = 10;
+        centered = d;
+        stroke = 0.15;
+      } else {
+        x = settings.width / 2;
+        y = settings.height / 2;
+        k = 1;
+        centered = null;
+        stroke = 1;
+      }
+
+      gg.classed("active", centered && function(d) { return d === centered; });
+
+      gg.transition()
+          .duration(750)
+          .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+          .style("stroke-width", stroke + "px");
+    }
   } 
 }
