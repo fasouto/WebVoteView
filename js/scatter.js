@@ -9,7 +9,10 @@ function webVoteScatter(element, data, options) {
   var bubbleRadius = 5;  // Radius of the small bubbles that represent members
   var marginCircle = 25; // Distance of the main circle to the axis
 
+  var staticUrl = "http://leela.sscnet.ucla.edu/voteview_static/";  // URL where the static content is stored(images...)
+
   var circleCenterX = (width - margin) / 2 + marginCircle
+  var tooltip = d3.select("body").append("div") .attr("class", "wvv-tooltip");
 
   var membersByID = {};
 
@@ -30,6 +33,15 @@ function webVoteScatter(element, data, options) {
            membersByID[d.id] = d;
         }
      })
+  }
+
+  // Render the tooltip
+  function tooltipHTML(members) {
+    var tooltipContent="";
+     for (var index in members) {
+       tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", staticUrl, parseInt(members[index]['icpsr']), members[index]['fname'], members[index]['partyname'], members[index]['cqlabel'], members[index]['vote']);
+     }
+     return tooltipContent;
   }
 
   // Main function to draw the scatter plot
