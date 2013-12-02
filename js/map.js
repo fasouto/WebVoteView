@@ -59,9 +59,9 @@ function webVoteMap(element, data, options) {
 
   // Set the member dictionary
   function mapMembersVotes(members, votation) {
-    members.forEach( function(d, i) { // d es el dato, i la iteracion
-        if (d.id in votation.votes) {
-           var dist = parseInt(d.districtCode) > 70 ? 0 : parseInt(d.districtCode); // ?
+    members.forEach( function(d) {
+        if (d.id in votation.votes) { // If the member had voted
+           var dist = parseInt(d.districtCode) > 70 ? 0 : parseInt(d.districtCode);  // 00 = At large
            d["vote"] = votation.votes[d.id]; // Add the vote to the member
            if (themembers[sprintf("%s%02d", d.stateAbbr, dist)] != undefined) {
             themembers[sprintf("%s%02d", d.stateAbbr, dist)].push(d);
@@ -74,10 +74,12 @@ function webVoteMap(element, data, options) {
   }
 
   // Render the tooltip
-  function tooltipHTML(members) {
+  function tooltipHTML(members, id) {
     var tooltipContent="";
-     for (var index in members) {
-       tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", settings.staticUrl, parseInt(members[index]['icpsr']), members[index]['fname'], members[index]['partyname'], members[index]['cqlabel'], members[index]['vote']);
+    var atLargeMembers = members[members[id][0].stateAbbr + "00"];
+    var allMembers = $.extend(true, atLargeMembers, members[id]);
+     for (var index in allMembers) {
+       tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", settings.staticUrl, parseInt(allMembers[index]['icpsr']), allMembers[index]['fname'], allMembers[index]['partyname'], allMembers[index]['cqlabel'], allMembers[index]['vote']);
      }
      return tooltipContent;
   }
@@ -179,7 +181,7 @@ function webVoteMap(element, data, options) {
 
     g.selectAll(".district")
       .data(topojson.feature(data.districts, data.districts.objects.districts).features).enter().append("path")
-      .attr("id", function(d) {  return d.id; } )
+      .attr("id", function(d) { return d.id; } )
       .attr("class", "district")
       .attr("d", path)
       .on("click", clicked)
@@ -188,7 +190,7 @@ function webVoteMap(element, data, options) {
           .classed("hidden", false)
           .style("left", d3.event.pageX + 10 + "px")
           .style("top", d3.event.pageY + 5 + "px")
-          .html(tooltipHTML(themembers[d.id]));
+          .html(tooltipHTML(themembers, d.id));
       })
       .on("mouseout",  function(d) {
         tooltip.classed("hidden", true);
