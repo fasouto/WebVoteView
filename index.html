@@ -51,8 +51,8 @@ var rc =  getUrlVars()['id'];
 
 if (rc != undefined){
   var chamber = rc[0];
-  var session = parseInt(rc.substr(1,3));
-  var rcnum = parseInt(rc.substr(4,7));
+  var session = parseInt(rc.substr(1,3),10);
+  var rcnum = parseInt(rc.substr(4,7),10);
 }
 </script>
 
