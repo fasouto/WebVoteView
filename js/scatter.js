@@ -306,18 +306,18 @@ function webVoteScatter(element, data, options) {
     // Zoom on click
     var centered;
     function clicked(d) {
-      var x, y, k, stroke;
+      var x, y, zoomLevel, stroke;
       console.log(d);
       if (d && centered !== d) {
         x = d3.mouse(this)[0];
         y = d3.mouse(this)[1];
-        k = 10;
+        zoomLevel = 5;
         centered = d;
         stroke = 0.15;
       } else {
         x = settings.width / 2;
         y = settings.height / 2;
-        k = 1;
+        zoomLevel = 1;
         centered = null;
         stroke = 1;
       }
@@ -326,8 +326,9 @@ function webVoteScatter(element, data, options) {
 
       gg.transition()
           .duration(750)
-          .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+          .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + zoomLevel + ")translate(" + -x + "," + -y + ")")
           .style("stroke-width", stroke + "px");
     }
+
   } 
 }
