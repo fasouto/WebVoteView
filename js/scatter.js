@@ -4,6 +4,7 @@ function webVoteScatter(element, data, options) {
   var defaults_map = {
     width: 650,
     height: 650,
+    zoomLevel: 5,
     staticUrl: "http://leela.sscnet.ucla.edu/voteview_static/" // URL where the static content is stored(images...)
   } 
 
@@ -302,24 +303,34 @@ function webVoteScatter(element, data, options) {
         .attr("style","text-anchor:middle")
         .attr("transform", sprintf("rotate(-90 20 %d)", settings.height/2))
 
+    // TODO set the properties of this button dinamically
+    var buttonUnzoom = svgscatter.append("foreignObject")
+        .attr('x', settings.width - 100)
+        .attr('y', 20)
+        .attr("width", 70).attr("height", 30)
+      .append("xhtml:body")
+        .html('<button>Unzoom</button>')
+        .on("click", clicked);
 
     // Zoom on click
     var centered;
     function clicked(d) {
       var x, y, zoomLevel, stroke;
-      console.log(d);
+
       if (d && centered !== d) {
         x = d3.mouse(this)[0];
         y = d3.mouse(this)[1];
-        zoomLevel = 5;
+        zoomLevel = settings.zoomLevel;
         centered = d;
         stroke = 0.15;
+        buttonUnzoom.style("display", "block");
       } else {
         x = settings.width / 2;
         y = settings.height / 2;
         zoomLevel = 1;
         centered = null;
         stroke = 1;
+        buttonUnzoom.style("display", "none");
       }
 
       gg.classed("active", centered && function(d) { return d === centered; });
