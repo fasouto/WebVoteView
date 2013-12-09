@@ -19,7 +19,7 @@ function webVoteScatter(element, data, options) {
 
   var staticUrl = "http://leela.sscnet.ucla.edu/voteview_static/";  // URL where the static content is stored(images...)
 
-  var circleCenterX = (settings.width - margin) / 2 + marginCircle
+  var circleCenter = { "x": (settings.width + margin) / 2, "y": (settings.width - margin) / 2 };
   var tooltip = d3.select("body").append("div") .attr("class", "wvv-tooltip");
 
   var membersByID = {};
@@ -66,9 +66,9 @@ function webVoteScatter(element, data, options) {
         .attr("x", 0)
         .attr("y", 0)
       .append("circle")
-        .attr("r", 275)
-        .attr("cx", 350)
-        .attr("cy", 300);
+        .attr("r", radius)
+        .attr("cx", circleCenter.x)
+        .attr("cy", circleCenter.y);
 
      var gg = svgscatter.append("g").attr("id","scatter-group");
 
@@ -94,14 +94,14 @@ function webVoteScatter(element, data, options) {
 
      d3.select("clipPath#scatterclip")
         .append("circle")
-        .attr("cx", 350)
-        .attr("cy", 300)
+        .attr("cx", circleCenter.x)
+        .attr("cy", circleCenter.y)
         .attr("r", radius)
        
      gg
         .append("circle")
-        .attr("cx", 350)
-        .attr("cy", 300)
+        .attr("cx", circleCenter.x)
+        .attr("cy", circleCenter.y)
         .attr("r", radius)
         .attr("style","stroke:#333;stroke-width:1;fill:#FFF");
 
@@ -110,53 +110,53 @@ function webVoteScatter(element, data, options) {
        var cs = (angle>0?1:0) + 2*(vn['zml'][0]>0?1:0);
        switch( cs ) {
          case 0:
-            var polyData = [ [ 350+radius*vn['x'][0]/scale,
-                               300-radius*vn['y'][0]/scale ],
-                             [ 350+radius*(vn['x'][0])/scale,
-                               300-radius*(vn['y'][0]+10)/scale ], 
-                             [ 350+radius*(vn['x'][1]+10)/scale,  
-                               300-radius*(vn['y'][1]+10)/scale ], 
-                             [ 350+radius*(vn['x'][1]+10)/scale,
-                               300-radius*(vn['y'][1])/scale ], 
-                             [ 350+radius*vn['x'][1]/scale,
-                               300-radius*vn['y'][1]/scale ] ]; 
+            var polyData = [ [ circleCenter.x+radius*vn['x'][0]/scale,
+                               circleCenter.y-radius*vn['y'][0]/scale ],
+                             [ circleCenter.x+radius*(vn['x'][0])/scale,
+                               circleCenter.y-radius*(vn['y'][0]+10)/scale ], 
+                             [ circleCenter.x+radius*(vn['x'][1]+10)/scale,  
+                               circleCenter.y-radius*(vn['y'][1]+10)/scale ], 
+                             [ circleCenter.x+radius*(vn['x'][1]+10)/scale,
+                               circleCenter.y-radius*(vn['y'][1])/scale ], 
+                             [ circleCenter.x+radius*vn['x'][1]/scale,
+                               circleCenter.y-radius*vn['y'][1]/scale ] ]; 
             break;
          case 1:
-            var polyData = [ [ 350+radius*vn['x'][0]/scale,
-                               300-radius*vn['y'][0]/scale ],
-                             [ 350+radius*(vn['x'][0])/scale,
-                               300-radius*(vn['y'][1]-10)/scale ], 
-                             [ 350+radius*(vn['x'][1]-10)/scale,
-                               300-radius*(vn['y'][1]-10)/scale ], 
-                             [ 350+radius*(vn['x'][1]-10)/scale,
-                               300-radius*(vn['y'][1])/scale ], 
-                             [ 350+radius*vn['x'][1]/scale,
-                               300-radius*vn['y'][1]/scale ] ]; 
+            var polyData = [ [ circleCenter.x+radius*vn['x'][0]/scale,
+                               circleCenter.y-radius*vn['y'][0]/scale ],
+                             [ circleCenter.x+radius*(vn['x'][0])/scale,
+                               circleCenter.y-radius*(vn['y'][1]-10)/scale ], 
+                             [ circleCenter.x+radius*(vn['x'][1]-10)/scale,
+                               circleCenter.y-radius*(vn['y'][1]-10)/scale ], 
+                             [ circleCenter.x+radius*(vn['x'][1]-10)/scale,
+                               circleCenter.y-radius*(vn['y'][1])/scale ], 
+                             [ circleCenter.x+radius*vn['x'][1]/scale,
+                               circleCenter.y-radius*vn['y'][1]/scale ] ]; 
             break;
          case 2:
-            var polyData = [ [ 350+radius*vn['x'][0]/scale,
-                               300-radius*(vn['y'][0])/scale ],
-                             [ 350+radius*(vn['x'][0])/scale,
-                               300-radius*(vn['y'][0]-10)/scale ], 
-                             [ 350+radius*(vn['x'][1]-10)/scale,
-                               300-radius*(vn['y'][0]-10)/scale ],
-                             [ 350+radius*(vn['x'][1]-10)/scale,
-                               300-radius*(vn['y'][1])/scale ],
-                             [ 350+radius*vn['x'][1]/scale,
-                               300-radius*vn['y'][1]/scale ] ]; 
+            var polyData = [ [ circleCenter.x+radius*vn['x'][0]/scale,
+                               circleCenter.y-radius*(vn['y'][0])/scale ],
+                             [ circleCenter.x+radius*(vn['x'][0])/scale,
+                               circleCenter.y-radius*(vn['y'][0]-10)/scale ], 
+                             [ circleCenter.x+radius*(vn['x'][1]-10)/scale,
+                               circleCenter.y-radius*(vn['y'][0]-10)/scale ],
+                             [ circleCenter.x+radius*(vn['x'][1]-10)/scale,
+                               circleCenter.y-radius*(vn['y'][1])/scale ],
+                             [ circleCenter.x+radius*vn['x'][1]/scale,
+                               circleCenter.y-radius*vn['y'][1]/scale ] ]; 
             break;
     
          case 3:
-            var polyData = [ [ 350+radius*vn['x'][0]/scale,
-                               300-radius*vn['y'][0]/scale ],
-                             [ 350+radius*(vn['x'][0])/scale,
-                               300-radius*(vn['y'][0]+10)/scale ], 
-                             [ 350+radius*(vn['x'][1]-10)/scale,
-                               300-radius*(vn['y'][1]-10)/scale ], 
-                             [ 350+radius*(vn['x'][1]-10)/scale,
-                               300-radius*(vn['y'][1])/scale ], 
-                             [ 350+radius*vn['x'][1]/scale,
-                               300-radius*vn['y'][1]/scale ] ]; 
+            var polyData = [ [ circleCenter.x+radius*vn['x'][0]/scale,
+                               circleCenter.y-radius*vn['y'][0]/scale ],
+                             [ circleCenter.x+radius*(vn['x'][0])/scale,
+                               circleCenter.y-radius*(vn['y'][0]+10)/scale ], 
+                             [ circleCenter.x+radius*(vn['x'][1]-10)/scale,
+                               circleCenter.y-radius*(vn['y'][1]-10)/scale ], 
+                             [ circleCenter.x+radius*(vn['x'][1]-10)/scale,
+                               circleCenter.y-radius*(vn['y'][1])/scale ], 
+                             [ circleCenter.x+radius*vn['x'][1]/scale,
+                               circleCenter.y-radius*vn['y'][1]/scale ] ]; 
             break;
        }
        if (isNaN(angle)) { polyData = [[0,0 ], [0, settings.height],[settings.width, settings.height],[settings.width, 0]] };
@@ -174,26 +174,26 @@ function webVoteScatter(element, data, options) {
 
      gg
         .append("circle")
-        .attr("cx", 350)
-        .attr("cy", 300)
+        .attr("cx", circleCenter.x)
+        .attr("cy", circleCenter.y)
         .attr("r", radius/scale)
         .attr("style","stroke:#333;stroke-dasharray:3 4;stroke-width:0.5;fill:none");
 
      gg
        .append("line")
-       .attr("x1",radius/scale*vn['x'][0]+350)
-       .attr("x2",radius/scale*vn['x'][1]+350)
-       .attr("y1",300 - radius/scale*vn['y'][0])
-       .attr("y2",300 - radius/scale*vn['y'][1])
+       .attr("x1", radius/scale*vn['x'][0] + circleCenter.x)
+       .attr("x2", radius/scale*vn['x'][1] + circleCenter.x)
+       .attr("y1", circleCenter.y - radius/scale*vn['y'][0])
+       .attr("y2", circleCenter.y - radius/scale*vn['y'][1])
        .attr("id","cutline")
        .attr("style","stroke:#000; stroke-width:2; clip-path:url(#scatterclip)");
 
      // Add yea and nay locations to the plot
      if (vn["dl"][0] * vn['dl'][0] != 0) { // Only drawn if there is a cutline!
-       var ynpts =  [350 + radius/scale*(vn["dl"][0]+vn["zml"][0]/2),
-                     300 - radius/scale*(vn["dl"][1]+vn["zml"][1]/2),
-                     350 + radius/scale*(vn["dl"][0]-vn["zml"][0]/2),
-                     300 - radius/scale*(vn["dl"][1]-vn["zml"][1]/2)];
+       var ynpts =  [circleCenter.x + radius/scale*(vn["dl"][0]+vn["zml"][0]/2),
+                     circleCenter.y - radius/scale*(vn["dl"][1]+vn["zml"][1]/2),
+                     circleCenter.x + radius/scale*(vn["dl"][0]-vn["zml"][0]/2),
+                     circleCenter.y - radius/scale*(vn["dl"][1]-vn["zml"][1]/2)];
        var angle =   57.295*Math.atan((vn["zml"][1])/(vn["zml"][0]));
        var cs = (angle>0?1:0) + 2*(vn['zml'][0]>0?1:0);
        switch( cs ) {
@@ -246,9 +246,9 @@ function webVoteScatter(element, data, options) {
      .append("circle")
         .attr("id",dt['id'])
         .attr("cx", function(d) {
-          return 350 + d['nominate']['oneDimNominate'] * radius/scale })
+          return circleCenter.x + d['nominate']['oneDimNominate'] * radius/scale })
         .attr("cy", function(d) {
-          return 300 - d['nominate']['twoDimNominate'] * radius/scale })
+          return circleCenter.y - d['nominate']['twoDimNominate'] * radius/scale })
         .attr("r", bubbleRadius)
         .attr('class',function(d,i) {
           return d['vote'] + ' ' + d['partyname']; 
