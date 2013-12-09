@@ -5,25 +5,23 @@ function webVoteScatter(element, data, options) {
     width: 650,
     height: 650,
     zoomLevel: 5,
+    bubbleRadius: 5,  // Radius of the small bubbles that represent members
     staticUrl: "http://leela.sscnet.ucla.edu/voteview_static/" // URL where the static content is stored(images...)
   } 
 
   // Compose Settings Object
   var settings = $.extend(defaults_map, options);
 
+  // Calculate circle attrs
   var margin = 50;
   var radius = (settings.width - 2 * margin) / 2;
-
-  var bubbleRadius = 5;  // Radius of the small bubbles that represent members
   var marginCircle = 25; // Distance of the main circle to the axis
-
-  var staticUrl = "http://leela.sscnet.ucla.edu/voteview_static/";  // URL where the static content is stored(images...)
-
   var circleCenter = { "x": (settings.width + margin) / 2, "y": (settings.width - margin) / 2 };
+
   var tooltip = d3.select("body").append("div") .attr("class", "wvv-tooltip");
 
+  // Data
   var membersByID = {};
-
   var voteChoices = {
     "1":'Yea', "2":"Yea", "3":"Yea", 
     "4":"Nay", "5":"Nay", "6":'Nay', 
@@ -47,7 +45,7 @@ function webVoteScatter(element, data, options) {
   function tooltipHTML(members) {
     var tooltipContent="";
      for (var index in members) {
-       tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", staticUrl, parseInt(members[index]['icpsr']), members[index]['fname'], members[index]['partyname'], members[index]['cqlabel'], members[index]['vote']);
+       tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", settings.staticUrl, parseInt(members[index]['icpsr']), members[index]['fname'], members[index]['partyname'], members[index]['cqlabel'], members[index]['vote']);
      }
      return tooltipContent;
   }
@@ -249,7 +247,7 @@ function webVoteScatter(element, data, options) {
           return circleCenter.x + d['nominate']['oneDimNominate'] * radius/scale })
         .attr("cy", function(d) {
           return circleCenter.y - d['nominate']['twoDimNominate'] * radius/scale })
-        .attr("r", bubbleRadius)
+        .attr("r", settings.bubbleRadius)
         .attr('class',function(d,i) {
           return d['vote'] + ' ' + d['partyname']; 
          })
