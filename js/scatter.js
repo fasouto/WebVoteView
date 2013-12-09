@@ -315,7 +315,9 @@ function webVoteScatter(element, data, options) {
     var buttonUnzoom = svgscatter.append("foreignObject")
         .attr('x', settings.width - 100)
         .attr('y', 20)
-        .attr("width", 70).attr("height", 30)
+        .attr("width", 70)
+        .attr("height", 30)
+        .style("display", "none")
       .append("xhtml:body")
         .html('<button>Unzoom</button>')
         .on("click", clicked);
