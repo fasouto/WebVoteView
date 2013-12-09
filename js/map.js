@@ -4,6 +4,8 @@ function webVoteMap(element, data, options) {
   var defaults_map = {
     width: 860,
     height: 500,
+    transitionDuration: 750,
+    zoomLevel: 10,
     staticUrl: "http://leela.sscnet.ucla.edu/voteview_static/" // URL where the static content is stored(images...)
   } 
 
@@ -110,18 +112,18 @@ function webVoteMap(element, data, options) {
 
   // Zoom on click
   function clicked(d) {
-    var x, y, k, stroke;
+    var x, y, zoomLevel, stroke;
     if (d && centered !== d) {
       var centroid = path.centroid(d);
       x = centroid[0];
       y = centroid[1];
-      k = 10;
+      zoomLevel = settings.zoomLevel;
       centered = d;
       stroke = 0.15;
     } else {
       x = settings.width / 2;
       y = settings.height / 2;
-      k = 1;
+      zoomLevel = 1;
       centered = null;
       stroke = 1;
     }
@@ -130,16 +132,16 @@ function webVoteMap(element, data, options) {
         .classed("active", centered && function(d) { return d === centered; });
 
     g.transition()
-        .duration(750)
-        .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+        .duration(settings.transitionDuration)
+        .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + zoomLevel + ")translate(" + -x + "," + -y + ")")
         .style("stroke-width", stroke + "px");
 
     sb.selectAll("path")
         .classed("active", centered && function(d) { return d === centered; });
 
     sb.transition()
-        .duration(750)
-        .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+        .duration(settings.transitionDuration)
+        .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + zoomLevel + ")translate(" + -x + "," + -y + ")")
         .style("stroke-width", stroke + "px");
   }
 
