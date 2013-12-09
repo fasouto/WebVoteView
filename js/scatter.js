@@ -60,6 +60,16 @@ function webVoteScatter(element, data, options) {
           .attr("width", settings.width)
           .attr("height", settings.height);
 
+    svgscatter
+      .append("clipPath")
+        .attr("id", "scatterclip")
+        .attr("x", 0)
+        .attr("y", 0)
+      .append("circle")
+        .attr("r", 275)
+        .attr("cx", 350)
+        .attr("cy", 300);
+
      var gg = svgscatter.append("g").attr("id","scatter-group");
 
 
