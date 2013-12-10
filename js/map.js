@@ -93,12 +93,15 @@ function webVoteMap(element, data, options) {
   // Render the tooltip
   function tooltipHTML(members, id) {
     var tooltipContent="";
+    var allMembers = members[id];
     var atLargeMembers = members[members[id][0].stateAbbr + "00"];
-    var allMembers = $.extend(true, atLargeMembers, members[id]);
-     for (var index in allMembers) {
-       tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", settings.staticUrl, parseInt(allMembers[index]['icpsr']), allMembers[index]['fname'], allMembers[index]['partyname'], allMembers[index]['cqlabel'], allMembers[index]['vote']);
-     }
-     return tooltipContent;
+    if (atLargeMembers !== undefined) {
+      allMembers = $.unique(members[id].concat(atLargeMembers));
+    }
+    for (var index in allMembers) {
+      tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", settings.staticUrl, parseInt(allMembers[index]['icpsr']), allMembers[index]['fname'], allMembers[index]['partyname'], allMembers[index]['cqlabel'], allMembers[index]['vote']);
+    }
+    return tooltipContent;
   }
 
   // Function to shade the districts
@@ -126,23 +129,23 @@ function webVoteMap(element, data, options) {
   }
 
   function shadeStates(votation) {
-     sb.selectAll(".state")
-       .style('fill',function(d, i) {
-         if (d.id in senateMembers) {
-           if (senateMembers[d.id].length > 1) {  // If we are in a state with several members
+    sb.selectAll(".state")
+      .style('fill',function(d, i) {
+        if (d.id in senateMembers) {
+          if (senateMembers[d.id].length > 1) {  // If we are in a state with several members
             var atlargeColors = []; // Array with all the colors for this state
             for (member in senateMembers[d.id]) {
               atlargeColors.push(partyColors[voteChoices[senateMembers[d.id][member].vote] + senateMembers[d.id][member].partyname]);
             }
             return blendColors(atlargeColors);
            }
-           var m = senateMembers[d.id][0];
-           if (m.id in votation.votes) {
+            var m = senateMembers[d.id][0];
+            if (m.id in votation.votes) {
               return partyColors[voteChoices[votation.votes[m.id]] + m.partyname];
-           }
-           return "red";
-         }
-         return "beige";
+            }
+            return "red";
+          }
+        return "beige";
       })
   }
 
@@ -217,6 +220,7 @@ function webVoteMap(element, data, options) {
 
     mapSenateMembersVotes(data.members, data.votation);
     mapCongressMembersVotes(data.members, data.votation);
+    console.log(congressMembers);
 
     if (data.votation.chamber == "Senate") {
       // Color the states
@@ -224,7 +228,17 @@ function webVoteMap(element, data, options) {
         .data(topojson.feature(data.states, data.states.objects.states).features).enter().append("path")
         .attr("id", function(d) { return d.id; } )
         .attr("class", "state")
-        .attr("d", path);
+        .attr("d", path)        
+        .on("mousemove", function(d) {
+          tooltip
+            .classed("hidden", false)
+            .style("left", d3.event.pageX + 10 + "px")
+            .style("top", d3.event.pageY + 5 + "px")
+            .html(tooltipHTML(senateMembers, d.id));
+        })
+        .on("mouseout",  function(d) {
+          tooltip.classed("hidden", true);
+        });
 
       shadeStates(data.votation);
     }

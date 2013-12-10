@@ -53,9 +53,10 @@ function webVoteScatter(element, data, options) {
   // Main function to draw the scatter plot
   function chart(element, data, options) {
 
-     var svgscatter = d3.select(element)
-          .attr("width", settings.width)
-          .attr("height", settings.width);
+    var svgscatter = d3.select(element)
+      .attr("xmlns", "http://www.w3.org/2000/svg")
+      .attr("width", settings.width)
+      .attr("height", settings.width);
 
     svgscatter
       .append("clipPath")
@@ -316,8 +317,8 @@ function webVoteScatter(element, data, options) {
         .attr('y', 20)
         .attr("width", 70)
         .attr("height", 30)
-        .style("display", "none")
       .append("xhtml:body")
+        .style("display", "none")
         .html('<button>Unzoom</button>')
         .on("click", clicked);
 
