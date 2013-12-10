@@ -29,8 +29,9 @@ function webVoteMap(element, data, options) {
     "7":"Abs", "8":"Abs", "9":"Abs"
   }
 
-  // Dictionary of members
-  var themembers = {};  
+  // Dictionaries of members
+  var congressMembers = {};
+  var senateMembers = {};
 
   // Define the colors of the political parties and votes
   var partyColors = {
@@ -60,16 +61,30 @@ function webVoteMap(element, data, options) {
   chart(element, data);
 
   // Set the member dictionary
-  function mapMembersVotes(members, votation) {
+  function mapCongressMembersVotes(members, votation) {
     members.forEach( function(d) {
         if (d.id in votation.votes) { // If the member had voted
            var dist = parseInt(d.districtCode) > 70 ? 0 : parseInt(d.districtCode);  // 00 = At large
            d["vote"] = votation.votes[d.id]; // Add the vote to the member
-           if (themembers[sprintf("%s%02d", d.stateAbbr, dist)] != undefined) {
-            themembers[sprintf("%s%02d", d.stateAbbr, dist)].push(d);
+           if (congressMembers[sprintf("%s%02d", d.stateAbbr, dist)] != undefined) {
+            congressMembers[sprintf("%s%02d", d.stateAbbr, dist)].push(d);
            }
            else {
-            themembers[sprintf("%s%02d", d.stateAbbr, dist)] = [d];
+            congressMembers[sprintf("%s%02d", d.stateAbbr, dist)] = [d];
+           }
+        }
+     })
+  }
+
+  function mapSenateMembersVotes(members, votation) {
+    members.forEach( function(d) {
+        if (d.id in votation.votes) { // If the member had voted
+           d["vote"] = votation.votes[d.id]; // Add the vote to the member
+           if (senateMembers[d.stateAbbr] != undefined) {
+            senateMembers[d.stateAbbr].push(d);
+           }
+           else {
+            senateMembers[d.stateAbbr] = [d];
            }
         }
      })
@@ -90,15 +105,15 @@ function webVoteMap(element, data, options) {
   function shadeDistricts(votation) {
      g.selectAll(".district")
        .style('fill',function(d, i) {
-         if (d.id in themembers) {
-           if (themembers[d.id].length > 1) {  // If we are in a district with several members
+         if (d.id in congressMembers) {
+           if (congressMembers[d.id].length > 1) {  // If we are in a district with several members
             var atlargeColors = []; // Array with all the colors for this district
-            for (member in themembers[d.id]) {
-              atlargeColors.push(partyColors[voteChoices[themembers[d.id][member].vote] + themembers[d.id][member].partyname]);
+            for (member in congressMembers[d.id]) {
+              atlargeColors.push(partyColors[voteChoices[congressMembers[d.id][member].vote] + congressMembers[d.id][member].partyname]);
             }
             return blendColors(atlargeColors);
            }
-           var m = themembers[d.id][0];
+           var m = congressMembers[d.id][0];
            if (m.id in votation.votes) {
               return partyColors[voteChoices[votation.votes[m.id]] + m.partyname];
            }
@@ -106,7 +121,28 @@ function webVoteMap(element, data, options) {
            return "red";
          }
          // return 'district';
-         return "white";
+         return "beige";
+      })
+  }
+
+  function shadeStates(votation) {
+     sb.selectAll(".state")
+       .style('fill',function(d, i) {
+         if (d.id in senateMembers) {
+           if (senateMembers[d.id].length > 1) {  // If we are in a state with several members
+            var atlargeColors = []; // Array with all the colors for this state
+            for (member in senateMembers[d.id]) {
+              atlargeColors.push(partyColors[voteChoices[senateMembers[d.id][member].vote] + senateMembers[d.id][member].partyname]);
+            }
+            return blendColors(atlargeColors);
+           }
+           var m = senateMembers[d.id][0];
+           if (m.id in votation.votes) {
+              return partyColors[voteChoices[votation.votes[m.id]] + m.partyname];
+           }
+           return "red";
+         }
+         return "beige";
       })
   }
 
@@ -179,36 +215,49 @@ function webVoteMap(element, data, options) {
     g = svgmap.append("g").attr("id","map-group");
     sb = svgmap.append("g");
 
-    mapMembersVotes(data.members, data.votation);
+    mapSenateMembersVotes(data.members, data.votation);
+    mapCongressMembersVotes(data.members, data.votation);
 
-    g.selectAll(".district")
-      .data(topojson.feature(data.districts, data.districts.objects.districts).features).enter().append("path")
-      .attr("id", function(d) { return d.id; } )
-      .attr("class", "district")
-      .attr("d", path)
-      .on("click", clicked)
-      .on("mousemove", function(d) {
-        tooltip
-          .classed("hidden", false)
-          .style("left", d3.event.pageX + 10 + "px")
-          .style("top", d3.event.pageY + 5 + "px")
-          .html(tooltipHTML(themembers, d.id));
-      })
-      .on("mouseout",  function(d) {
-        tooltip.classed("hidden", true);
-      });
+    if (data.votation.chamber == "Senate") {
+      // Color the states
+      sb.selectAll(".state")
+        .data(topojson.feature(data.states, data.states.objects.states).features).enter().append("path")
+        .attr("id", function(d) { return d.id; } )
+        .attr("class", "state")
+        .attr("d", path);
 
-    // Add state boundaries
-    sb.append("path")
-      .datum(topojson.mesh(data.states, data.states.objects.states, 
-           function(a, b) { return a.id != "AK" & a.id != "HI"}))
-      .attr("d", path)
-      .attr("class", "state-boundary");
-    
-    // Color the districts
-    shadeDistricts(data.votation);
+      shadeStates(data.votation);
+    }
+    else if (data.votation.chamber == "House") {
+      // Color the districts
+      g.selectAll(".district")
+        .data(topojson.feature(data.districts, data.districts.objects.districts).features).enter().append("path")
+        .attr("id", function(d) { return d.id; } )
+        .attr("class", "district")
+        .attr("d", path)
+        .on("click", clicked)
+        .on("mousemove", function(d) {
+          tooltip
+            .classed("hidden", false)
+            .style("left", d3.event.pageX + 10 + "px")
+            .style("top", d3.event.pageY + 5 + "px")
+            .html(tooltipHTML(congressMembers, d.id));
+        })
+        .on("mouseout",  function(d) {
+          tooltip.classed("hidden", true);
+        });
+
+      // // Add state boundaries
+      sb.append("path")
+        .datum(topojson.mesh(data.states, data.states.objects.states, 
+             function(a, b) { return a.id != "AK" & a.id != "HI"}))
+        .attr("d", path)
+        .attr("class", "state-boundary");
+
+      shadeDistricts(data.votation);
+    }
+
     resizeMap();
   };
-
 }
 
