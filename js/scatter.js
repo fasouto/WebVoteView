@@ -3,7 +3,6 @@ function webVoteScatter(element, data, options) {
   // Configurable variables
   var defaults_map = {
     width: 650,
-    height: 650,
     zoomLevel: 5,
     bubbleRadius: 5,  // Radius of the small bubbles that represent members
     staticUrl: "http://leela.sscnet.ucla.edu/voteview_static/" // URL where the static content is stored(images...)
@@ -56,7 +55,7 @@ function webVoteScatter(element, data, options) {
 
      var svgscatter = d3.select(element)
           .attr("width", settings.width)
-          .attr("height", settings.height);
+          .attr("height", settings.width);
 
     svgscatter
       .append("clipPath")
@@ -157,7 +156,7 @@ function webVoteScatter(element, data, options) {
                                circleCenter.y-radius*vn['y'][1]/scale ] ]; 
             break;
        }
-       if (isNaN(angle)) { polyData = [[0,0 ], [0, settings.height],[settings.width, settings.height],[settings.width, 0]] };
+       if (isNaN(angle)) { polyData = [[0,0 ], [0, settings.width],[settings.width, settings.width],[settings.width, 0]] };
 
      gg.selectAll("polygon")
         .data([polyData])
@@ -229,12 +228,12 @@ function webVoteScatter(element, data, options) {
        gg.append('text').text(sprintf("PRE: %4.2f",vn['pre']))
          .attr("class","fitbox")
          .attr("x", settings.width - 100)
-         .attr("y", settings.height - 70);
+         .attr("y", settings.width - 70);
    
        gg.append('text').text(sprintf("Classified: %4.2f",vn['classified']))
          .attr("class","fitbox")
          .attr("x", settings.width - 100)
-         .attr("y", settings.height - 90);
+         .attr("y", settings.width - 90);
      }
      
      // Main scatter plot
@@ -275,15 +274,15 @@ function webVoteScatter(element, data, options) {
 
       gg.append('text').text("Liberal")
         .attr("x", settings.width/4)
-        .attr("y", settings.height-margin+10)
+        .attr("y", settings.width-margin+10)
         .attr("style","text-anchor:middle")
       gg.append('text').text("Conservative")
         .attr("x", 3*settings.width/4)
-        .attr("y", settings.height-margin+10)
+        .attr("y", settings.width-margin+10)
         .attr("style","text-anchor:middle")
       gg.append('text').text("DWNom 1: Economic/Redistribution")      
         .attr("x", settings.width/2)
-        .attr("y", settings.height - 20)
+        .attr("y", settings.width - 20)
         .attr("style","text-anchor:middle")
 
       // Y-axis
@@ -292,24 +291,24 @@ function webVoteScatter(element, data, options) {
         .attr("points", sprintf("%d,%d  %d,%d  %d,%d  %d,%d", 
                                 margin, margin, 
                                 tickLength, margin, 
-                                tickLength, settings.height-margin-15, 
-                                margin, settings.height-margin-15));
+                                tickLength, settings.width-margin-15, 
+                                margin, settings.width-margin-15));
 
       gg.append('text').text("Liberal")
         .attr("x", 40)
-        .attr("y", 3*settings.height/4)
+        .attr("y", 3*settings.width/4)
         .attr("style","text-anchor:middle")
-        .attr("transform", sprintf("rotate(-90 40 %d)", 3*settings.height/4))
+        .attr("transform", sprintf("rotate(-90 40 %d)", 3*settings.width/4))
       gg.append('text').text("Conservative")
         .attr("x", 40)
-        .attr("y", settings.height/4)
+        .attr("y", settings.width/4)
         .attr("style","text-anchor:middle")
-        .attr("transform", sprintf("rotate(-90 40 %d)", settings.height/4))
+        .attr("transform", sprintf("rotate(-90 40 %d)", settings.width/4))
       gg.append('text').text("DWNom 2: Social/Race")
         .attr("x",20)
-        .attr("y", settings.height/2)
+        .attr("y", settings.width/2)
         .attr("style","text-anchor:middle")
-        .attr("transform", sprintf("rotate(-90 20 %d)", settings.height/2))
+        .attr("transform", sprintf("rotate(-90 20 %d)", settings.width/2))
 
     // TODO set the properties of this button dinamically
     var buttonUnzoom = svgscatter.append("foreignObject")
@@ -336,7 +335,7 @@ function webVoteScatter(element, data, options) {
         buttonUnzoom.style("display", "block");
       } else {
         x = settings.width / 2;
-        y = settings.height / 2;
+        y = settings.width / 2;
         zoomLevel = 1;
         centered = null;
         stroke = 1;
@@ -347,7 +346,7 @@ function webVoteScatter(element, data, options) {
 
       gg.transition()
           .duration(750)
-          .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + zoomLevel + ")translate(" + -x + "," + -y + ")")
+          .attr("transform", "translate(" + settings.width / 2 + "," + settings.width / 2 + ")scale(" + zoomLevel + ")translate(" + -x + "," + -y + ")")
           .style("stroke-width", stroke + "px");
     }
 
