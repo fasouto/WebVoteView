@@ -215,12 +215,10 @@ function webVoteMap(element, data, options) {
       .attr("viewBox", "0 0 860 500")
       .attr("preserveAspectRatio", "xMidYMid");
 
-    g = svgmap.append("g").attr("id","map-group");
     sb = svgmap.append("g");
 
     mapSenateMembersVotes(data.members, data.votation);
     mapCongressMembersVotes(data.members, data.votation);
-    console.log(congressMembers);
 
     if (data.votation.chamber == "Senate") {
       // Color the states
@@ -243,6 +241,7 @@ function webVoteMap(element, data, options) {
       shadeStates(data.votation);
     }
     else if (data.votation.chamber == "House") {
+      g = svgmap.append("g").attr("id","map-group");
       // Color the districts
       g.selectAll(".district")
         .data(topojson.feature(data.districts, data.districts.objects.districts).features).enter().append("path")
