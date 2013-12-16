@@ -1,4 +1,4 @@
-function webVoteView(options) {
+function WebVoteView(options) {
 
   // Default values
   var defaults = {
@@ -6,7 +6,7 @@ function webVoteView(options) {
     chamber: 'H',
     session: 89,
     rcnum: 2
-  }
+  };
 
   // Compose settings object
   var settings = $.extend(defaults, options);
@@ -16,16 +16,16 @@ function webVoteView(options) {
 
   // Main function
   function init() {
-    loadData(settings.chamber, parseInt(settings.session), parseInt(settings.rcnum));
-  };
+    loadData(settings.chamber, parseInt(settings.session, 10), parseInt(settings.rcnum, 10));
+  }
 
   // AJAX calls to load data
   function loadData(chamber, session, rcnum) {
     queue()
       .defer(d3.json, sprintf("json/districts%03d.json", session))
       .defer(d3.json, sprintf("json/states%03d.json", session))
-      .defer(d3.json,sprintf("../voteview/getvote?id=%s%03d%04d", chamber, session, rcnum))
-      .defer(d3.json,sprintf("../voteview/getmemberslist?session=%d", session))
+      .defer(d3.json, sprintf("../voteview/getvote?id=%s%03d%04d", chamber, session, rcnum))
+      .defer(d3.json, sprintf("../voteview/getmemberslist?session=%d", session))
       // .defer(d3.json, sprintf("../voteview/getvote/%s%03d%04d", chamber, session, rcnum))
       // .defer(d3.json, sprintf("../voteview/getmemberslist/%d", session))
       .await(drawWidgets);
@@ -35,9 +35,9 @@ function webVoteView(options) {
   function drawWidgets(error, districts, states, votation, members) {
     if (error) return console.error("Error: ", error);
     if (settings.showDescription) setDescription(votation);
-    if (settings.map != undefined) {
-      var mapChart = new webVoteMap("#map", {
-                                            'districts': districts, 
+    if (settings.map !== undefined) {
+      var mapChart = new WebVoteMap("#map", {
+                                            'districts': districts,
                                             'states': states,
                                             'votation': votation,
                                             'members': members
@@ -45,12 +45,11 @@ function webVoteView(options) {
                                           {
                                             'height': 800,
                                             'width': 1000
-                                          }
-                                          );
+                                          });
     }
-    if (settings.scatter != undefined) {
-      var scatterChart = new webVoteScatter("#scatter", {
-                                            'districts': districts, 
+    if (settings.scatter !== undefined) {
+      var scatterChart = new WebVoteScatter("#scatter", {
+                                            'districts': districts,
                                             'states': states,
                                             'votation': votation,
                                             'members': members
@@ -60,10 +59,9 @@ function webVoteView(options) {
 
   // Write to the description ids the name, description and date of the votation
   function setDescription(vote) {
-      d3.select("#wvv-rollcall").html(sprintf("Chamber %s/Congress %d/Rollcall %d", 
-                                               vote['chamber'], vote['session'], vote['rollnumber']));
-      d3.select("#wvv-description").html(vote['description']);
-      d3.select("#wvv-date").html(vote['date']);
+    d3.select("#wvv-rollcall").html(sprintf("Chamber %s/Congress %d/Rollcall %d",
+                                             vote.chamber, vote.session, vote.rollnumber));
+    d3.select("#wvv-description").html(vote.description);
+    d3.select("#wvv-date").html(vote.date);
   }
-
 }

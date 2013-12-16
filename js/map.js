@@ -1,5 +1,5 @@
 /*jslint white: true */
-function webVoteMap(element, data, options) {
+function WebVoteMap(element, data, options) {
 
   // Configurable variables
   var defaults_map = {
