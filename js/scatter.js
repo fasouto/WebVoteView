@@ -15,6 +15,7 @@ function WebVoteScatter(element, data, options) {
   // Calculate circle attrs
   var margin = 50;
   var radius = (settings.width - 2 * margin) / 2;
+  var centered;
   var marginCircle = 25; // Distance of the main circle to the axis
   var circleCenter = { "x": (settings.width + margin) / 2, "y": (settings.width - margin) / 2 };
 
@@ -324,7 +325,6 @@ function WebVoteScatter(element, data, options) {
         .on("click", clicked);
 
     // Zoom on click
-    var centered;
     function clicked(d) {
       var x, y, zoomLevel, stroke;
 

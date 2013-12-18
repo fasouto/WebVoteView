@@ -19,6 +19,7 @@ function WebVoteMap(element, data, options) {
   var projection = d3.geo.albersUsa();
   var path = d3.geo.path().projection(projection);
   var svgmap, g, sb;
+  var centered;
   var tooltip = d3.select("body").append("div").attr("class", "wvv-tooltip");
 
   // Map vote choices
@@ -207,7 +208,6 @@ function WebVoteMap(element, data, options) {
 
   // Main function to draw the map after data load
   function chart(element, data) {
-    var centered;
     svgmap = d3.select(element)
       .attr("xmlns", "http://www.w3.org/2000/svg")
       .attr("width", settings.width)
