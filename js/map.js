@@ -6,7 +6,7 @@ function WebVoteMap(element, data, options) {
     width: 860,
     height: 500,
     transitionDuration: 750,
-    zoomLevel: 10,
+    zoomLevel: 12,
     staticUrl: "http://leela.sscnet.ucla.edu/voteview_static/" // URL where the static content is stored(images...)
   };
 
@@ -18,7 +18,7 @@ function WebVoteMap(element, data, options) {
   // Get some D3 DOM objects and create others
   var projection = d3.geo.albersUsa();
   var path = d3.geo.path().projection(projection);
-  var svgmap, g, sb;
+  var svgmap, g, sb, buttonUnzoom;
   var centered;
   var tooltip = d3.select("body").append("div").attr("class", "wvv-tooltip");
 
@@ -159,12 +159,14 @@ function WebVoteMap(element, data, options) {
       zoomLevel = settings.zoomLevel;
       centered = d;
       stroke = 0.15;
+      buttonUnzoom.style("display", "block");
     } else {
       x = settings.width / 2;
       y = settings.height / 2;
       zoomLevel = 1;
       centered = null;
       stroke = 1;
+      buttonUnzoom.style("display", "none");
     }
 
     g.selectAll("path")
@@ -271,5 +273,16 @@ function WebVoteMap(element, data, options) {
     }
 
     resizeMap();
+
+    buttonUnzoom = svgmap.append("foreignObject")
+        .attr("x", 50)
+        .attr("y", 20)
+        .attr("width", 70)
+        .attr("height", 30)
+      .append("xhtml:body")
+        .style("display", "none")
+        .html('<button>Unzoom</button>')
+        .on("click", clicked);
+
   }
 }

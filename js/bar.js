@@ -92,6 +92,7 @@ function WebVoteBar(element, data, options) {
       .scale(partyScale)
       .orient("left");
 
+    // Lets draw the chart
     svgBar = d3.select(element)
       .append("svg")
       .attr("width", settings.width)
@@ -141,7 +142,6 @@ function WebVoteBar(element, data, options) {
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text(function(d) { return d.vote; });
-
 
   }
 }
