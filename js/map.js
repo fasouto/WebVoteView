@@ -24,7 +24,7 @@ function WebVoteMap(element, data, options) {
 
   // Map vote choices
   var voteChoices = {
-    "1": 'Yea', "2": "Yea", "3": "Yea", 
+    "1": "Yea", "2": "Yea", "3": "Yea", 
     "4": "Nay", "5": "Nay", "6": "Nay", 
     "7": "Abs", "8": "Abs", "9": "Abs"
   };
@@ -273,4 +273,3 @@ function WebVoteMap(element, data, options) {
     resizeMap();
   }
 }
-

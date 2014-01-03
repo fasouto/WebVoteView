@@ -35,6 +35,9 @@ function WebVoteView(options) {
   function drawWidgets(error, districts, states, votation, members) {
     if (error) return console.error("Error: ", error);
     if (settings.showDescription) setDescription(votation);
+    if (settings.bar !== undefined) {
+      var barChart = new WebVoteBar("#bar", {'votation': votation});
+    }
     if (settings.map !== undefined) {
       var mapChart = new WebVoteMap("#map", {
                                             'districts': districts,
