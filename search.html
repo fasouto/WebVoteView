@@ -69,7 +69,7 @@
 	}
 
 	$(document).ready(function() {
-	    setview("search");
+	    setview("home");
 	});
 	
 	makeTable = function(query) {
@@ -123,12 +123,48 @@
     <div class="container">
       <div class="header">
         <ul class="nav nav-pills pull-right">
-          <li><a href="home.html">Home</a></li>
-          <li class="active"><a href="search.html">Search</a></li>
+          <li class="active"><a onclick="setview('home')">Home</a></li>
+          <li><a onclick="setview('search')">Search</a></li>
           <li><a href="#">Contact</a></li>
         </ul>
       <h3 class="text-muted">VoteView</h3>
     </div>
+
+    <!-- HOME PAGE DIV -->
+    <div id="home">
+      <div class="jumbotron">
+        <h1>Welcome!</h1>
+        <p class="lead">Search, explore and visualize U.S. Roll Calls</p>
+	<p></p>
+	
+	<div id="buttons">
+	  <a class="btn btn-primary btn-lg" onclick="setview('search')" role="button"><span class="glyphicon glyphicon-search"></span><br>Search</a>
+	  
+	  <!--a class="btn btn-success btn-lg" href="#" role="button"><span class="glyphicon glyphicon-list"></span><br>Results</a> -->
+	  
+	  <!--a class="btn btn-warning btn-lg" href="#" role="button"><span class="glyphicon glyphicon-eye-open"></span><br>Visualize</a> -->
+	</div>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-6">
+          <h4>UCLA</h4>
+          <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
+
+          <h4>U.S. Congress</h4>
+          <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur.</p>
+        </div>
+
+        <div class="col-lg-6">
+          <h4>Breaking Bad</h4>
+          <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
+
+          <h4>Examples</h4>
+          <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
+        </div>
+      </div>
+    </div> 
+
 
     <!-- SEARCH PANEL -->
     <div id='search'>
