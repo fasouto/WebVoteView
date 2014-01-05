@@ -1,58 +1,189 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
-		<link href="css/jquery.dataTables.css" rel="stylesheet">
-		<link rel="shortcut icon" type="image/ico" href="" />
-		
-		<title>Search U.S. Rollcalls</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+	<title>Vote View</title>
+	
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-		<script type="text/javascript" language="javascript" src="js/libs/jquery-2.0.3.min.js"></script>
-		<script type="text/javascript" language="javascript" src="js/libs/jquery.sprintf.js"></script>
-		<script type="text/javascript" language="javascript" src="js/libs/jquery.dataTables.min.js"></script>
+	<link rel="shortcut icon" href="docs-assets/ico/favicon.png">
+	<link rel="shortcut icon" type="image/ico" href="">
 
-		<script type="text/javascript" charset="utf-8">
-			$(document).ready(function() {
-			    //xmakeTable("treaty");
-			});
-			
-			makeTable = function(query) {
-			        var q = encodeURIComponent(query)
-				$('#example').dataTable({
-                                  "oLanguage": {"sSearch": "Filter results:"},
-                                  "bProcessing": true,
-			          "bDestroy":true,
-			          "sAjaxSource": $.sprintf('http://leela.sscnet.ucla.edu/voteview/searchdt?q=%s',q),
-			          "aoColumns":[{"mData":"id", "sWidth": "50px", "sTitle":"ID"},
-			                       {"mData":"chamber", "sWidth": "20px", "sTitle":"Chamber"},
-			                       {"mData":"date", "sWidth": "75px", "sTitle":"Date"},
-			                       {"mData":"yea","sTitle":"Vote","sWidth":"10px"},
-                                               {"mData":"descriptionShort", "sWidth": "400px","sTitle":"Description"}],
-			          "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
-                                               $('td:eq(0)', nRow).html(
-			                            $.sprintf('<a href="index.html?id=%s">%s</a>',aData['id'],aData['id'])).attr("title","Click to explore this vote");
-                                               $('td:eq(3)', nRow).html(
-			                            $.sprintf('%s-%s',aData['yea'],aData['no']));
-			                       $('td:eq(4)', nRow).attr("title",aData['description'])
-                                               return nRow; }  
-			         });
-			}
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/webvoteview.css" media="all" rel="stylesheet" type="text/css" />
+        <link href="css/map.css" media="all" rel="stylesheet" type="text/css" />
+        <link href="css/scatter.css" media="all" rel="stylesheet" type="text/css" />
 
-			searchvotes = function() {
-			   $('#example').empty();
-			   makeTable($('#qqtext').val());
-			};
+	<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+	<link href="css/jumbotron-narrow.css" rel="stylesheet">
+	<link href="css/jquery.dataTables.css" rel="stylesheet">
 
-		</script>
-	</head>
-	<body>
-	<div class="container">
-	Search query: <input type="text" id="qqtext" onchange="searchvotes()"></input>
-	<h2>Results</h2>
-	<table id="example" class="table table-striped table-bordered"></table>
-	</div>
-	<div><p>Copyright Jeffrey B. Lewis, 2013.</p></br></div>
+        <script src="js/libs/jquery-2.0.3.min.js"></script>
+        <script src="js/libs/bootstrap.min.js"></script>
+        <script src="js/libs/jquery.sprintf.js"></script> 
+	<script src="js/libs/jquery.dataTables.min.js"></script>
+        <script src="js/libs/sprintf.min.js"></script>
+ 	        
+        <script src="js/libs/d3.v3.min.js"></script>
+        <script src="js/libs/queue.v1.min.js"></script>
+        <script src="js/libs/topojson.v1.min.js"></script>
+        <script src="js/map.js"></script>
+        <script src="js/scatter.js"></script>
+        <script src="js/bar.js"></script>
+        <script src="js/webvoteview.js"></script>
 
-</body>
+	<script type="text/javascript" charset="utf-8">
+	  
+        // set the page view (there must be much more jquery-ish way to do this!)
+	setview = function(v) {
+	   switch(v) {
+	      case "results":
+	          $("#results").show();
+	          $("#visualize").hide();
+	          $("#search").hide();
+	          $("#home").hide();
+	          break;
+	      case "visualize":
+	          $("#results").hide();
+	          $("#visualize").show();
+	          $("#search").hide();
+	          $("#home").hide();
+                  break;
+	      case "search":
+	          $("#results").hide();
+	          $("#visualize").hide();
+	          $("#search").show();
+	          $("#home").hide();
+                  break;
+	      case "home":
+	          $("#results").hide();
+	          $("#visualize").hide();
+	          $("#search").hide();
+	          $("#home").show();
+                  break;
+	  }
+	}
+
+	$(document).ready(function() {
+	    setview("search");
+	});
+	
+	makeTable = function(query) {
+	        var q = encodeURIComponent(query);
+	        $('#example').dataTable({
+	                                  "oLanguage": {"sSearch": "Filter results:"},
+	                                  "bProcessing": true,
+	          "bDestroy":true,
+	          "sAjaxSource": $.sprintf('http://leela.sscnet.ucla.edu/voteview/searchdt?q=%s',q),
+	          "aoColumns":[{"mData":"id", "sWidth": "20px", "sTitle":"ID"},
+	                       {"mData":"chamber", "sWidth": "10px", "sTitle":"Chamber"},
+	                       {"mData":"date", "sWidth": "85px", "sTitle":"Date"},
+	                       {"mData":"yea","sTitle":"Vote","sWidth":"80px"},
+	                                               {"mData":"descriptionShort", "sWidth": "200px","sTitle":"Description"}],
+	          "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+	                                               $('td:eq(0)', nRow).html(
+	                            $.sprintf('<a onclick="setviz(\'%s\');setview(\'visualize\')">%s</a>',aData['id'],aData['id'])).attr("title", "Click to explore this vote");
+	                                               $('td:eq(3)', nRow).html(
+	                            $.sprintf('%s-%s',aData['yea'],aData['no']));
+	                       $('td:eq(4)', nRow).attr("title",aData['description'])
+	                                               return nRow; }  
+	         });
+	}
+	
+	searchvotes = function() {
+	   $('#example').empty();
+	   makeTable($('#qqtext').val());
+	};
+        
+        var wvv;  //not sure if this needs to be in the global env
+        setviz = function(id) {
+           var chamber = id.substr(0,1);
+           var session = parseInt(id.substr(1,3),10);
+           var rcnum = parseInt(id.substr(4,7),10);
+  	   wvv = new WebVoteView({
+                            'chamber': chamber,
+                            'session': session,
+                            'rcnum': rcnum,
+                            'showDescription': true,
+                            'bar': {'element': 'bar'},
+                            'map': {'element': 'map'},
+                            'scatter': {'element': 'scatter'}
+                        });
+	};
+	
+	</script>
+	
+</head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="home.html">Home</a></li>
+          <li class="active"><a href="search.html">Search</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      <h3 class="text-muted">VoteView</h3>
+    </div>
+
+    <!-- SEARCH PANEL -->
+    <div id='search'>
+    <div class="jumbotron">
+      <div class="container">
+        <h3 align="center">Search for Roll Calls</h3>
+		<div class="col-sm-12">
+      		<input type="search" class="form-control" placeholder="Search" id="qqtext" onchange="setview('results');searchvotes()"></input>
+		<br>
+		</div>
+      </div>
+     </div>
+    </div>
+
+    <!-- RESULTS PANEL -->
+    <div id='results'>
+        <h2>Results</h2>
+	<br/>	
+	<div class="table-responsive">
+		<table id="example" class="table table-striped"></table>
+	</div>	
+    </div>
+
+
+    <!-- VISUALIZE PANEL -->
+    <div id='visualize'>
+
+       <h1 id="wvv-rollcall"></h1>
+       <h2 id="wvv-description"></h2>
+       <h3 id="wvv-date"></h3>
+
+       <div id="bar"></div>
+
+       <div id="map-container">
+         <svg id="map"></svg>
+       </div>
+
+       <svg id="scatter" xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>
+ 
+    </div>
+
+    <!-- NAV BUTTONS -->
+         <hr>
+		<div align="center">
+			<a class="btn btn-primary btn-lg" onclick="setview('search')" role="button"><span class="glyphicon glyphicon-search"></span><br>Search</a>
+			<a class="btn btn-success btn-lg" onclick="setview('results')" role="button"><span class="glyphicon glyphicon-list"></span><br>Results</a>
+			<a class="btn btn-warning btn-lg" onclick="setview('visualize')" role="button"><span class="glyphicon glyphicon-eye-open"></span><br>Visualize</a>
+		</div>				
+	<p></p>
+	
+    <footer>
+      <p>&copy; Jeffrey B. Lewis, 2013</p>
+    </footer>
+    </div> 
+
+
+  </body>
 </html>
