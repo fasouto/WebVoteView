@@ -96,6 +96,8 @@
 	    setview("home");
 	});
 	
+        var resultids = []; // container for search result ids to use in download
+
 	makeTable = function(query) {
 	        var q = encodeURIComponent(query);
 	        $('#example').dataTable({
@@ -113,9 +115,14 @@
 	                            $.sprintf('<a onclick="setviz(\'%s\');setview(\'visualize\')">%s</a>',aData['id'],aData['id'])).attr("title", "Click to explore this vote");
 	                                               $('td:eq(3)', nRow).html(
 	                            $.sprintf('%s-%s',aData['yea'],aData['no']));
-	                       $('td:eq(4)', nRow).attr("title",aData['description'])
-	                                               return nRow; }  
+	                            $('td:eq(4)', nRow).attr("title",aData['description']);
+                                    resultids.push(aData['id']); // build vector vote ids (nothing to do with the table)
+	                            return nRow; },  
+                  "fnInitComplete": function(oSettings, json) {
+                                       $('#downloadExcel').attr('href','http://leela.sscnet.ucla.edu/voteview/download?ids=' + resultids.join()); // Make download link
+                                    }
 	         });
+                 
 	}
 	
 	searchvotes = function() {
@@ -285,7 +292,8 @@
 		<div class="jumbotron">	
 			<div class="container special">
 				<div class="table">
-					<table id="example" class="table table-striped"></table><br></br>		
+					<table id="example" class="table table-striped"></table>
+	                                <br/><a id="downloadExcel" href="">Download results in spreadsheet</a><br></br>
 					<div align="center" data-toggle="buttons">
 						<a class="btn btn-primary btn-lg" onclick="setview('search')" role="button"><span class="glyphicon glyphicon-search"></span><br>Search</a>
 						<a class="btn btn-success btn-lg" onclick="setview('results')" role="button"><span class="glyphicon glyphicon-list"></span><br>Results</a>
@@ -293,6 +301,7 @@
 					</div><!-- buttons -->
 				</div><!-- table -->
 			</div><!-- container -->
+			
 		</div><!-- jumbotron -->	
     </div><!-- results -->
 
