@@ -61,8 +61,6 @@ function WebVoteBar(element, data, options) {
       parties.push(d);
     }
 
-    console.log(parties);
-
     // Order the result by  number of yea votes
     parties.sort(function(a, b) { return b.votes[0].number - a.votes[0].number; });
 
