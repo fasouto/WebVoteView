@@ -151,21 +151,19 @@ function WebVoteMap(element, data, options) {
 
   // Zoom on click
   function clicked(d) {
-    var x, y, zoomLevel, stroke;
+    var x, y, zoomLevel;
     if (d && centered !== d) {
       var centroid = path.centroid(d);
       x = centroid[0];
       y = centroid[1];
       zoomLevel = settings.zoomLevel;
       centered = d;
-      stroke = 0.15;
       buttonUnzoom.style("display", "block");
     } else {
       x = settings.width / 2;
       y = settings.height / 2;
       zoomLevel = 1;
       centered = null;
-      stroke = 1;
       buttonUnzoom.style("display", "none");
     }
 
@@ -175,7 +173,7 @@ function WebVoteMap(element, data, options) {
     g.transition()
         .duration(settings.transitionDuration)
         .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + zoomLevel + ")translate(" + -x + "," + -y + ")")
-        .style("stroke-width", stroke + "px");
+        .style("stroke-width", 1.2/zoomLevel + "px");
 
     sb.selectAll("path")
         .classed("active", centered && function(d) { return d === centered; });
@@ -183,7 +181,7 @@ function WebVoteMap(element, data, options) {
     sb.transition()
         .duration(settings.transitionDuration)
         .attr("transform", "translate(" + settings.width / 2 + "," + settings.height / 2 + ")scale(" + zoomLevel + ")translate(" + -x + "," + -y + ")")
-        .style("stroke-width", stroke + "px");
+        .style("stroke-width", 1.2/zoomLevel + "px");
   }
 
   // Blend an array of colors
