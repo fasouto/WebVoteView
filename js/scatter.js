@@ -268,7 +268,7 @@ function WebVoteScatter(element, data, options) {
       var tickLength = 60;
       // X-axis
       gg.append('polyline')
-        .attr("class","axis")
+        .attr("class", "scatter-axis")
         .attr("points", sprintf("%d,%d %d,%d %d,%d %d,%d", 
                                 margin+15, settings.width-margin, 
                                 margin+15, settings.width-tickLength, 
@@ -290,7 +290,7 @@ function WebVoteScatter(element, data, options) {
 
       // Y-axis
       gg.append('polyline')
-        .attr("class","axis")
+        .attr("class","scatter-axis")
         .attr("points", sprintf("%d,%d  %d,%d  %d,%d  %d,%d", 
                                 margin, margin, 
                                 tickLength, margin, 

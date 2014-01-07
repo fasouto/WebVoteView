@@ -23,7 +23,7 @@ svg.scatter {
     background: #000;
 }
 
-.axis {
+.scatter-axis {
 	stroke:#000; 
 	stroke-width:1; 
 	fill:none

@@ -65,7 +65,7 @@ function WebVoteBar(element, data, options) {
     parties.sort(function(a, b) { return b.votes[0].number - a.votes[0].number; });
 
     // Calculate the svg height in function of the number of parties
-    var svgHeight = parties.length * 3 * (settings.barHeight + settings.barSeparation) + settings.margin;
+    var svgHeight = parties.length * 3 * (settings.barHeight + settings.barSeparation) + settings.margin + settings.barSeparation;
 
     // Define the scales
     var partyScale = d3.scale.ordinal()
@@ -93,24 +93,25 @@ function WebVoteBar(element, data, options) {
     // Lets draw the chart
     svgBar = d3.select(element)
       .append("svg")
+      .attr("xmlns", "http://www.w3.org/2000/svg")
       .attr("width", settings.width)
       .attr("height", svgHeight);
 
     svgBar.append("g")
-        .attr("class", "axis")
-        .attr("transform", "translate(150," + (svgHeight - settings.margin) + ")")
+        .attr("class", "bar-axis")
+        .attr("transform", "translate(150," + (svgHeight - settings.margin + settings.barSeparation) + ")")
         .call(xAxis);
 
     svgBar.append("g")
-        .attr("class", "axis")
-        .attr("transform", "translate(110, 0)")
+        .attr("class", "bar-axis")
+        .attr("transform", "translate(105, 0)")
         .call(yAxis);
 
     var partyBars = svgBar.selectAll(".party")
         .data(parties)
       .enter().append("g")
         .attr("class", "g")
-        .attr("transform", function(d) { return "translate(0, " + partyScale(d.party) + ")"; });
+        .attr("transform", function(d) { return "translate(0, " + partyScale(d.party)  + ")"; });
 
     partyBars.selectAll('rect')
       .data(function(d) { return d.votes; })
