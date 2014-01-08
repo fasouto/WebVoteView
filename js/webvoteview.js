@@ -16,6 +16,7 @@ function WebVoteView(options) {
 
   // Main function
   function init() {
+    d3.select("#loading").style("display", "block");
     loadData(settings.chamber, parseInt(settings.session, 10), parseInt(settings.rcnum, 10));
   }
 
@@ -33,6 +34,7 @@ function WebVoteView(options) {
 
   // Call the map and scatterplot widgets
   function drawWidgets(error, districts, states, votation, members) {
+    d3.select("#loading").style("display", "none");
     if (error) return console.error("Error: ", error);
     if (settings.showDescription) setDescription(votation);
     if (settings.bar !== undefined) {

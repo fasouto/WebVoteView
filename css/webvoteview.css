@@ -1,4 +1,11 @@
 
+#loading {
+ float: none;
+ margin: 0 auto;
+ text-align: center;
+ display: none;
+}
+
 #map-container {
   width: 700px; 
 }
