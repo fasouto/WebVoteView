@@ -78,7 +78,7 @@ function WebVoteBar(element, data, options) {
 
     var xScale = d3.scale.linear()
       .domain([0, d3.max(parties, function(d) { return d3.max(d.votes, function(d) { return d.number }); })])
-      .range([0, settings.width - 150]);
+      .range([0, settings.width - 200]);
 
     // Define the axis
     var xAxis = d3.svg.axis()
@@ -99,12 +99,12 @@ function WebVoteBar(element, data, options) {
 
     svgBar.append("g")
         .attr("class", "bar-axis")
-        .attr("transform", "translate(150," + (svgHeight - settings.margin + settings.barSeparation) + ")")
+        .attr("transform", "translate(200," + (svgHeight - settings.margin + settings.barSeparation) + ")")
         .call(xAxis);
 
     svgBar.append("g")
         .attr("class", "bar-axis")
-        .attr("transform", "translate(105, 0)")
+        .attr("transform", "translate(155, " + settings.barSeparation + ")")
         .call(yAxis);
 
     var partyBars = svgBar.selectAll(".party")
@@ -117,7 +117,7 @@ function WebVoteBar(element, data, options) {
       .data(function(d) { return d.votes; })
       .enter()
       .append("rect")
-      .attr("x", 150)
+      .attr("x", 200)
       .attr("y", function (d, i) {
         return i * (settings.barHeight + settings.barSeparation);
       })
@@ -136,7 +136,7 @@ function WebVoteBar(element, data, options) {
 
 
     legend.append("text")
-        .attr("x", 140)
+        .attr("x", 190)
         .attr("y", function(d, i) { return i * (settings.barHeight + settings.barSeparation) + settings.barHeight/2 ;} )
         .attr("dy", ".35em")
         .style("text-anchor", "end")
