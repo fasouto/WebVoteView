@@ -323,28 +323,81 @@
 
     <!-- VISUALIZE PANEL -->
     <div id='visualize'>
-		
 		<div class="container">
     		<div class="panel panel-default">
-      			<h1 class="panel-heading" id="wvv-rollcall"></h1><b></b>
-			</div>
+      			<div class="panel-heading" id="wvv-rollcall"><b></b>
+			</div><!-- title -->
 
-	        <h2 class="panel-body" id="wvv-description"></h2>
+	        <div class="panel-body" id="wvv-description">
+			</div><!-- description -->
 
-	        <h3 class="panel-body" id="wvv-date"></h3>
+	        <div class="panel-body" id="wvv-date">
+			</div><!-- date -->
 	    </div>
-	
-       <div id="bar"></div>
 
-       <div id="map-container">
-         <svg id="map"></svg>
-       </div>
 
-       <svg id="scatter" xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>
- 
-    </div>
+    	<div class="bs-example">
+			<table class="table">
+		        <thead>
+          			<tr>
+			            <th>ID</th>
+            			<th>Description</th>
+			            <th>Yea</th>
+            			<th>Nay</th>
+		          </tr>
+        		</thead>
+	        	<tbody>
+    	    	<tr>
+            		<td id="idrollcall"></td>
+            		<td id="summary" class="col-lg-14"></td>
+            		<td id="yes"></td>
+            		<td id="nay"></td>
+          		</tr>
+        		</tbody>
+      		</table>
+    	</div><!-- summary -->
+		<br><br><br>
 
- 	
+
+		<div class="row">
+	        <div class="col-md-7" id="bar">
+    	    	<a href="bar.html"><img class="img-responsive" src="http://placehold.it/750x350"></a>
+        	</div><!-- image 1 -->
+
+	        <div class="col-md-5">
+    	    	<h3>Bar Chart</h3>
+          		<p align="justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum.</p>
+				<a class="btn btn-primary" href="portfolio-item.html">View<i class="fa fa-angle-right"></i></a>
+	        </div><!-- description of figure 1 -->
+       </div><!-- row -->
+		<hr>
+		
+		<div class="row">
+	        <div class="col-md-7" id="bar">
+    	    	<a href="bar.html"><img class="img-responsive" src="http://placehold.it/750x350"></a>
+        	</div><!-- image 2 -->
+
+	        <div class="col-md-5">
+    	    	<h3>Map</h3>
+          		<p align="justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum.</p>
+				<a class="btn btn-primary" href="portfolio-item.html">View<i class="fa fa-angle-right"></i></a>
+	        </div><!-- description of figure 2 -->
+       </div><!-- row -->
+		<hr>
+		
+		<div class="row">
+	        <div class="col-md-7" id="bar">
+    	    	<a href="bar.html"><img class="img-responsive" src="http://placehold.it/750x350"></a>
+        	</div><!-- image 3 -->
+
+	        <div class="col-md-5">
+    	    	<h3>W-Nominate</h3>
+          		<p align="justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum.</p>
+				<a class="btn btn-primary" href="portfolio-item.html">View<i class="fa fa-angle-right"></i></a>
+	        </div><!-- description of figure 3 -->
+       </div><!-- row -->
+	</div><!-- visualize -->
+ 	<br><br><br>
 	
 	<!-- FOOT -->
 	<div class="container">    
