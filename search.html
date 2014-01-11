@@ -357,45 +357,63 @@
       			</table>
     		</div><!-- summary -->
 		<br><br><br>
-				
-		<div class="row">
-			<div class="col-md-12">
-    	    	<h3>Roll Call Outcome</h3>
-          		<br><br>
-			</div><!-- description of figure 1 -->
-			<br><br>
-	        <div align="center" class="col-md-12" id="bar">
-    	    	<a href="bar.html"><img class="img-responsive" src="img/us_diagram.png" /></a>
-        	</div><!-- image 1 -->
-		</div><!-- row -->
-		<br>
-		<hr>
 		
-		<div class="row">
-			<div class="col-md-12">
-    	    	<h3>Ideological Map</h3>
-          		<br><br>
-			</div><!-- description of figure 1 -->
-			<br>
-			<br>
-	        <div align="center" class="col-md-12" id="bar">
-    	    	<a href="bar.html"><img align="center" class="img-responsive" src="img/us_map.png"></a>
-        	</div><!-- image 1 -->
-       </div><!-- row -->
-	   <br>
-		<hr>
-		
-		<div class="row">
-			<div class="col-md-12">
-    	    	<h3>W-Nominate Scores</h3>
-				<br>
-			</div><!-- description of figure 1 -->
-			<br><br>
-	        <div align="center" class="col-md-12" id="bar">
+		<div class="panel-group" id="accordion">
+  			<div class="panel panel-default">
+    			<div class="panel-heading">
+      				<h4 class="panel-title">
+        				<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Roll Call Outcome</a>
+      				</h4>
+    			</div><!-- panel-title -->
+    			<div id="collapseOne" class="panel-collapse collapse in">
+					<div class="panel-body">
+				        <div align="center" class="col-md-12" id="bar">
+				    		<a href="bar.html"><img class="img-responsive" src="img/us_diagram.png" /></a>
+				       	</div><!-- image 1 -->
+			       </div><!-- panel-body 1 -->
+			    </div><!-- collapse 1 -->
+			  </div><!-- panel-heading -->
+  		<div class="panel panel-default">
+		    <div class="panel-heading">
+      			<h4 class="panel-title">
+			        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Ideological Map</a>
+		      </h4>
+		    </div>
+	    <div id="collapseTwo" class="panel-collapse collapse">
+    		  <div class="panel-body">
+		        <div align="center" class="col-md-12" id="map">
+    			    <a href="map.html"><img align="center" class="img-responsive" src="img/us_map.png"></a>
+		        </div><!-- image 2 -->
+	      </div>
+	    </div>
+	  </div>
+  	<div class="panel panel-default">
+    	<div class="panel-heading">
+	      <h4 class="panel-title">
+    	    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">W-Nominate Scores</a>
+	      </h4>
+	    </div>
+    <div id="collapseThree" class="panel-collapse collapse">
+      <div class="panel-body">
+        <div align="center" class="col-md-12" id="wnominate">
     	    	<a href="bar.html"><img align="center" class="img-responsive" src="img/wnom.png"></a>
-        	</div><!-- image 1 -->
-       </div><!-- row -->
-	  </div><!-- container -->
+        	</div><!-- image 3 -->
+      </div>
+    </div>
+  </div>
+</div>
+
+      
+	 </div><!-- container -->
+	 <br>
+	 <br>
+	 <div>
+	 	<div align="center" data-toggle="buttons">
+			<a class="btn btn-primary btn-lg" onclick="setview('search')" role="button"><span class="glyphicon glyphicon-search"></span><br>Search</a>
+			<a class="btn btn-success btn-lg" onclick="setview('results')" role="button"><span class="glyphicon glyphicon-list"></span><br>Results</a>
+			<a class="btn btn-warning btn-lg" onclick="setview('visualize')" role="button"><span class="glyphicon glyphicon-eye-open"></span><br>&#160 View  &#160</a>
+	 	</div><!-- buttons -->
+	</div><!-- jumbotron -->
 	</div><!-- visualize -->
  	<br>
 	<br>
