@@ -4,7 +4,7 @@ function WebVoteBar(element, data, options) {
   // Configurable variables
   var defaults_map = {
     width: 560,
-    barHeight: 35,
+    barHeight: 25,
     barSeparation: 5,
     transitionDuration: 750,
     margin: 40

@@ -73,6 +73,15 @@ function WebVoteMap(element, data, options) {
         }
       }
      });
+    // Add the at large members to each district
+    for (var district in congressMembers) {
+      if (district.substr(2,4) !== "00") {
+        var atlargeindex = district.substr(0,2) + "00";
+        for (member in congressMembers[atlargeindex]) {
+          congressMembers[district].push(congressMembers[atlargeindex][member]);
+        }
+      }
+    };
   }
 
   function mapSenateMembersVotes(members, votation) {
@@ -92,13 +101,8 @@ function WebVoteMap(element, data, options) {
   // Render the tooltip
   function tooltipHTML(members, id) {
     var tooltipContent = "";
-    var index;
     var allMembers = members[id];
-    var atLargeMembers = members[members[id][0].stateAbbr + "00"];
-    if (atLargeMembers !== undefined) {
-      allMembers = $.unique(members[id].concat(atLargeMembers));
-    }
-    for (index in allMembers) {
+    for (var index in allMembers) {
       tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", settings.staticUrl, parseInt(allMembers[index].icpsr), allMembers[index].fname, allMembers[index].partyname, allMembers[index].cqlabel, allMembers[index].vote);
     }
     return tooltipContent;
@@ -108,7 +112,7 @@ function WebVoteMap(element, data, options) {
   function shadeDistricts(votation) {
      g.selectAll(".district")
        .style('fill',function(d, i) {
-         if (d.id in congressMembers) {
+         if (congressMembers.hasOwnProperty(d.id)) {
            if (congressMembers[d.id].length > 1) {  // If we are in a district with several members
             var atlargeColors = []; // Array with all the colors for this district
             for (member in congressMembers[d.id]) {
@@ -120,11 +124,8 @@ function WebVoteMap(element, data, options) {
            if (m.id in votation.votes) {
               return partyColors[voteChoices[votation.votes[m.id]] + m.partyname];
            }
-           // return 'district ' + m.partyname; 
-           return "red";
          }
-         // return 'district';
-         return "beige";
+         return 'white';
       });
   }
 
@@ -187,7 +188,7 @@ function WebVoteMap(element, data, options) {
   // Blend an array of colors
   function blendColors(colors) {
     var r = 0, g = 0 , b = 0, i, rgbColor;
-    for (i=0; i<colors.length; i++) {
+    for (i = 0; i < colors.length; i++) {
       rgbColor = d3.rgb(colors[i]);
       r = r + rgbColor.r;
       g = g + rgbColor.g;
@@ -241,16 +242,23 @@ function WebVoteMap(element, data, options) {
       shadeStates(data.votation);
     }
     else if (data.votation.chamber === "House") {
+
+      var mapTopo = topojson.feature(data.districts, data.districts.objects.districts).features;
+      var atLarge = mapTopo.filter(function(d) {return d.id.substr(2,4) === "00";});
+      var districts = mapTopo.filter(function(d) {return d.id.substr(2,4) !== "00";});
+
       g = svgmap.append("g").attr("id","map-group");
-      // Color the districts
-      g.selectAll(".district")
-        .data(topojson.feature(data.districts, data.districts.objects.districts).features).enter().append("path")
+
+      // This is a little hack, since sometimes at large states are drawn on top of the districts
+      // we filter the atlarge and draw them first and of top of them we draw the normal districts
+      g.selectAll(".district .atLarge")
+        .data(atLarge).enter().append("path")
         .attr("id", function(d) { return d.id; } )
         .attr("class", "district")
         .attr("d", path)
         .on("click", clicked)
         .on("mousemove", function(d) {
-          tooltip
+           tooltip
             .classed("hidden", false)
             .style("left", d3.event.pageX + 10 + "px")
             .style("top", d3.event.pageY + 5 + "px")
@@ -260,7 +268,24 @@ function WebVoteMap(element, data, options) {
           tooltip.classed("hidden", true);
         });
 
-      // // Add state boundaries
+       g.selectAll(".district .notatLarge")
+        .data(districts).enter().append("path")
+        .attr("id", function(d) { return d.id; } )
+        .attr("class", "district")
+        .attr("d", path)
+        .on("click", clicked)
+        .on("mousemove", function(d) {
+           tooltip
+            .classed("hidden", false)
+            .style("left", d3.event.pageX + 10 + "px")
+            .style("top", d3.event.pageY + 5 + "px")
+            .html(tooltipHTML(congressMembers, d.id));
+        })
+        .on("mouseout",  function(d) {
+          tooltip.classed("hidden", true);
+        });
+
+      // Add state boundaries
       sb.append("path")
         .datum(topojson.mesh(data.states, data.states.objects.states, 
              function(a, b) { return a.id !== "AK" && a.id !== "HI"; }))
