@@ -1,0 +1,16 @@
+/* line 1, .../sass/imagechange.sass */
+.bigOne{
+  width: 700px;
+  height: 350px; 
+  overflow: hidden; 
+}
+.bigOne img{
+  width: 100%; 
+}
+.smallerOne{
+  display: inline-block;
+  width: 302px;
+}
+.smallerOne img{
+  width: 100%; 
+}

@@ -29,6 +29,12 @@
     <link rel="stylesheet" href="css/flexslider.css" type="text/css" media="screen">          
     <link rel="stylesheet" href="css/default.css" id="style_color">
 	
+	<link href="css/lightbox.css" rel="stylesheet" />
+	<link href="css/image.change.css" rel="stylesheet" />
+	
+	<script src="js/libs/jquery-1.10.2.min.js"></script>
+	<script src="js/libs/lightbox-2.6.min.js"></script>
+
     <script src="js/libs/jquery-2.0.3.min.js"></script>
 	<script src="js/libs/jquery.sprintf.js"></script> 
 	<script src="js/libs/jquery.dataTables.min.js"></script>   
@@ -158,6 +164,16 @@
         	}, 5000)
     	});
 	})
+	
+	$(document).ready(function() {
+		$('.smallerOne').click(function(){
+    		var bigCont = $('.bigOne').html();
+		    var smallCont = $(this).html();
+  
+	    	$('.bigOne').html(smallCont);
+	    	$(this).html(bigCont); 
+		 });
+	 });
 
 	</script>
 	
@@ -325,15 +341,9 @@
     <div id='visualize'>
 		<div class="container">
     		<div class="panel panel-default">
-      			<div class="panel-heading" id="wvv-rollcall">
-					<b>House of Representatives</b>
-				</div><!-- title -->
-
-	        	<div class="panel-body" id="wvv-description">UDonec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum. Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum. Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.
-				</div><!-- description -->
-
-	        	<div class="panel-body" id="wvv-date">2013-01-05
-				</div><!-- date -->
+      			<div class="panel-heading" id="wvv-rollcall"><b></b></div><!-- title -->
+	        	<div class="panel-body" id="wvv-description"></div><!-- description -->
+	        	<div class="panel-body" id="wvv-date"></div><!-- date -->
 	    	</div><!-- panel -->
 
 	    	<div class="bs-example">
@@ -348,65 +358,92 @@
         		   </thead>
 	        		<tbody>
     	    		<tr>
-            			<td id="idrollcall">5235</td>
-            			<td id="summary" class="col-lg-14">This is so important that I can't believe without knowing this before</td>
-            			<td id="yes">568</td>
-            			<td id="nay">861</td>
+            			<td id="idrollcall"></td>
+            			<td id="summary" class="col-lg-14"></td>
+            			<td id="yes"></td>
+            			<td id="nay"></td>
           			</tr>
         			</tbody>
       			</table>
     		</div><!-- summary -->
 		<br><br><br>
 		
-		<div class="panel-group" id="accordion">
-  			<div class="panel panel-default">
-    			<div class="panel-heading">
-      				<h4 class="panel-title">
-        				<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Roll Call Outcome</a>
-      				</h4>
-    			</div><!-- panel-title -->
-    			<div id="collapseOne" class="panel-collapse collapse in">
-					<div class="panel-body">
-				        <div align="center" class="col-md-12" id="bar">
-				    		<a href="bar.html"><img class="img-responsive" src="img/us_diagram.png" /></a>
-				       	</div><!-- image 1 -->
-			       </div><!-- panel-body 1 -->
-			    </div><!-- collapse 1 -->
-			  </div><!-- panel-heading -->
-  		<div class="panel panel-default">
-		    <div class="panel-heading">
-      			<h4 class="panel-title">
-			        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Ideological Map</a>
-		      </h4>
-		    </div>
-	    <div id="collapseTwo" class="panel-collapse collapse">
-    		  <div class="panel-body">
-		        <div align="center" class="col-md-12" id="map">
-    			    <a href="map.html"><img align="center" class="img-responsive" src="img/us_map.png"></a>
-		        </div><!-- image 2 -->
-	      </div>
-	    </div>
-	  </div>
-  	<div class="panel panel-default">
-    	<div class="panel-heading">
-	      <h4 class="panel-title">
-    	    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">W-Nominate Scores</a>
-	      </h4>
-	    </div>
-    <div id="collapseThree" class="panel-collapse collapse">
-      <div class="panel-body">
-        <div align="center" class="col-md-12" id="wnominate">
-    	    	<a href="bar.html"><img align="center" class="img-responsive" src="img/wnom.png"></a>
-        	</div><!-- image 3 -->
-      </div>
-    </div>
-  </div>
-</div>
+		<!-- Example Set of Images 1 -->
+	    <div class="bs-example">
+      		<div class="row">
 
-      
-	 </div><!-- container -->
+        		<div class="col-sm-4 col-md-4">
+          			<div class="thumbnail">
+            			<div id="map-container">
+							<a class="img-thumbnail" data-lightbox="roadtrip" title="Ideological Map" href="img/us_map2.png"><img class="example-image" src="img/us_map.png" alt="Ideological Map" width="192" height="165"/></a>
+							<!-- <a class="example-image-link" data-lightbox="map" title="Ideological Map"><svg id="map" alt="thumb-1" width="150" height="150"></svg></a> -->
+						</div>
+            			<div class="caption">
+              				<h3>Ideological Map</h3>
+              				<p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+            			</div><!-- caption -->
+          			</div><!-- thumbnail -->
+        		</div><!-- col-sm-6 col-md-4 -->
+
+				<div class="col-sm-4 col-md-4">
+          			<div class="thumbnail">
+            			<div id="bar">
+							<a class="img-thumbnail" data-lightbox="roadtrip" title="Bar" href="img/us_diagram2.png"><img class="example-image" src="img/us_diagram.png" alt="Bar Graph" width="192" height="150"/></a>
+						</div>
+            			<div class="caption">
+              				<h3>Floor Diagram</h3>
+              				<p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+            			</div><!-- caption -->
+          			</div><!-- thumbnail -->
+        		</div><!-- col-sm-6 col-md-4 -->
+
+				<div class="col-sm-4 col-md-4">
+          			<div class="thumbnail">
+            			<div id="scatter">
+							<a class="img-thumbnail" data-lightbox="roadtrip" title="W-Nominate" href="img/wnom2.png"><img class="example-image" src="img/wnom.png" alt="W-Nominate" width="192" height="150"/><a/>
+							<!-- <a class="example-image-link" data-lightbox="roadtrip" title="W-Nominate"><svg id="scatter" xmlns="http://www.w3.org/2000/svg" version="1.1" alt="thumb-3"></svg><a/> -->
+						</div>
+            			<div class="caption">
+              				<h3>DW-Nominate</h3>
+              				<p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+            			</div><!-- caption -->
+          			</div><!-- thumbnail -->
+        		</div><!-- col-sm-6 col-md-4 -->
+
+	         </div><!-- row -->
+	    </div><!-- /.bs-example -->
+	
+	
+	<!-- Example Set of Images 2 -->
+	<br>
+	<hr>
+	
+	<h3> Example 2 </h3>
+	<div class="bigOne">
+		<div id="map-container">
+			<a class="img-thumbnail" data-lightbox="roadtrip" title="Ideological Map" href="img/us_map2.png"><img class="example-image" src="img/us_map.png" alt="Ideological Map" width="192" height="330"/></a>
+			<!-- <a class="example-image-link" data-lightbox="map" title="Ideological Map"><svg id="map" alt="thumb-1" width="150" height="150"></svg></a> -->
+		</div>
+	</div>
+	
+	<div class="smallerOne">
+  		<div id="bar">
+			<a class="img-thumbnail" data-lightbox="roadtrip" title="Bar" href="img/us_diagram2.png"><img class="example-image" src="img/us_diagram.png" alt="Bar Graph" /></a>
+		</div>
+	</div>
+
+	<div class="smallerOne">
+  		<div id="scatter">
+			<a class="img-thumbnail" data-lightbox="roadtrip" title="W-Nominate" href="img/wnom2.png"><img class="example-image" src="img/wnom.png" alt="W-Nominate" /><a/>
+			<!-- <a class="example-image-link" data-lightbox="roadtrip" title="W-Nominate"><svg id="scatter" xmlns="http://www.w3.org/2000/svg" version="1.1" alt="thumb-3"></svg><a/> -->
+		</div>
+	</div>
+	
+	</div>
+	
 	 <br>
 	 <br>
+	
 	 <div>
 	 	<div align="center" data-toggle="buttons">
 			<a class="btn btn-primary btn-lg" onclick="setview('search')" role="button"><span class="glyphicon glyphicon-search"></span><br>Search</a>
