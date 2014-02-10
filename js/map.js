@@ -6,7 +6,7 @@ function WebVoteMap(element, data, options) {
     width: 860,
     height: 500,
     transitionDuration: 750,
-    zoomLevel: 12,
+    zoomLevel: 16,
     staticUrl: "http://leela.sscnet.ucla.edu/voteview_static/" // URL where the static content is stored(images...)
   };
 
@@ -28,6 +28,7 @@ function WebVoteMap(element, data, options) {
     "4": "Nay", "5": "Nay", "6": "Nay", 
     "7": "Abs", "8": "Abs", "9": "Abs"
   };
+        
 
   // Dictionaries of members
   var congressMembers = {};
@@ -244,6 +245,7 @@ function WebVoteMap(element, data, options) {
     else if (data.votation.chamber === "House") {
 
       var mapTopo = topojson.feature(data.districts, data.districts.objects.districts).features;
+
       var atLarge = mapTopo.filter(function(d) {return d.id.substr(2,4) === "00";});
       var districts = mapTopo.filter(function(d) {return d.id.substr(2,4) !== "00";});
 
