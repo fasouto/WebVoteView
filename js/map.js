@@ -6,7 +6,7 @@ function WebVoteMap(element, data, options) {
     width: 860,
     height: 500,
     transitionDuration: 750,
-    zoomLevel: 16,
+    zoomLevel: 20,
     staticUrl: "http://leela.sscnet.ucla.edu/voteview_static/" // URL where the static content is stored(images...)
   };
 
@@ -101,8 +101,9 @@ function WebVoteMap(element, data, options) {
 
   // Render the tooltip
   function tooltipHTML(members, id) {
-    var tooltipContent = "";
+    var tooltipContent = "No info for this region";
     var allMembers = members[id];
+    if (allMembers) tooltipContent = "";
     for (var index in allMembers) {
       tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", settings.staticUrl, parseInt(allMembers[index].icpsr), allMembers[index].fname, allMembers[index].partyname, allMembers[index].cqlabel, allMembers[index].vote);
     }
