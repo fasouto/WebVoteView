@@ -103,7 +103,7 @@ function WebVoteScatter(element, data, options) {
         .attr("cx", circleCenter.x)
         .attr("cy", circleCenter.y)
         .attr("r", radius)
-        .attr("style","stroke:#333;stroke-width:1;fill:#FFF");
+        .attr("id","outer-circle");
 
        // Hacky way to shade region where yea vote is expected...
        var angle = -vn.zml[1]/vn.zml[0];
@@ -170,14 +170,16 @@ function WebVoteScatter(element, data, options) {
                      return [d[0], d[1]].join(",");
                  }).join(" ");
             })
-         .attr("style","stroke:none; fill:#FFFFED;clip-path:url(#scatterclip)");
+         .attr("id","yea-semi")
+         .attr("style","stroke:none;fill:#FFFFED;clip-path:url(#scatterclip)")
+         ;
 
      gg
         .append("circle")
         .attr("cx", circleCenter.x)
         .attr("cy", circleCenter.y)
         .attr("r", radius/scale)
-        .attr("style","stroke:#333;stroke-dasharray:3 4;stroke-width:0.5;fill:none");
+        .attr("id", "dashed-circle");
 
      gg
        .append("line")
@@ -186,7 +188,8 @@ function WebVoteScatter(element, data, options) {
        .attr("y1", circleCenter.y - radius/scale*vn.y[0])
        .attr("y2", circleCenter.y - radius/scale*vn.y[1])
        .attr("id","cutline")
-       .attr("style","stroke:#000; stroke-width:2; clip-path:url(#scatterclip)");
+       .attr("style","stroke:#000;stroke-width:2; clip-path:url(#scatterclip)")
+       ;
 
      // Add yea and nay locations to the plot
      if (vn.dl[0] * vn.dl[0] != 0) { // Only drawn if there is a cutline!

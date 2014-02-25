@@ -48,3 +48,28 @@ svg.scatter {
 	stroke-width:2; 
 	fill:none;
 }
+
+#cutline {
+	stroke:#000; 
+	stroke-width:2; 
+	clip-path:url(#scatterclip);
+}
+
+#dashed-circle {
+	stroke:#333;
+	stroke-dasharray:3 4;
+	stroke-width:0.5;
+	fill:none;
+}
+
+#yea-semi {
+	stroke:none; 
+	fill:#FFFFED;
+	clip-path:url(#scatterclip);
+}
+
+#outer-circle {
+	stroke:#333;
+	stroke-width:1;
+	fill:#FFF;
+}
