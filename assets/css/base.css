@@ -1,0 +1,47 @@
+body {
+      padding-top: 20px;
+}
+
+#main_body {
+    background: url(/static/img/congress.jpg);
+    background-size: 100%;
+}
+
+#home-header {
+    text-align: center;
+    padding-top: 10%;
+    color:white;
+}
+#home-header p {
+    text-shadow: 0 -1px 8px rgba(0,0,0,0.9);
+    font-size: 140%;
+}
+ #home-header h1 {
+    text-shadow: 0 -1px 8px rgba(0,0,0,0.9);
+    font-size: 320%;
+ }
+
+
+#search-examples {
+    padding-top: 10px;
+}
+
+#results-page-container {
+    padding-top: 10px;
+}
+
+#results-selects {
+    padding-top: 10px;
+}
+
+#results-list {
+    padding-top: 10px;
+}
+
+#wbv-header h1 {
+  font-size: 25px;
+  padding-bottom: 19px;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 40px;
+}
