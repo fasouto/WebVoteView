@@ -1,0 +1,12 @@
+  {% block results%}
+      {% for rollcall in rollcalls %}
+        <div class="well">
+            <p><strong>Chamber:</strong> {{ rollcall.chamber }} <strong>Date:</strong> {{ rollcall.date }}</p>
+            <p><strong>Code: </strong>{{ rollcall.chamber}}/{{ rollcall.session }}/{{ rollcall.rollnumber }}</p>
+            <p>{{ rollcall.shortdescription }}</p>
+            <a href="/rollcall?id={{rollcall.id}}">See results</a>
+        </div>
+      {% empty %}
+          <h2>No rollcalls with those parameters found</h2>
+      {% endfor %}
+  {% endblock %}

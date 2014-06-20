@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}WebVoteView - Main{% endblock %}
+
+{% block body_id %}main_body{% endblock %}
+
+{% block content %}
+<div id="home-header">
+    <h1>Visualize US roll calls</h1>
+    <p class="lead">Explore all the votations in the latest 300 years</p>
+    <!-- <form role="form"> -->
+    <form id="faceted-search-form" action="/search/" method="post">
+        {% csrf_token %} 
+        <input name="search-string" type="text" class="form-control input-lg" id="searchText" placeholder="Enter a term to search for">
+    </form>
+    <p id="search-examples">Examples: <a href="/search">soccer</a>, <a href="/search">Winsconsin</a>, <a href="/search">H9O2244</a>, <a href="/search">beer</a>, <a href="/search">Bill Clinton</a></p>
+</div>
+{% endblock %}

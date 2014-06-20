@@ -1,4 +1,4 @@
-WebVoteView
-===========
+WebVoteView project
+__________________
 
-Webbased rollcall vote visualization software
+Visualize US rollcalls

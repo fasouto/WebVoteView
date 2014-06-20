@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}WebVoteView - Search results{% endblock %}
+
+{% block content %}
+
+{% include 'header.html' %}
+
+<form id="faceted-search-form" action="." method="post">
+{% csrf_token %} 
+    
+<div id="results-page-container">
+    <div class="row">
+        <div class="col-xs-12">
+            <input name="search-string" type="text" class="form-control" id="searchText" placeholder="Enter a term to search for">  
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="results-selects" class="col-md-3">
+            <div id="chamber-select" class="well">
+                <h3>Chamber</h3>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" name="chamber" id="optionsRadios1" value="Senate" checked>
+                    Senate
+                  </label>
+                </div>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" name="chamber" id="optionsRadios2" value="House" checked>
+                    Congress
+                  </label>
+                </div>
+            </div>
+            <div id="result-select" class="well">
+                <h3>Clausen</h3>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" value="Government Management" name="clausen">
+                    Government Management
+                  </label>
+                                  </div>
+
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" value="Miscellaneous Policy" name="clausen">
+                    Miscellaneous Policy
+                  </label>
+                                  </div>
+
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" value="Foreign and Defense Policy" name="clausen">
+                    Foreign and Defense Policy
+                  </label>
+                                  </div>
+
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" value="Social Welfare" name="clausen">
+                    Social Welfare
+                  </label>
+                                  </div>
+
+                <div class="checkbox">
+                 <label>
+                    <input type="checkbox" value="Agriculture" name="clausen">
+                    Agriculture
+                  </label>
+                                  </div>
+
+                <div class="checkbox">
+                 <label>
+                    <input type="checkbox" value="Civil Liberties" name="clausen">
+                    Civil Liberties
+                  </label>
+                </div>
+            </div>
+
+            <div id="result-select" class="well">
+                <h3>Result</h3>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" name="optionsRadios" id="optionsRadios2" value="option2">
+                    Yea
+                  </label>
+                </div>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" name="optionsRadios" id="optionsRadios2" value="option2">
+                    Nay
+                  </label>
+                </div>
+
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" name="optionsRadios" id="optionsRadios2" value="option2">
+                    Abs
+                  </label>
+                </div>
+
+            </div>
+
+        </div>
+</form>
+        <div id="results-list" class="col-md-9">
+            <div class="result well">
+                <p><strong>Date </strong>1859-02-22</p>
+                <p><strong>Description </strong>NO ARMED MEN AT PLACES OF ELECTIONS</p>
+                <p><strong>Date </strong>1859-02-22</p>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+  $(document).ready(
+    function(){
+
+      function get_rollcalls(){
+        $.ajax({
+          type: "POST",
+          url: "/api/search/",
+          data: $('#faceted-search-form').serialize(),
+          success: function(msg) {
+            $("#results-list").html(msg);
+           }
+          });
+        }
+      
+        $("#faceted-search-form").change(function() {
+            get_rollcalls();
+        });
+        $("#searchText").keyup(function() {
+            get_rollcalls();
+        });
+
+        get_rollcalls();
+  });
+</script>
+
+{% endblock %}
+
