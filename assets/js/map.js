@@ -7,7 +7,7 @@ function WebVoteMap(element, data, options) {
     height: 500,
     transitionDuration: 750,
     zoomLevel: 20,
-    staticUrl: "http://leela.sscnet.ucla.edu/voteview_static/" // URL where the static content is stored(images...)
+    staticUrl: "http://localhost:8000/static/img/bios/" // URL where the static content is stored(images...)
   };
 
   // Compose Settings Object
@@ -105,7 +105,7 @@ function WebVoteMap(element, data, options) {
     var allMembers = members[id];
     if (allMembers) tooltipContent = "";
     for (var index in allMembers) {
-      tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", settings.staticUrl, parseInt(allMembers[index].icpsr), allMembers[index].fname, allMembers[index].partyname, allMembers[index].cqlabel, allMembers[index].vote);
+      tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='http://localhost:8000/static/img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", settings.staticUrl, parseInt(allMembers[index].icpsr), allMembers[index].fname, allMembers[index].partyname, allMembers[index].cqlabel, allMembers[index].vote);
     }
     return tooltipContent;
   }

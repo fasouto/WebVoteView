@@ -6,7 +6,7 @@ function WebVoteScatter(element, data, options) {
     width: 650,
     zoomLevel: 5,
     bubbleRadius: 5,  // Radius of the small bubbles that represent members
-    staticUrl: "http://leela.sscnet.ucla.edu/voteview_static/" // URL where the static content is stored(images...)
+    staticUrl: "http://localhost:8000/static/img/bios/" // URL where the static content is stored(images...)
   };
 
   // Compose Settings Object
@@ -47,7 +47,7 @@ function WebVoteScatter(element, data, options) {
     var tooltipContent = "";
     var index;
     for (index in members) {
-      tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", settings.staticUrl, parseInt(members[index].icpsr, 10), members[index].fname, members[index].partyname, members[index].cqlabel, members[index].vote);
+      tooltipContent += sprintf("<img src=\"%simg/img%06ds.png\" onerror=\"null;this.src='http://localhost:8000/static/img/no_image.png';\"/><p><strong>%s</strong></p><p>%s %s</p><p>Vote:%s</p>", settings.staticUrl, parseInt(members[index].icpsr, 10), members[index].fname, members[index].partyname, members[index].cqlabel, members[index].vote);
     }
     return tooltipContent;
   }

@@ -3,12 +3,12 @@ svg.map {
     top: -25px;
     left: 0px;
     z-index: 0;
-    background: #EEEEEE;
+    background: #eee;
 }
 
 .state-boundary {
   fill: none;
-  stroke: #FFF;
+  stroke: #fff;
   stroke-linejoin: round;
 }
 
