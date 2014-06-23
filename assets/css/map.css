@@ -6,12 +6,7 @@ svg.map {
     background: #eee;
 }
 
-.state-boundary {
-  fill: none;
-  stroke: #fff;
-  stroke-linejoin: round;
-}
-
+.state, 
 .district {
   stroke: #fff; 
   stroke-linejoin: round; 

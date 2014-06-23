@@ -1,7 +1,3 @@
-body {
-      padding-top: 20px;
-}
-
 #main_body {
     background: url(/static/img/congress.jpg);
     background-size: 100%;
@@ -36,6 +32,10 @@ body {
 
 #results-list {
     padding-top: 10px;
+}
+
+#wbv-header {
+  padding-top: 20px;
 }
 
 #wbv-header h1 {
