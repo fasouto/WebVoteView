@@ -10,14 +10,16 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$',  HomePageView.as_view(), name='home'),
-    url(r'^search/$', 'webvoteview.views.search', name='search'),
-    url(r'^rollcall/$', RollcallView.as_view(), name='rollcall_display'),
+    # url(r'^$',  HomePageView.as_view(), name='home'),
+    url(r'^$', 'webvoteview.views.search', name='search'),
+    url(r'^old_rollcall/$', RollcallView.as_view(), name='rollcall_display'),
+    url(r'^rollcall/(?P<rollcall_id>[-\w]+)/$', 'webvoteview.views.show_rollcall', name='dc_rollcall_display'),
     url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
 
     # API urls
     url(r'^api/search/$', 'webvoteview.views.ajax_faceted_search', name='api_search'),
     url(r'^voteview/getvote/(?P<rollcall_id>[-\w]+)/$', 'webvoteview.views.get_vote', name='get_vote'),
+    url(r'^api/getvote/(?P<rollcall_id>[-\w]+)/$', 'webvoteview.views.api_get_votes', name='api_get_votes'),
     url(r'^voteview/getmemberslist/(?P<session_id>[-\w]+)/$', 'webvoteview.views.get_members', name='get_members'),
 
     url(r'^admin/', include(admin.site.urls)),

@@ -90,3 +90,8 @@ line.cutline {
 .wvv-tooltip.hidden {
   display: none;
 }
+
+/*Hacky way to remove the axis while https://github.com/dc-js/dc.js/issues/548 is solved*/
+#scatter-chart .axis {
+  display: none;
+}

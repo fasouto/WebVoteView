@@ -12,3 +12,8 @@ class HomePageView(TemplateView):
 class RollcallView(TemplateView):
 
     template_name = "rollcall.html"
+
+
+class DCRollcallView(TemplateView):
+
+    template_name = "dc_rollcall.html"

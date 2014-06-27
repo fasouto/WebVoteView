@@ -26,13 +26,13 @@
             <div class="panel-body">
               <div class="checkbox">
                 <label>
-                  <input type="checkbox" name="chamber" id="optionsRadios1" value="Senate" checked>
+                  <input type="checkbox" name="chamber" id="optionsRadios1" value="Senate">
                   Senate
                 </label>
               </div>
               <div class="checkbox">
                 <label>
-                  <input type="checkbox" name="chamber" id="optionsRadios2" value="House" checked>
+                  <input type="checkbox" name="chamber" id="optionsRadios2" value="House">
                   Congress
                 </label>
               </div>
@@ -90,31 +90,31 @@
           </div>
 
 
-
-
-
-            <div id="result-select" class="well">
-                <h3>Result (not working yet)</h3>
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">Most common vote</h3>
+           </div>
+           <div class="panel-body">
                 <div class="checkbox">
                   <label>
-                    <input type="checkbox" name="optionsRadios" id="optionsRadios2" value="option2">
+                    <input type="checkbox" name="result" value="yea">
                     Yea
                   </label>
                 </div>
                 <div class="checkbox">
                   <label>
-                    <input type="checkbox" name="optionsRadios" id="optionsRadios2" value="option2">
+                    <input type="checkbox" name="result"  value="nay">
                     Nay
                   </label>
                 </div>
 
                 <div class="checkbox">
                   <label>
-                    <input type="checkbox" name="optionsRadios" id="optionsRadios2" value="option2">
+                    <input type="checkbox" name="result" value="abs">
                     Abs
                   </label>
                 </div>
-
+              </div>
             </div>
 
         </div>
@@ -139,6 +139,9 @@
           type: "POST",
           url: "/api/search/",
           data: $('#faceted-search-form').serialize(),
+          beforeSend:function(){
+            $('#results-list').html('<div class="loading"><h2>Loading...</h2><img src="{{ STATIC_URL }}img/loading.gif" alt="Loading..." /></div>');
+          },
           success: function(msg) {
             $("#results-list").html(msg);
            }

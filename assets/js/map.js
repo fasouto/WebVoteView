@@ -246,7 +246,7 @@ function WebVoteMap(element, data, options) {
     else if (data.votation.chamber === "House") {
 
       var mapTopo = topojson.feature(data.districts, data.districts.objects.districts).features;
-
+      console.log(data);
       var atLarge = mapTopo.filter(function(d) {return d.id.substr(2,4) === "00";});
       var districts = mapTopo.filter(function(d) {return d.id.substr(2,4) !== "00";});
 

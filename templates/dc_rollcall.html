@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+
+{% block title %}WebVoteView - Search results{% endblock %}
+
+{% block extra_head %}
+    <link href="{{ STATIC_URL }}css/dc.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="{{ STATIC_URL }}css/map.css" media="all" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block content %}
+
+{% include 'header.html' %}
+
+<div class="row">
+    <div class="col-md-12">
+      <h3><abbr title="Chamber">{{ rollcall.chamber}}</abbr>/<abbr title="Session">{{ rollcall.session }}</abbr>/<abbr title="Rollnumber">{{ rollcall.rollnumber }}</abbr> </h3> 
+      <p><strong>Date:</strong> {{ rollcall.date }}</p>
+      <p><strong>Clausen:</strong> {{ rollcall.code.Clausen.0 }} <strong>Peltzman:</strong> {{ rollcall.code.Peltzman.0 }}</p>
+      <p>{{ rollcall.description }}</p>
+  </div>
+</div>
+
+<div class="row">
+    <div class="col-md-9">
+        <div id="map-chart">
+            <a class="reset" href="javascript:mapChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+            <span class="reset" style="display: none;"> | Current filter: <span class="filter"></span></span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div id="yeanay-chart">
+            <strong>Votes</strong>
+            <a class="reset" href="javascript:yeaNayChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+            <div class="clearfix"></div>
+        </div>
+        <div id="party-chart">
+            <strong>Party</strong>
+            <a class="reset" href="javascript:partyChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="scatter-chart">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="data-count">
+            <span class="filter-count"></span> selected out of <span class="total-count"></span> records | <a
+                href="javascript:dc.filterAll(); dc.renderAll();">Reset All</a>
+        </div>
+        <table class="table table-hover dc-data-table">
+            <thead>
+            <tr class="header">
+                <th>Name</th>
+                <th>Party</th>
+                <th>Vote</th>
+                <th>State</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/sprintf.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/queue.v1.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/d3.v3.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/crossfilter.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/dc.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/topojson.v1.min.js"></script>
+<script type="text/javascript">
+'use strict';
+
+/* jshint globalstrict: true */
+/* global dc,d3,crossfilter,colorbrewer */
+
+var chamber = "{{ rollcall.chamber }}";
+// Define the colors used for the cloropeth
+var partyColors = {
+    "YeaFederalist": "#0000FF",
+    "NayFederalist": "#AAAAFF",
+    "AbsFederalist": "#DDD",
+    "YeaDemocrat": "#0000FF",
+    "NayDemocrat": "#AAAAFF",
+    "AbsDemocrat": "#DDD",
+    "YeaFarmer-Labor": "#0000FF",
+    "NayFarmer-Labor": "#AAAAFF",
+    "AbsFarmer-Labor": "#DDD",
+    "YeaProgressive": "#0000FF",
+    "NayProgressive": "#AAAAFF",
+    "AbsProgressive": "#DDD",
+    "YeaRepublican": "#FF0000",
+    "NayRepublican": "#FFAAAA",
+    "AbsRepublican": "#AAAAFF",
+    "YeaIndependent": "#FFDD00",
+    "NayIndependent": "#FFDDAA",
+    "AbsIndependent": "#DDD"
+};
+
+var yeaNayChart = dc.pieChart("#yeanay-chart");
+var partyChart = dc.pieChart("#party-chart");
+var mapChart = dc.geoChoroplethChart("#map-chart");
+var opinionChart = dc.scatterPlot("#scatter-chart");
+// var composeScatter = dc.compositeChart("#scatter-container");
+
+
+(function loadData() {
+    if (chamber == "House") {
+        queue()
+          .defer(d3.json, sprintf("/static/json/districts%03d.json", {{ rollcall.session }}))
+          .defer(d3.json, "/api/getvote/{{ rollcall.id }}")
+          .await(drawWidgets);
+    } else if (chamber == "Senate") {
+        queue()
+          .defer(d3.json, sprintf("/static/json/states%03d.json", {{ rollcall.session }}))
+          .defer(d3.json, "/api/getvote/{{ rollcall.id }}")
+          .await(drawWidgets);
+    }
+})();
+
+function drawWidgets(error, geodata, data) {
+    var ndx = crossfilter(data.votes); 
+    var all = ndx.groupAll();
+
+    var voteDimension = ndx.dimension(function(d) { return d.vote; });
+    var voteGroup = voteDimension.group();
+
+    var partyDimension = ndx.dimension(function(d) { return d.party; });
+    var partyGroup = partyDimension.group();
+
+
+    var xDimension = ndx.dimension(function(d) { return [d.x, d.y]; });
+    // var xGroup = xDimension.group(function(total) { return 10; });
+    // var  = xDimension.group();
+
+    var xGroup = xDimension.group().reduce(
+        function (p, d) {
+            p.partys.push(partyColors[d.vote + d.party]);
+            return p;
+        },
+
+        function (p, d) {
+            var index = p.partys.indexOf(partyColors[d.vote + d.party]);
+            if (index > -1) {
+              p.partys.splice(index, 1);
+            }
+            return p;
+        },
+
+        function () {
+            return {partys: []} ;
+        });
+
+    var stateDimension = ndx.dimension(function(d) { return d.state; });
+    // Array of colors for each district
+    var stateGroup = stateDimension.group().reduce(
+        function (p, d) {
+            p.partys.push(partyColors[d.vote + d.party]);
+            return p;
+        },
+
+        function (p, d) {
+            var index = p.partys.indexOf(partyColors[d.vote + d.party]);
+            if (index > -1) {
+              p.partys.splice(index, 1);
+            }
+            return p;
+        },
+
+        function () {
+            return {partys: []} ;
+        });
+
+    var districtDimension = ndx.dimension(function(d) { return d.district; });
+    // Array of colors for each district
+    var districtGroup = districtDimension.group().reduce(
+        function (p, d) {
+            p.partys.push(partyColors[d.vote + d.party]);
+            return p;
+        },
+
+        function (p, d) {
+            var index = p.partys.indexOf(partyColors[d.vote + d.party]);
+            if (index > -1) {
+              p.partys.splice(index, 1);
+            }
+            return p;
+        },
+
+        function () {
+            return {partys: []} ;
+        });
+
+    yeaNayChart
+        .width(180)
+        .height(180)
+        .radius(80)
+        .dimension(voteDimension)
+        .group(voteGroup);
+
+    partyChart
+        .width(180)
+        .height(180)
+        .radius(80)
+        .dimension(partyDimension)
+        .group(partyGroup);
+
+    opinionChart
+        .width(600)
+        .height(600)
+        // .margins({top: 0, right: 0, bottom: -1, left: -1})
+        .dimension(xDimension)
+        .mouseZoomable(false)
+        .group(xGroup)
+        .symbolSize(5)
+        .colorCalculator(function (d) { 
+            var color = "#CCC";
+            try {
+                if(d.value.partys.length > 0){   
+                    color = blendColors(d.value.partys);
+                }
+            }catch(e){
+           }
+            return color; 
+        })
+        .highlightedSize(7)
+        .x(d3.scale.linear().domain([-1, 1]))
+        .y(d3.scale.linear().domain([-1, 1]))
+        ;
+
+
+    dc.dataCount("#data-count")
+        .dimension(ndx)
+        .group(all);
+
+    dc.dataTable(".dc-data-table")
+        .dimension(voteDimension)
+        .group(function (d) {
+            return d.party;
+        })
+        .size(200)
+        .columns([
+            function (d) {
+                return d.name;
+            },
+            function (d) {
+                return d.party;
+            },
+            function (d) {
+                return d.vote;
+            },
+            function (d) {
+                if (chamber == "House") {
+                    return d.district;
+                } else if (chamber == "Senate") {
+                    return d.state;
+                }
+            }
+        ]);
+
+        // http://stackoverflow.com/questions/24246125/how-to-add-zoom-effect-into-dc-geochoroplethchart
+        if (chamber == "House") {
+            var mapTopo = topojson.feature(geodata, geodata.objects.districts).features;
+            mapChart.width(890)
+                    .height(500)
+                    .dimension(districtDimension)
+                    .group(districtGroup)
+                    .colorCalculator(function (d) { 
+                        var color = "#CCC";
+                        try {
+                            if(d.partys.length > 0){   
+                                color = blendColors(d.partys);
+                            }
+                        }catch(e){
+                       }
+                        return color; 
+                    })
+                    .overlayGeoJson(mapTopo, "district", function (d) {
+                        return d.id;
+                    })
+                    .title(function (d) {
+                        // var obj = data.filter(function ( obj ) {
+                        //     return obj.district === d.key;
+                        // })[0];
+                        return "District: " + d.key;
+                    });            
+        } else if (chamber == "Senate") {
+            var mapTopo = topojson.feature(geodata, geodata.objects.states).features;
+            mapChart.width(890)
+                    .height(500)
+                    .dimension(stateDimension)
+                    .group(stateGroup)
+                    .colorCalculator(function (d) { 
+                        var color = "#CCC";
+                        try {
+                            if(d.partys.length > 0){   
+                                color = blendColors(d.partys);
+                            }
+                        }catch(e){
+                       }
+                        return color; 
+                    })
+                    .overlayGeoJson(mapTopo, "state", function (d) {
+                        return d.id;
+                    })
+                    .title(function (d) {
+                        // var obj = data.filter(function ( obj ) {
+                        //     return obj.district === d.key;
+                        // })[0];
+                        return "State: " + d.key;
+                    });   
+        }
+
+    dc.renderAll();
+}
+
+// Blend an array of colors
+function blendColors(colors) {
+    var r = 0, g = 0 , b = 0, i, rgbColor;
+    for (i = 0; i < colors.length; i++) {
+      rgbColor = d3.rgb(colors[i]);
+      r = r + rgbColor.r;
+      g = g + rgbColor.g;
+      b = b + rgbColor.b; 
+    }
+    r = r / colors.length;
+    g = g / colors.length;
+    b = b / colors.length;
+    return d3.rgb(r,g,b).toString();
+}
+
+</script>
+{% endblock %}

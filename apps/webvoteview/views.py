@@ -12,6 +12,15 @@ from utils import render_block_to_string
 def search(request):
     return render(request, 'search.html')
 
+
+def show_rollcall(request, rollcall_id):
+    client = MongoClient('localhost', 27017)
+    vw_db = client.voteview
+    rollcalls_col = vw_db.voteview_rollcalls
+    rollcall = rollcalls_col.find_one({'id': rollcall_id})
+    return render(request, 'dc_rollcall.html', {'rollcall': rollcall})
+
+
 def ajax_faceted_search(request):
     """
     Return a paginated list of rollcalls that match the parameters
@@ -25,6 +34,8 @@ def ajax_faceted_search(request):
         query['chamber'] = {'$in': request.POST.getlist('chamber')}
     if request.POST.get('clausen'):
         query['code.Clausen'] = {'$in': request.POST.getlist('clausen')}
+    if request.POST.get('result'):
+        query['finalresult'] = {'$in': request.POST.getlist('result')}
     rollcalls = vw_db.voteview_rollcalls.find(query)
     rollcalls_page = list(rollcalls[:15])
     # Build the template
@@ -32,6 +43,52 @@ def ajax_faceted_search(request):
     return_str = render_block_to_string('search_list.html', 'results', context)
     return HttpResponse(return_str)
 
+
+def get_yeanayabs(vote_id):
+    if vote_id < 4:
+        return "Yea"
+    elif vote_id < 7:
+        return "Nay"
+    elif vote_id < 10:
+        return "Abs"
+
+def api_get_votes(request, rollcall_id):
+    """
+    Refactor
+    Returns a list of all votes for a rollcall
+    """
+    session = rollcall_id[2:4]
+
+    client = MongoClient('localhost', 27017)
+    vw_db = client.voteview
+    rollcalls_col = vw_db.voteview_rollcalls
+    members_col = vw_db.voteview_members
+
+
+    rollcall = rollcalls_col.find_one({'id': rollcall_id})
+    result = []
+    for vote in rollcall['votes']:
+        temp = {}
+        temp['vote'] = get_yeanayabs(rollcall['votes'][vote])
+        member = members_col.find_one({'id': vote})
+        temp['name'] = member['fname']
+        temp['party'] = member['partyname']
+        temp['state'] = member['stateAbbr']
+        if member['nominate']['oneDimNominate']:
+            temp['x'] = member['nominate']['oneDimNominate']
+            temp['y'] = member['nominate']['twoDimNominate']
+        if member['districtCode']:
+            temp['district'] = "%s%02d" % (member['stateAbbr'], member['districtCode'])
+        result.append(temp)
+
+    res = {}
+    res['votes'] = result
+    res['nominate'] = rollcall['nominate']
+    return (
+        HttpResponse(
+            dumps(res),
+            content_type='application/json; charset=utf8')
+    )
 
 ###################################################
 ## FROM NOW ON IM EMULATING EXISTING APIS, MUST REFACTOR LATER
@@ -43,21 +100,8 @@ def get_vote(request, rollcall_id):
     vw_db = client.voteview
     rollcalls_col = vw_db.voteview_rollcalls
     rollcall = rollcalls_col.find_one({'id': rollcall_id})
-    print rollcall
     return (
         HttpResponse(
             dumps(rollcall),
-            content_type='application/json; charset=utf8')
-    )
-
-def get_members(request, session_id):
-    client = MongoClient('localhost', 27017)
-    vw_db = client.voteview
-    members_col = vw_db.voteview_members
-    members = members_col.find({'session': int(session_id)})
-    print members
-    return (
-        HttpResponse(
-            dumps(members),
             content_type='application/json; charset=utf8')
     )
