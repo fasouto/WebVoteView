@@ -36,6 +36,8 @@
 
 #wbv-header {
   padding-top: 20px;
+  border-bottom:thin solid #DDD;
+  margin-bottom: 20px;
 }
 
 #wbv-header h1 {

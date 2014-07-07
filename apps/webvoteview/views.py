@@ -44,6 +44,36 @@ def ajax_faceted_search(request):
     return HttpResponse(return_str)
 
 
+def api_get_rollcalls(request):
+    """
+    Get all the rollcalls
+    """
+    client = MongoClient('localhost', 27017)
+    vw_db = client.voteview
+    rollcalls_col = vw_db.voteview_rollcalls
+    import random
+    result = []
+    rollcalls = rollcalls_col.find({'chamber':'Senate'})[:2000]
+    for rollcall in rollcalls:
+        res = {}
+        res['chamber'] = rollcall['chamber']
+        try:
+            res['clausen'] = rollcall['code']['Clausen'][0]
+        except IndexError:
+            res['clausen'] = 'None'
+        res['result'] = random.choice(['Yea', 'Nay', 'Abs'])
+        res['date'] = rollcall['date']
+        res['session'] = rollcall['session']
+        res['rcnum'] = rollcall['rollnumber']
+        res['desc'] = rollcall['shortdescription']
+        result.append(res)
+    return (
+        HttpResponse(
+            dumps(result),
+            content_type='application/json; charset=utf8')
+    ) 
+
+
 def get_yeanayabs(vote_id):
     if vote_id < 4:
         return "Yea"
@@ -51,6 +81,7 @@ def get_yeanayabs(vote_id):
         return "Nay"
     elif vote_id < 10:
         return "Abs"
+
 
 def api_get_votes(request, rollcall_id):
     """

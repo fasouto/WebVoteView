@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}WebVoteView - Explore{% endblock %}
+
+{% block extra_head %}
+    <link href="{{ STATIC_URL }}css/dc.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="{{ STATIC_URL }}css/map.css" media="all" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block content %}
+
+{% include 'header.html' %}
+
+<div class="row">
+  <div class="col-md-12">
+    <h3>Number of rollcals by time</h3>
+    <div id="time-chart"></div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div id="chamber-chart"></div>
+    <div id="clausen-chart"></div>
+    <div id="result-chart"></div>
+  </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Rollcalls</h3>
+        <table class="table table-hover dc-data-table">
+            <thead>
+            <tr class="header">
+                <th>Date</th>
+                <th>Result</th>
+                <th>Description</th>
+                <th>Link</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/d3.v3.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/crossfilter.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/dc.js"></script>
+
+<script type="text/javascript">
+    'use strict';
+
+    /* jshint globalstrict: true */
+    /* global dc,d3,crossfilter,colorbrewer */
+
+    var timeChart = dc.barChart("#time-chart");
+    var chamberChart = dc.pieChart("#chamber-chart");
+    var clausenChart = dc.rowChart("#clausen-chart");
+    var resultChart = dc.pieChart("#result-chart");
+    // var rollcallsGrid = dc.dataGrid("#grid");
+
+// Return the ID for each rollcall
+// ID is: chamber(1 char) + session(3 char) + rollcall number(4 char)
+function getRollcallID(rollcallData) {
+
+    // Fill with zeroes at the right 
+    // lpad (17, 4) -> 0017
+    function lpad(value, padding) {
+        var zeroes = new Array(padding+1).join("0");
+        return (zeroes + value).slice(-padding);
+    }
+
+    var result = "";
+    result += rollcallData.chamber.slice(0,1);
+    result += lpad(rollcallData.session ,3)
+    result += lpad(rollcallData.rcnum ,4)
+    return result
+}
+
+d3.json("/api/getrollcalls/", function (data) {
+
+    var dateFormat = d3.time.format("%Y-%m-%d");
+
+    data.forEach(function (d) {
+        d.dd = dateFormat.parse(d.date);
+        d.year = d3.time.year(d.dd);
+    });
+
+    var ndx = crossfilter(data); 
+    var all = ndx.groupAll();
+    console.log(getRollcallID(data[2]));
+
+    var yearlyDimension = ndx.dimension(function (d) {
+        return d3.time.year(d.dd).getFullYear();
+    });
+    var yearlyGroup = yearlyDimension.group();
+
+    var chamberDimension = ndx.dimension(function(d) { return d.chamber; });
+    var chamberGroup = chamberDimension.group();
+
+    var clausenDimension = ndx.dimension(function(d) { return d.clausen; });
+    var clausenGroup = clausenDimension.group();
+
+    var resultDimension = ndx.dimension(function(d) { return d.result; });
+    var resultGroup = resultDimension.group();
+
+    timeChart
+        .width(980)
+        .height(180)
+        .dimension(yearlyDimension)
+        .group(yearlyGroup)
+        .elasticX(true)
+        .elasticY(true)
+        .x(d3.scale.linear().domain([0, 2014]));
+
+    chamberChart
+        .width(180)
+        .height(180)
+        .radius(80)
+        .dimension(chamberDimension)
+        .group(chamberGroup);
+
+    clausenChart
+        .width(480)
+        .height(180)
+        .dimension(clausenDimension)
+        .elasticX(true)
+        .group(clausenGroup)
+        .xAxis().ticks(4);
+
+    resultChart
+        .width(180)
+        .height(180)
+        .radius(80)
+        .dimension(resultDimension)
+        .group(resultGroup);
+
+    dc.dataTable(".dc-data-table")
+        .dimension(chamberDimension)
+        .group(function (d) {
+            return d.chamber;
+        })
+        .size(1000)
+        .columns([
+            function (d) {
+                return d.date;
+            },
+            function (d) {
+                return d.result;
+            },
+            function (d) {
+                return d.desc;
+            },
+            function (d) {
+                var rollcallID = getRollcallID(d);
+                return "<a href='/rollcall/" + rollcallID + "' class='btn btn-default btn-sm'>See votation results</a>";
+            }
+        ]);
+
+    dc.renderAll();
+});
+
+</script>
+{% endblock %}
+

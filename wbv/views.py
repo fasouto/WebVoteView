@@ -17,3 +17,9 @@ class RollcallView(TemplateView):
 class DCRollcallView(TemplateView):
 
     template_name = "dc_rollcall.html"
+
+
+class ExploreView(TemplateView):
+
+    template_name = "explore.html"
+

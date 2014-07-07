@@ -22,7 +22,7 @@ class Command(BaseCommand):
         4,5,6 -> Nay
         7,8,9 -> Abs
         """
-        print "Importing members"
+        print "Starting calculation"
         rollcalls =  db.voteview_rollcalls
         for rollcall in rollcalls.find():
             votes = {}
