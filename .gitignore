@@ -2,3 +2,5 @@ _
 *.log
 *.pot
 *.pyc
+
+*.pyc
