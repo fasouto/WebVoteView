@@ -87,7 +87,6 @@ d3.json("/api/getrollcalls/", function (data) {
 
     var ndx = crossfilter(data); 
     var all = ndx.groupAll();
-    console.log(getRollcallID(data[2]));
 
     var yearlyDimension = ndx.dimension(function (d) {
         return d3.time.year(d.dd).getFullYear();

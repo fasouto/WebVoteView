@@ -2,7 +2,6 @@ django-dotenv
 jsonfield
 pymongo
 django-haystack
-mongoengine
 django
 south
 jsonfield
