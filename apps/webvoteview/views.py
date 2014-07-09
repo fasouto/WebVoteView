@@ -1,4 +1,5 @@
 import json
+import random
 
 from pymongo.connection import Connection
 from django.template import loader, Context
@@ -11,8 +12,6 @@ from utils import render_block_to_string
 
 db = Connection().voteview
 
-def search(request):
-    return render(request, 'search.html')
 
 def show_rollcall(request, rollcall_id):
     rollcalls_col = db.voteview_rollcalls
@@ -34,6 +33,7 @@ def ajax_faceted_search(request):
         query['finalresult'] = {'$in': request.POST.getlist('result')}
     rollcalls = db.voteview_rollcalls.find(query)
     rollcalls_page = list(rollcalls[:15])
+
     # Build the template
     context = Context({'rollcalls': rollcalls_page, 'request':request})
     return_str = render_block_to_string('search_list.html', 'results', context)
@@ -44,29 +44,34 @@ def api_get_rollcalls(request):
     Get all the rollcalls
     """
     rollcalls_col = db.voteview_rollcalls
-    import random
+    rollcalls = rollcalls_col.find()[:5000]
+
     result = []
-    rollcalls = rollcalls_col.find({'chamber':'Senate'})[:2000]
     for rollcall in rollcalls:
-        res = {}
-        res['chamber'] = rollcall['chamber']
         try:
-            res['clausen'] = rollcall['code']['Clausen'][0]
+            clausen = rollcall['code']['Clausen'][0]
         except IndexError:
-            res['clausen'] = 'None'
-        res['result'] = random.choice(['Yea', 'Nay', 'Abs'])
-        res['date'] = rollcall['date']
-        res['session'] = rollcall['session']
-        res['rcnum'] = rollcall['rollnumber']
-        res['desc'] = rollcall['shortdescription']
-        result.append(res)
+            clausen = 'None'
+        result.append({
+            'clausen': clausen,
+            'chamber': rollcall['chamber'],
+            'result': random.choice(['Yea', 'Nay', 'Abs']),
+            'date': rollcall['date'],
+            'session': rollcall['session'],
+            'rcnum': rollcall['rollnumber'],
+            'desc': rollcall['shortdescription'] 
+        })
     return (
         HttpResponse(
             dumps(result),
             content_type='application/json; charset=utf8')
     ) 
 
-def get_yeanayabs(vote_id):
+def _get_yeanayabs(vote_id):
+    """
+    Map vote ids with the propper values
+    Yea -> [1..3], Nay -> [4..6], Abs -> [7..9]
+    """
     if vote_id < 4:
         return "Yea"
     elif vote_id < 7:
@@ -79,7 +84,6 @@ def api_get_votes(request, rollcall_id):
     Refactor
     Returns a list of all votes for a rollcall
     """
-    session = rollcall_id[2:4]
     rollcalls_col = db.voteview_rollcalls
     members_col = db.voteview_members
 
@@ -87,30 +91,29 @@ def api_get_votes(request, rollcall_id):
     result = []
     for vote in rollcall['votes']:
         temp = {}
-        temp['vote'] = get_yeanayabs(rollcall['votes'][vote])
+        temp['vote'] = _get_yeanayabs(rollcall['votes'][vote])
         member = members_col.find_one({'id': vote})
         temp['name'] = member['fname']
+        temp['id'] = member['id']
         temp['party'] = member['partyname']
         temp['state'] = member['stateAbbr']
         if member['nominate']['oneDimNominate']:
             temp['x'] = member['nominate']['oneDimNominate']
             temp['y'] = member['nominate']['twoDimNominate']
-        if member['districtCode']:
+
+        if member['districtCode'] > 70:
+            temp['district'] = "%s00" % member['stateAbbr']
+        elif member['districtCode'] and member['districtCode'] <= 70:
             temp['district'] = "%s%02d" % (member['stateAbbr'], member['districtCode'])
         result.append(temp)
-
-    res = {}
-    res['votes'] = result
-    res['nominate'] = rollcall['nominate']
     return (
         HttpResponse(
-            dumps(res),
+            dumps({'votes': result, 'nominate': rollcall['nominate']}),
             content_type='application/json; charset=utf8')
     )
 
-###################################################
-## FROM NOW ON IM EMULATING EXISTING APIS, MUST REFACTOR LATER
 def get_vote(request, rollcall_id):
+    """Deprecated"""
     rollcalls_col = db.voteview_rollcalls
     rollcall = rollcalls_col.find_one({'id': rollcall_id})
     return (

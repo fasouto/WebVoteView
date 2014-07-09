@@ -11,34 +11,48 @@
 
 {% include 'header.html' %}
 
-<div class="row">
-  <div class="col-md-12">
-    <h3>Number of rollcals by time</h3>
-    <div id="time-chart"></div>
-  </div>
+<div id="loading-container">
+    <h3>Loading dataset</h3>
+    <img src="{{ STATIC_URL }}img/loading.gif" />
 </div>
 
-<div class="row">
-  <div class="col-md-12">
-    <div id="chamber-chart"></div>
-    <div id="clausen-chart"></div>
-    <div id="result-chart"></div>
-  </div>
-</div>
+<div id="content">
+    <div class="row">
+      <div class="col-md-12">
+        <h4>Rollcalls per year <small><a class="reset" href="javascript:timeChart.filterAll();dc.redrawAll();" style="display: none;">reset</a></small></h4>
+        <div id="time-chart"></div>
+      </div>
+    </div>
 
-<div class="row">
-    <div class="col-md-12">
-        <h3>Rollcalls</h3>
-        <table class="table table-hover dc-data-table">
-            <thead>
-            <tr class="header">
-                <th>Date</th>
-                <th>Result</th>
-                <th>Description</th>
-                <th>Link</th>
-            </tr>
-            </thead>
-        </table>
+    <div class="row">
+      <div class="col-md-12">
+        <div id="clausen-chart">
+            <h4>Clausen  <small><a class="reset" href="javascript:clausenChart.filterAll();dc.redrawAll();" style="display: none;">reset</a></small></h4>
+        </div>
+        <div id="result-chart">
+            <h4>Result<small><a class="reset" href="javascript:resultChart.filterAll();dc.redrawAll();" style="display: none;">reset</a></small></h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h4>Rollcalls list</h4>
+            <div id="data-count">
+                <span class="filter-count"></span> selected out of <span class="total-count"></span> records | <a
+                    href="javascript:dc.filterAll(); dc.renderAll();">Reset All</a>
+            </div>
+            <table class="table table-hover dc-data-table">
+                <thead>
+                <tr class="header">
+                    <th>Date</th>
+                    <th>Result</th>
+                    <th>Description</th>
+                    <th>Link</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -53,7 +67,6 @@
     /* global dc,d3,crossfilter,colorbrewer */
 
     var timeChart = dc.barChart("#time-chart");
-    var chamberChart = dc.pieChart("#chamber-chart");
     var clausenChart = dc.rowChart("#clausen-chart");
     var resultChart = dc.pieChart("#result-chart");
     // var rollcallsGrid = dc.dataGrid("#grid");
@@ -76,87 +89,91 @@ function getRollcallID(rollcallData) {
     return result
 }
 
-d3.json("/api/getrollcalls/", function (data) {
+var xhr = d3.json("/api/getrollcalls/")
+    .on("progress", function() { 
+        console.log("progress", d3.event.loaded); 
 
-    var dateFormat = d3.time.format("%Y-%m-%d");
+    })
+    .on("load", function(json) { console.log("success!", json); })
+    .on("error", function(error) { console.log("failure!", error); })
+    .get(function(error, data) {
+        
+        d3.select("#loading-container").style("display", "none");
+        d3.select("#content").style("display", "block");
 
-    data.forEach(function (d) {
-        d.dd = dateFormat.parse(d.date);
-        d.year = d3.time.year(d.dd);
+        var dateFormat = d3.time.format("%Y-%m-%d");
+
+        data.forEach(function (d) {
+            d.dd = dateFormat.parse(d.date);
+            d.year = d3.time.year(d.dd);
+        });
+
+        var ndx = crossfilter(data); 
+        var all = ndx.groupAll();
+
+        var yearlyDimension = ndx.dimension(function (d) {
+            return d3.time.year(d.dd).getFullYear();
+        });
+        var yearlyGroup = yearlyDimension.group();
+
+        var clausenDimension = ndx.dimension(function(d) { return d.clausen; });
+        var clausenGroup = clausenDimension.group();
+
+        var resultDimension = ndx.dimension(function(d) { return d.result; });
+        var resultGroup = resultDimension.group();
+
+        timeChart
+            .width(1180)
+            .height(180)
+            .dimension(yearlyDimension)
+            .group(yearlyGroup)
+            .elasticX(true)
+            .elasticY(true)
+            .x(d3.scale.linear().domain([0, 2014]));
+
+        clausenChart
+            .width(480)
+            .height(180)
+            .dimension(clausenDimension)
+            .elasticX(true)
+            .group(clausenGroup)
+            .xAxis().ticks(4);
+
+        resultChart
+            .width(180)
+            .height(180)
+            .radius(80)
+            .dimension(resultDimension)
+            .group(resultGroup);
+
+        dc.dataCount("#data-count")
+            .dimension(ndx)
+            .group(all);
+
+        dc.dataTable(".dc-data-table")
+            .dimension(clausenDimension)
+            .group(function (d) {
+                return d.clausen;
+            })
+            .size(1000)
+            .columns([
+                function (d) {
+                    return d.date;
+                },
+                function (d) {
+                    return d.result;
+                },
+                function (d) {
+                    return d.desc;
+                },
+                function (d) {
+                    var rollcallID = getRollcallID(d);
+                    return "<a href='/rollcall/" + rollcallID + "' class='btn btn-default btn-sm'>See votation results</a>";
+                }
+            ]);
+
+        dc.renderAll();
     });
-
-    var ndx = crossfilter(data); 
-    var all = ndx.groupAll();
-
-    var yearlyDimension = ndx.dimension(function (d) {
-        return d3.time.year(d.dd).getFullYear();
-    });
-    var yearlyGroup = yearlyDimension.group();
-
-    var chamberDimension = ndx.dimension(function(d) { return d.chamber; });
-    var chamberGroup = chamberDimension.group();
-
-    var clausenDimension = ndx.dimension(function(d) { return d.clausen; });
-    var clausenGroup = clausenDimension.group();
-
-    var resultDimension = ndx.dimension(function(d) { return d.result; });
-    var resultGroup = resultDimension.group();
-
-    timeChart
-        .width(980)
-        .height(180)
-        .dimension(yearlyDimension)
-        .group(yearlyGroup)
-        .elasticX(true)
-        .elasticY(true)
-        .x(d3.scale.linear().domain([0, 2014]));
-
-    chamberChart
-        .width(180)
-        .height(180)
-        .radius(80)
-        .dimension(chamberDimension)
-        .group(chamberGroup);
-
-    clausenChart
-        .width(480)
-        .height(180)
-        .dimension(clausenDimension)
-        .elasticX(true)
-        .group(clausenGroup)
-        .xAxis().ticks(4);
-
-    resultChart
-        .width(180)
-        .height(180)
-        .radius(80)
-        .dimension(resultDimension)
-        .group(resultGroup);
-
-    dc.dataTable(".dc-data-table")
-        .dimension(chamberDimension)
-        .group(function (d) {
-            return d.chamber;
-        })
-        .size(1000)
-        .columns([
-            function (d) {
-                return d.date;
-            },
-            function (d) {
-                return d.result;
-            },
-            function (d) {
-                return d.desc;
-            },
-            function (d) {
-                var rollcallID = getRollcallID(d);
-                return "<a href='/rollcall/" + rollcallID + "' class='btn btn-default btn-sm'>See votation results</a>";
-            }
-        ]);
-
-    dc.renderAll();
-});
 
 </script>
 {% endblock %}

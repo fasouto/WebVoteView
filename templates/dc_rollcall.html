@@ -72,6 +72,7 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/d3.v3.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/crossfilter.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/dc.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/d3.tip.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/topojson.v1.min.js"></script>
 <script type="text/javascript">
 'use strict';
@@ -135,65 +136,77 @@ function drawWidgets(error, geodata, data) {
 
 
     var xDimension = ndx.dimension(function(d) { return [d.x, d.y]; });
-    // var xGroup = xDimension.group(function(total) { return 10; });
-    // var  = xDimension.group();
 
     var xGroup = xDimension.group().reduce(
         function (p, d) {
-            p.partys.push(partyColors[d.vote + d.party]);
+           p.members.push(d);
             return p;
         },
 
         function (p, d) {
-            var index = p.partys.indexOf(partyColors[d.vote + d.party]);
+            var index = p.members.indexOf(d);
             if (index > -1) {
-              p.partys.splice(index, 1);
+              p.members.splice(index, 1);
             }
             return p;
         },
 
         function () {
-            return {partys: []} ;
+            return {members: []} ;
         });
 
     var stateDimension = ndx.dimension(function(d) { return d.state; });
     // Array of colors for each district
     var stateGroup = stateDimension.group().reduce(
         function (p, d) {
-            p.partys.push(partyColors[d.vote + d.party]);
+            p.members.push(d);
             return p;
         },
 
         function (p, d) {
-            var index = p.partys.indexOf(partyColors[d.vote + d.party]);
+            var index = p.members.indexOf(d);
             if (index > -1) {
-              p.partys.splice(index, 1);
+              p.members.splice(index, 1);
             }
             return p;
         },
 
         function () {
-            return {partys: []} ;
+            return {members: []} ;
         });
 
     var districtDimension = ndx.dimension(function(d) { return d.district; });
     // Array of colors for each district
     var districtGroup = districtDimension.group().reduce(
         function (p, d) {
-            p.partys.push(partyColors[d.vote + d.party]);
+            // Add at large members
+            var atlargecode = d.state + "00";
+            var atlarge = $.grep(data.votes, function(e){return e.district == atlargecode; });
+            $.each(atlarge, function(member) {
+                p.members.push(atlarge[member]);
+            });
+
+            p.members.push(d);
             return p;
         },
 
         function (p, d) {
-            var index = p.partys.indexOf(partyColors[d.vote + d.party]);
+            // Remove at large members
+            var atlargecode = d.state + "00";
+            var atlarge = $.grep(data.votes, function(e){return e.district == atlargecode; });
+            $.each(atlarge, function(member) {
+                p.members.splice( $.inArray(atlarge[member], p.members), 1);
+            });
+
+            var index = p.members.indexOf(d);
             if (index > -1) {
-              p.partys.splice(index, 1);
+              p.members.splice(index, 1);
             }
             return p;
         },
 
         function () {
-            return {partys: []} ;
+            return {members: []} ;
         });
 
     yeaNayChart
@@ -221,8 +234,8 @@ function drawWidgets(error, geodata, data) {
         .colorCalculator(function (d) { 
             var color = "#CCC";
             try {
-                if(d.value.partys.length > 0){   
-                    color = blendColors(d.value.partys);
+                if(d.value.members.length > 0){   
+                    color = blendColors(d.value.members);
                 }
             }catch(e){
            }
@@ -230,9 +243,7 @@ function drawWidgets(error, geodata, data) {
         })
         .highlightedSize(7)
         .x(d3.scale.linear().domain([-1, 1]))
-        .y(d3.scale.linear().domain([-1, 1]))
-        ;
-
+        .y(d3.scale.linear().domain([-1, 1]));
 
     dc.dataCount("#data-count")
         .dimension(ndx)
@@ -263,6 +274,8 @@ function drawWidgets(error, geodata, data) {
             }
         ]);
 
+        // var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { console.log(); return d; });
+
         // http://stackoverflow.com/questions/24246125/how-to-add-zoom-effect-into-dc-geochoroplethchart
         if (chamber == "House") {
             var mapTopo = topojson.feature(geodata, geodata.objects.districts).features;
@@ -273,10 +286,11 @@ function drawWidgets(error, geodata, data) {
                     .colorCalculator(function (d) { 
                         var color = "#CCC";
                         try {
-                            if(d.partys.length > 0){   
-                                color = blendColors(d.partys);
+                            if(d.members.length > 0){   
+                                color = blendColors(d.members);
                             }
                         }catch(e){
+                            console.log(e);
                        }
                         return color; 
                     })
@@ -284,11 +298,11 @@ function drawWidgets(error, geodata, data) {
                         return d.id;
                     })
                     .title(function (d) {
-                        // var obj = data.filter(function ( obj ) {
-                        //     return obj.district === d.key;
-                        // })[0];
-                        return "District: " + d.key;
-                    });            
+                        return "State: " + d;
+                    });
+
+
+
         } else if (chamber == "Senate") {
             var mapTopo = topojson.feature(geodata, geodata.objects.states).features;
             mapChart.width(890)
@@ -298,8 +312,8 @@ function drawWidgets(error, geodata, data) {
                     .colorCalculator(function (d) { 
                         var color = "#CCC";
                         try {
-                            if(d.partys.length > 0){   
-                                color = blendColors(d.partys);
+                            if(d.members.length > 0){   
+                                color = blendColors(d.members);
                             }
                         }catch(e){
                        }
@@ -309,28 +323,35 @@ function drawWidgets(error, geodata, data) {
                         return d.id;
                     })
                     .title(function (d) {
-                        // var obj = data.filter(function ( obj ) {
-                        //     return obj.district === d.key;
-                        // })[0];
-                        return "State: " + d.key;
+                        var result = "";
+                        for (var i = 0; i < d.value.members.length; i++) {
+                            result += d.value.members[i].name;
+                        }
+                        return "State: " + d.key + "<p>" + result + "</p>";
                     });   
         }
 
     dc.renderAll();
+
+    // Call the  tooltip
+    // d3.selectAll(".district").call(tip);
+    // d3.selectAll(".district").on('mouseover', tip.show)
+    //           .on('mouseout', tip.hide);
+
 }
 
 // Blend an array of colors
-function blendColors(colors) {
+function blendColors(members) {
     var r = 0, g = 0 , b = 0, i, rgbColor;
-    for (i = 0; i < colors.length; i++) {
-      rgbColor = d3.rgb(colors[i]);
+    for (i = 0; i < members.length; i++) {
+      rgbColor = d3.rgb(partyColors[members[i].vote + members[i].party]);
       r = r + rgbColor.r;
       g = g + rgbColor.g;
       b = b + rgbColor.b; 
     }
-    r = r / colors.length;
-    g = g / colors.length;
-    b = b / colors.length;
+    r = r / members.length;
+    g = g / members.length;
+    b = b / members.length;
     return d3.rgb(r,g,b).toString();
 }
 

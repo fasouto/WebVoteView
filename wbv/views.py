@@ -23,3 +23,7 @@ class ExploreView(TemplateView):
 
     template_name = "explore.html"
 
+
+class SearchView(TemplateView):
+
+    template_name = "search.html"
