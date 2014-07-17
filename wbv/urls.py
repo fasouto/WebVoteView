@@ -10,7 +10,9 @@ from wbv.views import HomePageView, RollcallView, ExploreView, SearchView
 urlpatterns = patterns('',
     url(r'^$', SearchView.as_view(), name='search'),
     url(r'^rollcall/(?P<rollcall_id>[-\w]+)/$', 'webvoteview.views.show_rollcall', name='dc_rollcall_display'),
-    url(r'^explore/$', ExploreView.as_view(), name='explore'),
+    url(r'^explore/congress/$', ExploreView.as_view(chamber="house"), name='explore-congress'),
+    url(r'^explore/senate/$', ExploreView.as_view(chamber="senate"), name='explore-senate'),
+
     url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
 
     # API urls

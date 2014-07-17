@@ -21,8 +21,13 @@ class DCRollcallView(TemplateView):
 
 class ExploreView(TemplateView):
 
+    chamber = "senate"
     template_name = "explore.html"
 
+    def get_context_data(self, **kwargs):
+        context = super(ExploreView, self).get_context_data(**kwargs)
+        context['chamber'] = self.chamber
+        return context
 
 class SearchView(TemplateView):
 
