@@ -89,7 +89,7 @@ function getRollcallID(rollcallData) {
     return result
 }
 
-var xhr = d3.json("/api/getrollcalls/")
+var xhr = d3.json("/api/getrollcalls/?chamber={{ chamber }}")
     .on("progress", function() { 
         console.log("progress", d3.event.loaded); 
 
@@ -155,7 +155,7 @@ var xhr = d3.json("/api/getrollcalls/")
             .group(function (d) {
                 return d.clausen;
             })
-            .size(1000)
+            .size(200)
             .columns([
                 function (d) {
                     return d.date;

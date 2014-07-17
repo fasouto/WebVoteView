@@ -43,8 +43,10 @@ def api_get_rollcalls(request):
     """
     Get all the rollcalls
     """
+    chamber = request.GET.get('chamber', 'senate').title()
+
     rollcalls_col = db.voteview_rollcalls
-    rollcalls = rollcalls_col.find()[:5000]
+    rollcalls = rollcalls_col.find({'chamber': chamber})[:5000]
 
     result = []
     for rollcall in rollcalls:
@@ -90,22 +92,23 @@ def api_get_votes(request, rollcall_id):
     rollcall = rollcalls_col.find_one({'id': rollcall_id})
     result = []
     for vote in rollcall['votes']:
-        temp = {}
-        temp['vote'] = _get_yeanayabs(rollcall['votes'][vote])
         member = members_col.find_one({'id': vote})
-        temp['name'] = member['fname']
-        temp['id'] = member['id']
-        temp['party'] = member['partyname']
-        temp['state'] = member['stateAbbr']
+        v = {
+            'vote': _get_yeanayabs(rollcall['votes'][vote]),
+            'name': member['fname'],
+            'id': member['id'],
+            'party': member['partyname'],
+            'state': member['stateAbbr']
+        }
         if member['nominate']['oneDimNominate']:
-            temp['x'] = member['nominate']['oneDimNominate']
-            temp['y'] = member['nominate']['twoDimNominate']
+            v['x'] = member['nominate']['oneDimNominate']
+            v['y'] = member['nominate']['twoDimNominate']
 
         if member['districtCode'] > 70:
-            temp['district'] = "%s00" % member['stateAbbr']
+            v['district'] = "%s00" % member['stateAbbr']
         elif member['districtCode'] and member['districtCode'] <= 70:
-            temp['district'] = "%s%02d" % (member['stateAbbr'], member['districtCode'])
-        result.append(temp)
+            v['district'] = "%s%02d" % (member['stateAbbr'], member['districtCode'])
+        result.append(v)
     return (
         HttpResponse(
             dumps({'votes': result, 'nominate': rollcall['nominate']}),
