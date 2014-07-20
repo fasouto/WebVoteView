@@ -1,5 +1,4 @@
 import json
-import random
 
 from pymongo.connection import Connection
 from django.template import loader, Context
@@ -57,7 +56,7 @@ def api_get_rollcalls(request):
         result.append({
             'clausen': clausen,
             'chamber': rollcall['chamber'],
-            'result': random.choice(['Yea', 'Nay', 'Abs']),
+            'result': rollcall['finalresult'],
             'date': rollcall['date'],
             'session': rollcall['session'],
             'rcnum': rollcall['rollnumber'],
