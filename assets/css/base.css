@@ -18,11 +18,11 @@
 }
 
 #main_body {
-    background: url(/static/img/congress.jpg);
-    background-size: 100%;
 }
 
 #home-header {
+    background: url(/static/img/congress.jpg) 50% 0% repeat-x;
+    height: 480px;
     text-align: center;
     padding-top: 10%;
     color:white;

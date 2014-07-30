@@ -12,3 +12,8 @@ svg.map {
   stroke-linejoin: round; 
   opacity: 1;
 }
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}

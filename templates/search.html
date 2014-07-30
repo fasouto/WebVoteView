@@ -5,135 +5,111 @@
 {% block content %}
 
 {% include 'header.html' %}
+<div class="container">
 
-<form id="faceted-search-form" action="." method="post">
-{% csrf_token %} 
-        <div class="row">
-        <div class="col-xs-12">
-          <h3>Browse US rollcalls</h3>
-        </div>
-        </div>
-<div id="results-page-container">
-    <div class="row">
-        <div class="col-xs-12">
-            <input name="search-string" type="text" class="form-control" id="searchText" placeholder="Enter a term to search for">  
-        </div>
-    </div>
-
-    <div class="row">
-        <div id="results-selects" class="col-md-3">
-
-          <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">Chamber</h3>
-            </div>
-            <div class="panel-body">
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="chamber" id="optionsRadios1" value="Senate">
-                  Senate
-                </label>
-              </div>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="chamber" id="optionsRadios2" value="House">
-                  Congress
-                </label>
-              </div>
-            </div>
+  <form id="faceted-search-form" action="." method="post">
+  {% csrf_token %} 
+          <div class="row">
+          <div class="col-xs-12">
+            <h3>Browse US rollcalls</h3>
           </div>
-
-
-          <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">Clausen</h3>
-            </div>
-            <div class="panel-body">
-                <div class="checkbox">
-                  <label>
-                    <input type="checkbox" value="Government Management" name="clausen">
-                    Government Management
-                  </label>
-                                  </div>
-
-                <div class="checkbox">
-                  <label>
-                    <input type="checkbox" value="Miscellaneous Policy" name="clausen">
-                    Miscellaneous Policy
-                  </label>
-                                  </div>
-
-                <div class="checkbox">
-                  <label>
-                    <input type="checkbox" value="Foreign and Defense Policy" name="clausen">
-                    Foreign and Defense Policy
-                  </label>
-                                  </div>
-
-                <div class="checkbox">
-                  <label>
-                    <input type="checkbox" value="Social Welfare" name="clausen">
-                    Social Welfare
-                  </label>
-                                  </div>
-
-                <div class="checkbox">
-                 <label>
-                    <input type="checkbox" value="Agriculture" name="clausen">
-                    Agriculture
-                  </label>
-                                  </div>
-
-                <div class="checkbox">
-                 <label>
-                    <input type="checkbox" value="Civil Liberties" name="clausen">
-                    Civil Liberties
-                  </label>
-                </div>
-            </div>
           </div>
+  <div id="results-page-container">
+      <div class="row">
+          <div class="col-xs-12">
+              <input name="search-string" type="text" class="form-control" id="searchText" placeholder="Enter a term to search for">  
+          </div>
+      </div>
 
+      <div class="row">
+          <div id="results-selects" class="col-md-3">
 
-          <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">Most common vote</h3>
-           </div>
-           <div class="panel-body">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Chamber</h3>
+              </div>
+              <div class="panel-body">
                 <div class="checkbox">
                   <label>
-                    <input type="checkbox" name="result" value="yea">
-                    Yea
+                    <input type="checkbox" name="chamber" id="optionsRadios1" value="Senate">
+                    Senate
                   </label>
                 </div>
                 <div class="checkbox">
                   <label>
-                    <input type="checkbox" name="result"  value="nay">
-                    Nay
-                  </label>
-                </div>
-
-                <div class="checkbox">
-                  <label>
-                    <input type="checkbox" name="result" value="abs">
-                    Abs
+                    <input type="checkbox" name="chamber" id="optionsRadios2" value="House">
+                    Congress
                   </label>
                 </div>
               </div>
             </div>
 
-        </div>
-</form>
-        <div id="results-list" class="col-md-9">
-            <div class="result well">
-                <p><strong>Date </strong>1859-02-22</p>
-                <p><strong>Description </strong>NO ARMED MEN AT PLACES OF ELECTIONS</p>
-                <p><strong>Date </strong>1859-02-22</p>
 
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">Clausen</h3>
+              </div>
+              <div class="panel-body">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="Government Management" name="clausen">
+                      Government Management
+                    </label>
+                                    </div>
+
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="Miscellaneous Policy" name="clausen">
+                      Miscellaneous Policy
+                    </label>
+                                    </div>
+
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="Foreign and Defense Policy" name="clausen">
+                      Foreign and Defense Policy
+                    </label>
+                                    </div>
+
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" value="Social Welfare" name="clausen">
+                      Social Welfare
+                    </label>
+                                    </div>
+
+                  <div class="checkbox">
+                   <label>
+                      <input type="checkbox" value="Agriculture" name="clausen">
+                      Agriculture
+                    </label>
+                                    </div>
+
+                  <div class="checkbox">
+                   <label>
+                      <input type="checkbox" value="Civil Liberties" name="clausen">
+                      Civil Liberties
+                    </label>
+                  </div>
+              </div>
             </div>
 
-        </div>
-    </div>
+
+          </div>
+  </form>
+          <div id="results-list" class="col-md-9">
+              <div class="result well">
+                  <p><strong>Date </strong>1859-02-22</p>
+                  <p><strong>Description </strong>NO ARMED MEN AT PLACES OF ELECTIONS</p>
+                  <p><strong>Date </strong>1859-02-22</p>
+
+              </div>
+
+          </div>
+      </div>
+  </div>
 </div>
+
 <script type="text/javascript">
   $(document).ready(
     function(){

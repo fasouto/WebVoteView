@@ -11,67 +11,68 @@
 {% block content %}
 
 {% include 'header.html' %}
-
-<div class="row">
-    <div class="col-md-12">
-      <h3><abbr title="Chamber">{{ rollcall.chamber }}</abbr>/<abbr title="Session">{{ rollcall.session }}</abbr>/<abbr title="Rollnumber">{{ rollcall.rollnumber }}</abbr> </h3> 
-      <p><strong>Date:</strong> {{ rollcall.date }}</p>
-      <p><strong>Clausen:</strong> {{ rollcall.code.Clausen.0 }} <strong>Peltzman:</strong> {{ rollcall.code.Peltzman.0 }}</p>
-      <p>{{ rollcall.description }}</p>
+<div class="container">
+  <div class="row">
+      <div class="col-md-12">
+        <h3><abbr title="Chamber">{{ rollcall.chamber }}</abbr>/<abbr title="Session">{{ rollcall.session }}</abbr>/<abbr title="Rollnumber">{{ rollcall.rollnumber }}</abbr> </h3> 
+        <p><strong>Date:</strong> {{ rollcall.date }}</p>
+        <p><strong>Clausen:</strong> {{ rollcall.code.Clausen.0 }} <strong>Peltzman:</strong> {{ rollcall.code.Peltzman.0 }}</p>
+        <p>{{ rollcall.description }}</p>
+    </div>
   </div>
-</div>
 
-<div class="row">
-    <div class="col-md-9">
-        <div id="map-chart">
-            <a class="reset" href="javascript:mapChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-            <span class="reset" style="display: none;"> | Current filter: <span class="filter"></span></span>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div id="yeanay-chart">
-            <strong>Votes</strong>
-            <a class="reset" href="javascript:yeaNayChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-            <div class="clearfix"></div>
-        </div>
-        <div id="party-chart">
-            <strong>Party</strong>
-            <a class="reset" href="javascript:partyChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-            <div class="clearfix"></div>
-        </div>
-    </div>
-</div>
+  <div class="row">
+      <div class="col-md-9">
+          <div id="map-chart">
+              <a class="reset" href="javascript:mapChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+              <span class="reset" style="display: none;"> | Current filter: <span class="filter"></span></span>
+          </div>
+      </div>
+      <div class="col-md-3">
+          <div id="yeanay-chart">
+              <strong>Votes</strong>
+              <a class="reset" href="javascript:yeaNayChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+              <div class="clearfix"></div>
+          </div>
+          <div id="party-chart">
+              <strong>Party</strong>
+              <a class="reset" href="javascript:partyChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+              <div class="clearfix"></div>
+          </div>
+      </div>
+  </div>
 
-<div class="row">
-    <div class="col-md-12">
-        <div id="scatter-container">
-            <div id="scatter-bg">
-                <svg id="svg-bg">
-                </svg>
-            </div>
-            <div id="scatter-chart">
-            </div>
-        </div>
-    </div>
-</div>
+  <div class="row">
+      <div class="col-md-12">
+          <div id="scatter-container">
+              <div id="scatter-bg">
+                  <svg id="svg-bg">
+                  </svg>
+              </div>
+              <div id="scatter-chart">
+              </div>
+          </div>
+      </div>
+  </div>
 
-<div class="row">
-    <div class="col-md-12">
-        <div id="data-count">
-            <span class="filter-count"></span> selected out of <span class="total-count"></span> records | <a
-                href="javascript:dc.filterAll(); dc.renderAll();">Reset All</a>
-        </div>
-        <table class="table table-hover dc-data-table">
-            <thead>
-            <tr class="header">
-                <th>Name</th>
-                <th>Party</th>
-                <th>Vote</th>
-                <th>State</th>
-            </tr>
-            </thead>
-        </table>
-    </div>
+  <div class="row">
+      <div class="col-md-12">
+          <div id="data-count">
+              <span class="filter-count"></span> selected out of <span class="total-count"></span> records | <a
+                  href="javascript:dc.filterAll(); dc.renderAll();">Reset All</a>
+          </div>
+          <table class="table table-hover dc-data-table">
+              <thead>
+              <tr class="header">
+                  <th>Name</th>
+                  <th>Party</th>
+                  <th>Vote</th>
+                  <th>State</th>
+              </tr>
+              </thead>
+          </table>
+      </div>
+  </div>
 </div>
 
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/sprintf.min.js"></script>
@@ -95,7 +96,7 @@ var partyColors = {
     "AbsFederalist": "#DDD",
     "YeaDemocrat": "#0000FF",
     "NayDemocrat": "#AAAAFF",
-    "AbsDemocrat": "#DDD",
+    "AbsDemocrat": "#EEE",
     "YeaFarmer-Labor": "#0000FF",
     "NayFarmer-Labor": "#AAAAFF",
     "AbsFarmer-Labor": "#DDD",
@@ -104,7 +105,7 @@ var partyColors = {
     "AbsProgressive": "#DDD",
     "YeaRepublican": "#FF0000",
     "NayRepublican": "#FFAAAA",
-    "AbsRepublican": "#AAAAFF",
+    "AbsRepublican": "#AAAFFF",
     "YeaIndependent": "#FFDD00",
     "NayIndependent": "#FFDDAA",
     "AbsIndependent": "#DDD"
@@ -192,7 +193,7 @@ function drawWidgets(error, geodata, data) {
             $.each(atlarge, function(member) {
                 p.members.push(atlarge[member]);
             });
-
+            // console.log(d);
             p.members.push(d);
             return p;
         },
@@ -281,8 +282,6 @@ function drawWidgets(error, geodata, data) {
         ]);
 
         // var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { console.log(); return d; });
-
-        // http://stackoverflow.com/questions/24246125/how-to-add-zoom-effect-into-dc-geochoroplethchart
         if (chamber == "House") {
             var mapTopo = topojson.feature(geodata, geodata.objects.districts).features;
             mapChart.width(890)
@@ -292,7 +291,7 @@ function drawWidgets(error, geodata, data) {
                     .colorCalculator(function (d) { 
                         var color = "#CCC";
                         try {
-                            if(d.members.length > 0){   
+                            if(d.members.length > 0){
                                 color = blendColors(d.members);
                             }
                         }catch(e){
@@ -342,8 +341,20 @@ function drawWidgets(error, geodata, data) {
 
     dc.renderAll();
 
-    drawOpinionBackground(data);
+    var gtest = d3.select("#map-chart svg g")
+        .call(d3.behavior.zoom()
+        .scaleExtent([1, 10])
+        .on("zoom", zoom));
 
+    function zoom() {
+        gtest.attr("transform", "translate("
+                + d3.event.translate
+                + ")scale(" + d3.event.scale + ")");
+        gtest.style("stroke-width", 1.2 / d3.event.scale + "px");
+    }
+
+
+    drawOpinionBackground(data);
 }
 
 // Blend an array of colors
