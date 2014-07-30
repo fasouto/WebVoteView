@@ -62,7 +62,7 @@ function WebVoteView(options) {
     }
   }
 
-  // Write to the description ids the name, description and date of the votation
+  // Write to the description ids the name, description and date of the rollcall
   function setDescription(vote) {
     d3.select("#wvv-rollcall").html(sprintf("Chamber %s/Congress %d/Rollcall %d",
                                              vote.chamber, vote.session, vote.rollnumber));

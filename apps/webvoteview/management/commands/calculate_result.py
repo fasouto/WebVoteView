@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     def calculate_result(self, db):
         """
-        Simply calculate the predominant result in the votations and store it in the document
+        Simply calculate the predominant result in the rollcalls and store it in the document
         1,2,3 -> Yea
         4,5,6 -> Nay
         7,8,9 -> Abs
