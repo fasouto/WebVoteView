@@ -17,27 +17,37 @@
     z-index: 10;
 }
 
-#main_body {
-}
 
 #home-header {
-    background: url(/static/img/congress.jpg) 50% 0% repeat-x;
-    height: 480px;
+    background: url(/static/img/blue.jpg) 50% 0% repeat-x;
+    height: 440px;
     text-align: center;
     padding-top: 10%;
-    color:white;
+    margin-bottom: 3%;
 }
 #home-header p {
+    color:white;
     text-shadow: 0 -1px 8px rgba(0,0,0,0.9);
     font-size: 140%;
 }
  #home-header h1 {
+    color: white;
     text-shadow: 0 -1px 8px rgba(0,0,0,0.9);
     font-size: 320%;
+    font-weight: 700;
  }
+
+
+.imageAndText {position: relative;} 
+.imageAndText p {position: absolute; z-index: 1; bottom: 0; left: 50; color:white; font-size: 200%;}
 
 #content {
   display: none;
+}
+
+#home-search-form {
+  width: 60%;
+  margin: 0 auto;
 }
 
 #search-examples {
