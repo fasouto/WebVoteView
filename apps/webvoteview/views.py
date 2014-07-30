@@ -17,6 +17,43 @@ def show_rollcall(request, rollcall_id):
     rollcall = rollcalls_col.find_one({'id': rollcall_id})
     return render(request, 'dc_rollcall.html', {'rollcall': rollcall})
 
+def download_results(request, rollcall_list, format="xls"):
+    """
+    Download in R format the rollcalls with the ids passed on the list
+    """
+    ids = [i.strip() for i in ids.split(',')]
+    rcc = RollcallCollection(ids=ids)
+    
+    # Roll call descriptions
+    rollcalls = [['vote']+[f[1] for f in self.descriptionfields]]
+    rollcalls[0][2] = 'congress'
+    i = 1
+    for r in rcc:
+        rollcalls.append( ['V%i' % i] + 
+                          [ r[f[0]] for f in self.descriptionfields] )
+        i += 1
+        
+    # Roll roll call matrix
+    m = Member()
+    votematrix = [[f[1] for f in self.infofields] + 
+                  ["V%i" % (i+1) for i in range(len(ids))]]
+    for k,v in rcc.toMatrix(by='icpsr').iteritems():
+        m.getMemberByIcpsr(k)
+        votematrix.append([str(mm) for mm in self._memberinfo(m)]+
+                          [str(vv) for vv in v])
+        
+    if xls == "True":
+        content_type = 'application/x-excel'
+        # Write workbook
+        print "Writing workbook..."
+        wxls = WriteXls(rollcalls=rollcalls, votes=votematrix)
+        wxls.addVotes()
+        wxls.addRollcalls()
+        return  wxls.render()
+    else:
+        content_type = 'application/json'
+        return writeRollcall(rollcalls,votematrix)
+
 def ajax_faceted_search(request):
     """
     Return a paginated list of rollcalls that match the parameters
@@ -28,8 +65,6 @@ def ajax_faceted_search(request):
         query['chamber'] = {'$in': request.POST.getlist('chamber')}
     if request.POST.get('clausen'):
         query['code.Clausen'] = {'$in': request.POST.getlist('clausen')}
-    if request.POST.get('result'):
-        query['finalresult'] = {'$in': request.POST.getlist('result')}
     rollcalls = db.voteview_rollcalls.find(query)
     rollcalls_page = list(rollcalls[:15])
 
@@ -121,5 +156,16 @@ def get_vote(request, rollcall_id):
     return (
         HttpResponse(
             dumps(rollcall),
+            content_type='application/json; charset=utf8')
+    )
+
+## DEPRECATED USED ONLY TO CHECK IF THE CHARTS ARE LIKE THE OLD ONES
+def get_members(request, session_id):
+    members_col = db.voteview_members
+    members = members_col.find({'session': int(session_id)})
+    print members
+    return (
+        HttpResponse(
+            dumps(members),
             content_type='application/json; charset=utf8')
     )
