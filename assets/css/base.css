@@ -17,7 +17,6 @@
     z-index: 10;
 }
 
-
 #home-header {
     background: url(/static/img/blue.jpg) 50% 0% repeat-x;
     height: 440px;
@@ -25,6 +24,7 @@
     padding-top: 10%;
     margin-bottom: 3%;
 }
+
 #home-header p {
     color:white;
     text-shadow: 0 -1px 8px rgba(0,0,0,0.9);
@@ -37,6 +37,9 @@
     font-weight: 700;
  }
 
+#images-section .row {
+  margin-bottom: 20px;
+}
 
 .imageAndText {position: relative;} 
 .imageAndText p {position: absolute; z-index: 1; bottom: 0; left: 50; color:white; font-size: 200%;}

@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from pymongo.connection import Connection
 from django.template import loader, Context
@@ -65,6 +66,24 @@ def ajax_faceted_search(request):
         query['chamber'] = {'$in': request.POST.getlist('chamber')}
     if request.POST.get('clausen'):
         query['code.Clausen'] = {'$in': request.POST.getlist('clausen')}
+
+    if request.POST.get('from-date'):
+        from_year = int(request.POST.get('from-date'))
+        if 'datef' in query:
+            query['datef']["$gte"] = datetime(from_year, 1, 1)
+        else:
+            query["datef"] = { "$gte": datetime(from_year, 1, 1) }
+            
+    if request.POST.get('to-date'):
+        to_year = int(request.POST.get('to-date'))
+        # We get the rollcalls of these year too
+        if 'datef' in query:
+            query['datef']["$lt"] = datetime(to_year + 1, 1, 1)
+        else:
+            query["datef"] = { "$lt": datetime(to_year + 1, 1, 1) }
+
+    if request.POST.get('to-date'):
+        print request.POST.get('to-date')
     rollcalls = db.voteview_rollcalls.find(query)
     rollcalls_page = list(rollcalls[:15])
 
