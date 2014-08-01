@@ -19,7 +19,7 @@ class Command(BaseCommand):
 
     def import_members(self, db):
         """
-        Import Senate/congress members
+        Import senate/house members
         """
         print "Importing members"
         members =  db.voteview_members
