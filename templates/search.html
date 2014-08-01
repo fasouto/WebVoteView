@@ -29,95 +29,100 @@
       <div class="row">
           <div id="results-selects" class="col-md-3">
 
+
             <div class="panel panel-primary">
-              <div class="panel-heading">
+              <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-chamber">
                 <h3 class="panel-title">Chamber</h3>
               </div>
-              <div class="panel-body">
-                <div class="checkbox">
-                  <label>
-                    <input type="checkbox" name="chamber" id="optionsRadios1" value="Senate">
-                    Senate
-                  </label>
-                </div>
-                <div class="checkbox">
-                  <label>
-                    <input type="checkbox" name="chamber" id="optionsRadios2" value="House">
-                    House
-                  </label>
+              <div id="facet-chamber" class="panel-collapse facet-content collapse">
+                <div class="panel-body">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="chamber" id="optionsRadios1" value="Senate">
+                      Senate
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="chamber" id="optionsRadios2" value="House">
+                      House
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
 
 
             <div class="panel panel-primary">
-              <div class="panel-heading">
+              <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-clausen">
                 <h3 class="panel-title">Clausen</h3>
               </div>
-              <div class="panel-body">
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="Government Management" name="clausen">
-                      Government Management
-                    </label>
-                                    </div>
+              <div id="facet-clausen" class="panel-collapse facet-content collapse">
+                <div class="panel-body">
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" value="Government Management" name="clausen">
+                        Government Management
+                      </label>
+                                      </div>
 
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="Miscellaneous Policy" name="clausen">
-                      Miscellaneous Policy
-                    </label>
-                                    </div>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" value="Miscellaneous Policy" name="clausen">
+                        Miscellaneous Policy
+                      </label>
+                                      </div>
 
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="Foreign and Defense Policy" name="clausen">
-                      Foreign and Defense Policy
-                    </label>
-                                    </div>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" value="Foreign and Defense Policy" name="clausen">
+                        Foreign and Defense Policy
+                      </label>
+                                      </div>
 
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="Social Welfare" name="clausen">
-                      Social Welfare
-                    </label>
-                                    </div>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" value="Social Welfare" name="clausen">
+                        Social Welfare
+                      </label>
+                                      </div>
 
-                  <div class="checkbox">
-                   <label>
-                      <input type="checkbox" value="Agriculture" name="clausen">
-                      Agriculture
-                    </label>
-                                    </div>
+                    <div class="checkbox">
+                     <label>
+                        <input type="checkbox" value="Agriculture" name="clausen">
+                        Agriculture
+                      </label>
+                                      </div>
 
-                  <div class="checkbox">
-                   <label>
-                      <input type="checkbox" value="Civil Liberties" name="clausen">
-                      Civil Liberties
-                    </label>
-                  </div>
+                    <div class="checkbox">
+                     <label>
+                        <input type="checkbox" value="Civil Liberties" name="clausen">
+                        Civil Liberties
+                      </label>
+                    </div>
+                </div>
               </div>
             </div>
 
             <div class="panel panel-primary">
-              <div class="panel-heading">
+              <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-date">
                 <h3 class="panel-title">Date range</h3>
               </div>
-              <div class="panel-body">
-
-                <div class="form-group">
-                  <label for="fromDate" class="col-sm-5 control-label">From (year)</label>
-                  <div class="col-sm-6">
-                    <input name="from-date" type="text" class="form-control" id="fromDate" placeholder="From">
+              <div id="facet-date" class="panel-collapse facet-content collapse">
+                <div class="panel-body">
+                  <div class="form-group">
+                    <label for="fromDate" class="col-sm-5 control-label">From (year)</label>
+                    <div class="col-sm-6">
+                      <input name="from-date" type="text" class="form-control" id="fromDate" placeholder="From">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="toDate" class="col-sm-5 control-label">To (year)</label>
+                    <div class="col-sm-6">
+                      <input name="to-date" type="text" class="form-control" id="toDate" placeholder="To">
+                    </div>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="toDate" class="col-sm-5 control-label">To (year)</label>
-                  <div class="col-sm-6">
-                    <input name="to-date" type="text" class="form-control" id="toDate" placeholder="To">
-                  </div>
-                </div>
-
               </div>
             </div>
 
