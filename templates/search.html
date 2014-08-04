@@ -9,11 +9,12 @@
 
   <form id="faceted-search-form" action="." method="post" class="form-horizontal">
   {% csrf_token %} 
-          <div class="row">
-          <div class="col-xs-12">
-            <h3>Browse US rollcalls</h3>
-          </div>
-          </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <h3>Browse US rollcalls</h3>
+    </div>
+  </div>
+
   <div id="results-page-container">
       <div class="row">
           <div class="col-xs-12">
@@ -30,7 +31,7 @@
           <div id="results-selects" class="col-md-3">
 
 
-            <div class="panel panel-primary">
+            <div id="panel-chamber" class="panel panel-primary">
               <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-chamber">
                 <h3 class="panel-title">Chamber <i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i></h3>
               </div>
@@ -224,9 +225,7 @@
           </div>
   </form>
           <div id="results-list" class="col-md-9">
-              <div class="result well">
-
-              </div>
+            {# List of rollcalls goes here #}
           </div>
       </div>
   </div>
@@ -236,7 +235,7 @@
   $(document).ready(
     function(){
 
-      function get_rollcalls(){
+      function getRollcalls(){
         $.ajax({
           type: "POST",
           url: "/api/search/",
@@ -249,18 +248,18 @@
            }
           });
         }
-      
+
+        getRollcalls();
+
         $("#faceted-search-form input:not(#searchTextInput)").change(function() {
-            get_rollcalls();
+            getRollcalls();
         });
 
+        // Prevent to do a AJAX call everytime we update the search bar
         $("#faceted-search-form").submit(function(event) {
           event.preventDefault();
-          get_rollcalls();
+          getRollcalls();
         });
-
-        // Initial call
-        get_rollcalls();
 
         // Toggle panel icons
         function toggleChevron(e) {
@@ -271,6 +270,21 @@
         }
         $('.panel').on('hidden.bs.collapse', toggleChevron);
         $('.panel').on('shown.bs.collapse', toggleChevron);
+
+
+        // If any panel has data display it
+        if($('#facet-chamber input[type=checkbox]:checked').length) {
+          $("#facet-chamber").collapse('show');
+        }
+        if($('#facet-clausen input[type=checkbox]:checked').length) {
+          $("#facet-clausen").collapse('show');
+        }
+        if($('#facet-peltzman input[type=checkbox]:checked').length) {
+          $("#facet-peltzman").collapse('show');
+        }
+        if($('#fromDate').val()  || $("#toDate").val()) {
+          $("#facet-date").collapse('show');
+        }
   });
 </script>
 
