@@ -66,6 +66,8 @@ def ajax_faceted_search(request):
         query['chamber'] = {'$in': request.POST.getlist('chamber')}
     if request.POST.get('clausen'):
         query['code.Clausen'] = {'$in': request.POST.getlist('clausen')}
+    if request.POST.get('peltzman'):
+        query['code.Peltzman'] = {'$in': request.POST.getlist('peltzman')}
 
     if request.POST.get('from-date'):
         from_year = int(request.POST.get('from-date'))
