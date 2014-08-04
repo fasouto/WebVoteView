@@ -32,7 +32,7 @@
 
             <div class="panel panel-primary">
               <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-chamber">
-                <h3 class="panel-title">Chamber</h3>
+                <h3 class="panel-title">Chamber <i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i></h3>
               </div>
               <div id="facet-chamber" class="panel-collapse facet-content collapse">
                 <div class="panel-body">
@@ -55,7 +55,7 @@
 
             <div class="panel panel-primary">
               <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-clausen">
-                <h3 class="panel-title">Clausen</h3>
+                <h3 class="panel-title">Clausen <i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i></h3>
               </div>
               <div id="facet-clausen" class="panel-collapse facet-content collapse">
                 <div class="panel-body">
@@ -107,7 +107,7 @@
 
             <div class="panel panel-primary">
               <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-peltzman">
-                <h3 class="panel-title">Peltzman</h3>
+                <h3 class="panel-title">Peltzman <i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i></h3>
               </div>
               <div id="facet-peltzman" class="panel-collapse facet-content collapse">
                 <div class="panel-body">
@@ -200,7 +200,7 @@
 
             <div class="panel panel-primary">
               <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-date">
-                <h3 class="panel-title">Date range</h3>
+                <h3 class="panel-title">Date range <i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i></h3>
               </div>
               <div id="facet-date" class="panel-collapse facet-content collapse">
                 <div class="panel-body">
@@ -259,7 +259,18 @@
           get_rollcalls();
         });
 
+        // Initial call
         get_rollcalls();
+
+        // Toggle panel icons
+        function toggleChevron(e) {
+            $(e.target)
+                .prev('.panel-heading')
+                .find('i.indicator')
+                .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+        }
+        $('.panel').on('hidden.bs.collapse', toggleChevron);
+        $('.panel').on('shown.bs.collapse', toggleChevron);
   });
 </script>
 
