@@ -221,6 +221,27 @@
               </div>
             </div>
 
+            <div class="panel panel-primary">
+              <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-session">
+                <h3 class="panel-title">Session range <i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i></h3>
+              </div>
+              <div id="facet-session" class="panel-collapse facet-content collapse">
+                <div class="panel-body">
+                  <div class="form-group">
+                    <label for="fromSession" class="col-sm-5 control-label">From</label>
+                    <div class="col-sm-6">
+                      <input name="from-session" type="text" class="form-control" id="fromSession" placeholder="From">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="toSession" class="col-sm-5 control-label">To</label>
+                    <div class="col-sm-6">
+                      <input name="to-session" type="text" class="form-control" id="toSession" placeholder="To">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
           </div>
   </form>
@@ -284,6 +305,9 @@
         }
         if($('#fromDate').val()  || $("#toDate").val()) {
           $("#facet-date").collapse('show');
+        }
+        if($('#fromSession').val()  || $("#toSession").val()) {
+          $("#facet-session").collapse('show');
         }
   });
 </script>

@@ -69,20 +69,34 @@ def ajax_faceted_search(request):
     if request.POST.get('peltzman'):
         query['code.Peltzman'] = {'$in': request.POST.getlist('peltzman')}
 
+    # Filter by session
+    if request.POST.get('from-session'):
+        from_session = int(request.POST.get('from-session'))
+        if 'session' in query:
+            query['session']['$gte'] = int(from_session)
+        else:
+            query['session'] = { '$gte': int(from_session) }
+    if request.POST.get('to-session'):
+        to_session = int(request.POST.get('to-session'))
+        if 'session' in query:
+            query['session']['$lte'] = int(to_session)
+        else:
+            query['session'] = {'$lte': int(to_session)}
+
+    # Filter by date range
     if request.POST.get('from-date'):
         from_year = int(request.POST.get('from-date'))
         if 'datef' in query:
             query['datef']["$gte"] = datetime(from_year, 1, 1)
         else:
-            query["datef"] = { "$gte": datetime(from_year, 1, 1) }
-            
+            query['datef'] = { "$gte": datetime(from_year, 1, 1) }            
     if request.POST.get('to-date'):
         to_year = int(request.POST.get('to-date'))
         # We get the rollcalls of these year too
         if 'datef' in query:
             query['datef']["$lt"] = datetime(to_year + 1, 1, 1)
         else:
-            query["datef"] = { "$lt": datetime(to_year + 1, 1, 1) }
+            query['datef'] = {"$lt": datetime(to_year + 1, 1, 1)}
 
     if request.POST.get('to-date'):
         print request.POST.get('to-date')
