@@ -98,10 +98,17 @@ def ajax_faceted_search(request):
         else:
             query['datef'] = {"$lt": datetime(to_year + 1, 1, 1)}
 
-    if request.POST.get('to-date'):
-        print request.POST.get('to-date')
-    rollcalls = db.voteview_rollcalls.find(query)
-    rollcalls_page = list(rollcalls[:15])
+    # Sort the results
+    order = request.POST.get('sort', None)
+    if order == 'date-asc':
+        sorting = ('datef', 1)
+    elif order == 'date-desc':
+        sorting = ('datef', -1)
+    elif order == 'session':
+        sorting = ('session', -1)
+
+    rollcalls = db.voteview_rollcalls.find(query).sort(*sorting)
+    rollcalls_page = list(rollcalls[:20])
 
     # Build the template
     context = Context({'rollcalls': rollcalls_page, 'request':request})

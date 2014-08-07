@@ -57,11 +57,11 @@
     padding-top: 10px;
 }
 
-#results-page-container {
-    padding-top: 10px;
+#search-bar-container {
+  padding-bottom: 25px;
 }
 
-#results-selects {
+#results-page-container {
     padding-top: 10px;
 }
 

@@ -11,13 +11,13 @@
   {% csrf_token %} 
   <div class="row">
     <div class="col-xs-12">
-      <h3>Browse US rollcalls</h3>
+      <h3>Browse US roll calls</h3>
     </div>
   </div>
 
   <div id="results-page-container">
-      <div class="row">
-          <div class="col-xs-12">
+      <div id="search-bar-container" class="row">
+          <div class="col-md-12">
             <div class="input-group">
               <input name="search-string" type="text" class="form-control" id="searchTextInput" placeholder="Enter a term to search for">
                 <div class="input-group-btn">
@@ -29,7 +29,6 @@
 
       <div class="row">
           <div id="results-selects" class="col-md-3">
-
 
             <div id="panel-chamber" class="panel panel-primary">
               <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-chamber">
@@ -242,11 +241,27 @@
                 </div>
               </div>
             </div>
-
           </div>
+
+          <div class="col-md-9">
+            <div class="form-group">
+              <div class="col-md-7">
+                <h4>5000 matching roll calls</h4>
+              </div>
+                <label for="sort" class="col-md-2 control-label">Sort by</label>
+                <div class="col-md-3">
+                  <select id="sorting-select" name="sort" class="form-control">
+                    <option value="date-desc" selected>date: newest first</option> 
+                    <option value="date-asc">date: oldest first</option> 
+                    <option value="session">session</option>
+                  </select>
   </form>
-          <div id="results-list" class="col-md-9">
-            {# List of rollcalls goes here #}
+                </div>
+          </div>
+
+            <div id="results-list">
+              {# List of rollcalls goes here #}
+            </div>
           </div>
       </div>
   </div>
@@ -272,7 +287,8 @@
 
         getRollcalls();
 
-        $("#faceted-search-form input:not(#searchTextInput)").change(function() {
+        $("#faceted-search-form input:not(#searchTextInput), #sorting-select").change(function() {
+          console.log("cacapis");
             getRollcalls();
         });
 
