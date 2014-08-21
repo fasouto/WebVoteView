@@ -13,8 +13,7 @@ urlpatterns = patterns('',
     url(r'^rollcall/(?P<rollcall_id>[-\w]+)/$', 'webvoteview.views.show_rollcall', name='dc_rollcall_display'),
     url(r'^explore/house/$', ExploreView.as_view(chamber="house"), name='explore-house'),
     url(r'^explore/senate/$', ExploreView.as_view(chamber="senate"), name='explore-senate'),
-    url(r'^download/(?P<rollcall_id>[-\w]+)/$', 'webvoteview.views.download_excel', name='download_excel'),
-
+    url(r'^download/$', 'webvoteview.views.download_excel', name='download_excel'),
     url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
 
     # API urls
