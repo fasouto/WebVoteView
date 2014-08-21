@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+import xlwt
 
 from pymongo.connection import Connection
 from django.template import loader, Context
@@ -17,42 +18,58 @@ def show_rollcall(request, rollcall_id):
     rollcall = rollcalls_col.find_one({'id': rollcall_id})
     return render(request, 'dc_rollcall.html', {'rollcall': rollcall})
 
-def download_results(request, rollcall_list, format="xls"):
+
+def download_excel(request, rollcall_id):
     """
-    Download in R format the rollcalls with the ids passed on the list
+    Download an excel with the rollcall
     """
-    ids = [i.strip() for i in ids.split(',')]
-    rcc = RollcallCollection(ids=ids)
-    
-    # Roll call descriptions
-    rollcalls = [['vote']+[f[1] for f in self.descriptionfields]]
-    rollcalls[0][2] = 'congress'
-    i = 1
-    for r in rcc:
-        rollcalls.append( ['V%i' % i] + 
-                          [ r[f[0]] for f in self.descriptionfields] )
-        i += 1
-        
-    # Roll roll call matrix
-    m = Member()
-    votematrix = [[f[1] for f in self.infofields] + 
-                  ["V%i" % (i+1) for i in range(len(ids))]]
-    for k,v in rcc.toMatrix(by='icpsr').iteritems():
-        m.getMemberByIcpsr(k)
-        votematrix.append([str(mm) for mm in self._memberinfo(m)]+
-                          [str(vv) for vv in v])
-        
-    if xls == "True":
-        content_type = 'application/x-excel'
-        # Write workbook
-        print "Writing workbook..."
-        wxls = WriteXls(rollcalls=rollcalls, votes=votematrix)
-        wxls.addVotes()
-        wxls.addRollcalls()
-        return  wxls.render()
-    else:
-        content_type = 'application/json'
-        return writeRollcall(rollcalls,votematrix)
+    rollcall_id = "S1120486"
+
+    # Create the excel workbook and sheets and define the basic styles
+    book = xlwt.Workbook(encoding='utf8')
+    sheet_vote = book.add_sheet('Vote Matrix')
+    sheet_rollcall = book.add_sheet('Roll Call Descriptions')
+    default_style = xlwt.Style.default_style
+    datetime_style = xlwt.easyxf(num_format_str='dd/mm/yyyy hh:mm')
+    date_style = xlwt.easyxf(num_format_str='dd/mm/yyyy')
+
+    # Let's write the headers
+    vote_matrix_cols = ['ICSPR', 'State', 'State Abbr','District', 'CQ label', 'Name', 'Full name', 'Party code', 'Party name', 'V1']
+    rollcall_desc_cols = ['Vote', 'Chamber', 'Congress', 'Date', 'Rollnumber', 'Description']
+    for col, title in enumerate(vote_matrix_cols):
+        sheet_vote.write(0, col, title, style=default_style)
+    for col, title in enumerate(rollcall_desc_cols):
+        sheet_rollcall.write(0, col, title, style=default_style)
+
+    rollcall = db.voteview_rollcalls.find({'id': rollcall_id})[0]
+    for row_index, member_id in enumerate(rollcall['votes'], start=1):
+        member = db.voteview_members.find_one({'id':member_id})
+        sheet_vote.write(row_index, 0, member['icpsr'], style=default_style)
+        sheet_vote.write(row_index, 1, member['state'], style=default_style)
+        sheet_vote.write(row_index, 2, member['stateAbbr'], style=default_style)
+        sheet_vote.write(row_index, 3, member['districtCode'], style=default_style)
+        sheet_vote.write(row_index, 4, member['cqlabel'], style=default_style)
+        sheet_vote.write(row_index, 5, member['name'], style=default_style)
+        sheet_vote.write(row_index, 6, member['fname'], style=default_style)
+        sheet_vote.write(row_index, 7, member['party'], style=default_style)
+        sheet_vote.write(row_index, 8, member['partyname'], style=default_style)
+        sheet_vote.write(row_index, 9, rollcall['votes'][member_id], style=default_style)
+
+
+    sheet_rollcall.write(1, 0, "V1", style=default_style)
+    sheet_rollcall.write(1, 1, rollcall['chamber'], style=default_style)
+    sheet_rollcall.write(1, 2, rollcall['session'], style=default_style)
+    sheet_rollcall.write(1, 3, rollcall['date'], style=default_style)
+    sheet_rollcall.write(1, 4, rollcall['rollnumber'], style=default_style)
+    sheet_rollcall.write(1, 5, rollcall['description'], style=default_style)
+
+
+    # Download the excel file
+    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=%s.xls' % rollcall_id
+    book.save(response)
+    return response
+
 
 def ajax_faceted_search(request):
     """
