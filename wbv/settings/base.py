@@ -29,6 +29,7 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+COMPRESS_ENABLED = True
 
 ALLOWED_HOSTS = []
 
@@ -39,6 +40,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third party apps
+    'compressor',
 
     # Project apps
     'wbv',
@@ -111,6 +115,16 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'assets'),
 )
 
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # other finders..
+    'compressor.finders.CompressorFinder',
+)
+
+COMPRESS_JS_FILTERS = [
+    'compressor.filters.template.TemplateFilter',
+]
 
 # Template Settings
 TEMPLATE_DIRS = (
