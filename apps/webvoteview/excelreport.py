@@ -8,7 +8,7 @@ from pymongo.connection import Connection
 
 class ExcelReport(object):
     """
-    Create a report of several rollcalls with the associated votes
+    Create a report of several roll calls with the associated votes
     """
 
     def __init__(self, rollcall_ids):
@@ -21,12 +21,11 @@ class ExcelReport(object):
         self.datetime_style = xlwt.easyxf(num_format_str='dd/mm/yyyy hh:mm')
         self.date_style = xlwt.easyxf(num_format_str='dd/mm/yyyy')
 
-
     def write_headers(self, rollcalls, sheet_vote, sheet_rollcall):
         """
-        Write the excel headers
+        Write the headers of the different sheets
         """
-        vote_matrix_cols = ['ICSPR', 'State', 'State Abbr','District', 'CQ label', 'Name', 'Full name', 'Party code', 'Party name']
+        vote_matrix_cols = ['ICSPR', 'State', 'State Abbr', 'District', 'CQ label', 'Name', 'Full name', 'Party code', 'Party name']
         vote_matrix_cols.extend(rollcalls.keys())
 
         rollcall_desc_cols = ['Vote', 'Chamber', 'Congress', 'Date', 'Rollnumber', 'Description']
@@ -39,15 +38,15 @@ class ExcelReport(object):
         """
         Download an excel with the rollcall
         """
+        # Roll calls are associated between sheets with a code V1, V2...
         rollcalls = {}
-        for i,rollcall in enumerate(self.rollcall_ids):
-            rollcalls["V" + str(i+1)] = rollcall
+        for i, rollcall in enumerate(self.rollcall_ids):
+            rollcalls["V" + str(i + 1)] = rollcall
 
         # Create the excel workbook and sheets and define the basic styles
         book = xlwt.Workbook(encoding='utf8')
         sheet_vote = book.add_sheet('Vote Matrix')
         sheet_rollcall = book.add_sheet('Roll Call Descriptions')
-
 
         # Write the headers
         self.write_headers(rollcalls, sheet_vote, sheet_rollcall)
@@ -66,7 +65,7 @@ class ExcelReport(object):
 
             # Populate the members matrix
             for member_id in rollcall['votes']:
-                member = self.db.voteview_members.find_one({'id':member_id})
+                member = self.db.voteview_members.find_one({'id': member_id})
                 if member['icpsr'] not in members_matrix.keys():
                     members_matrix[member['icpsr']] = {}
                 members_matrix[member['icpsr']]['ICSPR'] = member['icpsr']
