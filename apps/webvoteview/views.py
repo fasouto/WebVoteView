@@ -18,6 +18,7 @@ def show_rollcall(request, rollcall_id):
     rollcall = rollcalls_col.find_one({'id': rollcall_id})
     return render(request, 'dc_rollcall.html', {'rollcall': rollcall})
 
+
 def download_excel(request):
     """
     Creates an excel report with the roll calls passed as parameter
@@ -29,6 +30,7 @@ def download_excel(request):
     response['Content-Disposition'] = 'attachment; filename=rollcalls.xls'
     report.save(response)
     return response
+
 
 def ajax_faceted_search(request):
     """
@@ -50,7 +52,7 @@ def ajax_faceted_search(request):
         if 'session' in query:
             query['session']['$gte'] = int(from_session)
         else:
-            query['session'] = { '$gte': int(from_session) }
+            query['session'] = {'$gte': int(from_session)}
     if request.POST.get('to-session'):
         to_session = int(request.POST.get('to-session'))
         if 'session' in query:
@@ -64,7 +66,7 @@ def ajax_faceted_search(request):
         if 'datef' in query:
             query['datef']["$gte"] = datetime(from_year, 1, 1)
         else:
-            query['datef'] = { "$gte": datetime(from_year, 1, 1) }            
+            query['datef'] = {"$gte": datetime(from_year, 1, 1)}
     if request.POST.get('to-date'):
         to_year = int(request.POST.get('to-date'))
         # We get the rollcalls of these year too
@@ -86,9 +88,10 @@ def ajax_faceted_search(request):
     rollcalls_page = list(rollcalls[:20])
 
     # Build the template
-    context = Context({'rollcalls': rollcalls_page, 'request':request})
+    context = Context({'rollcalls': rollcalls_page, 'request': request})
     return_str = render_block_to_string('search_list.html', 'results', context)
     return HttpResponse(return_str)
+
 
 def api_get_rollcalls(request):
     """
@@ -112,13 +115,14 @@ def api_get_rollcalls(request):
             'date': rollcall['date'],
             'session': rollcall['session'],
             'rcnum': rollcall['rollnumber'],
-            'desc': rollcall['shortdescription'] 
+            'desc': rollcall['shortdescription']
         })
     return (
         HttpResponse(
             dumps(result),
             content_type='application/json; charset=utf8')
-    ) 
+    )
+
 
 def _get_yeanayabs(vote_id):
     """
@@ -131,6 +135,7 @@ def _get_yeanayabs(vote_id):
         return "Nay"
     elif vote_id < 10:
         return "Abs"
+
 
 def api_get_votes(request, rollcall_id):
     """
@@ -166,6 +171,7 @@ def api_get_votes(request, rollcall_id):
             content_type='application/json; charset=utf8')
     )
 
+
 def get_vote(request, rollcall_id):
     """Deprecated"""
     rollcalls_col = db.voteview_rollcalls
@@ -175,6 +181,7 @@ def get_vote(request, rollcall_id):
             dumps(rollcall),
             content_type='application/json; charset=utf8')
     )
+
 
 ## DEPRECATED USED ONLY TO CHECK IF THE CHARTS ARE LIKE THE OLD ONES
 def get_members(request, session_id):
