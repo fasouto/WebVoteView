@@ -91,6 +91,10 @@ class ExcelReport(object):
             sheet_vote.write(row_index, 7, members_matrix[member]['Party code'], style=self.default_style)
             sheet_vote.write(row_index, 8, members_matrix[member]['Party name'], style=self.default_style)
             for idx_vote, rollcall_key in enumerate(rollcalls.keys(), start=9):
-                sheet_vote.write(row_index, idx_vote, members_matrix[member][rollcall_key] or 0, style=self.default_style)
+                try:
+                    sheet_vote.write(row_index, idx_vote, members_matrix[member][rollcall_key] or 0, style=self.default_style)
+                except:
+                    sheet_vote.write(row_index, idx_vote, 0, style=self.default_style)
+
 
         return book
