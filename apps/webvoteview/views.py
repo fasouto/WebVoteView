@@ -76,7 +76,7 @@ def ajax_faceted_search(request):
             query['datef'] = {"$lt": datetime(to_year + 1, 1, 1)}
 
     # Sort the results
-    order = request.POST.get('sort', 'date-desc')
+    order = request.POST.get('sort', None)
     if order == 'date-asc':
         sorting = ('datef', 1)
     elif order == 'date-desc':

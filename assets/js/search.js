@@ -3,8 +3,9 @@
 
       function getRollcalls(){
         $.ajax({
+          type: "POST",
           url: "/api/search/",
-          data: $('#faceted-search-form').serialize(),
+          data: $('#faceted-search-form').serialize() + '&sort=' + $("#sorting-select").val(),
           beforeSend:function(){
             $('#results-list').html('<div class="loading"><h2>Loading...</h2><img src="{{ STATIC_URL }}img/loading.gif" alt="Loading..." /></div>');
           },
