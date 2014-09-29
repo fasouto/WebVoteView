@@ -249,7 +249,6 @@
             <div class="form-group">
               <div class="row">
               <div class="col-md-7">
-                <a id="download-btn" class="btn btn-default" onclick="$('#download-rollcalls-form').submit()">Download to Excel</a>
               </div>
                 <label for="sort" class="col-md-2 control-label">Sort by</label>
                 <div class="col-md-3">
@@ -261,6 +260,7 @@
                 </div>
               </div>
           </div>
+            <a id="download-btn" class="btn btn-default" onclick="$('#download-rollcalls-form').submit()">Download selected roll calls to Excel</a>
             <form id="download-rollcalls-form" action="{% url 'download_excel' %}" method="post">
                 {% csrf_token %} 
               <input id="url" name="url" type="hidden" value="{{ request.get_full_path }}">
