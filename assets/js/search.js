@@ -1,43 +1,8 @@
   $(document).ready(
     function(){
 
-
-        // function triggerDownload(){
-        //   // $("#download-rollcalls-form").submit();
-        //   console.log($('#download-rollcalls-form').serialize());
-
-        //   $.post('download/');
-        // }
-            // function(retData) {
-            //  $("body").append("<iframe src='" + retData.url+ "' style='display: none;' ></iframe>");
-            // }); 
-
-            //   $.ajax({
-            //       url: "download/",
-            //       data: $('#download-rollcalls-form').serialize(),
-            //       function(retData) {
-            //         var iframe = document.createElement("iframe");
-            //         iframe.setAttribute("src", retData.url);
-            //         iframe.setAttribute("style", "display: none");
-            //         document.body.appendChild(iframe);
-            //       }); 
-            //     });
-          // }
-
-
-        // $("#download-btn").click(function(){
-          // console.log("as");
-          // triggerDownload();
-             // $.ajax({
-             //    type: "GET",
-             //    url: "download",
-             //  });
-        // });
-
-
       function getRollcalls(){
         $.ajax({
-          // type: "POST",
           url: "/api/search/",
           data: $('#faceted-search-form').serialize(),
           beforeSend:function(){
@@ -50,6 +15,7 @@
           $("#download-btn").hide();
         }
 
+        // Initial call to the function
         getRollcalls();
 
         $("#faceted-search-form input:not(#searchTextInput), #sorting-select").change(function() {
@@ -58,7 +24,6 @@
 
         // Prevent to do a AJAX call everytime we update the search bar
         $("#faceted-search-form").submit(function(event) {
-          console.log(event);
           event.preventDefault();
           getRollcalls();
         });
@@ -77,8 +42,6 @@
               $("#download-btn").hide();
           }
         }
-
-
 
         // Toggle panel icons
         function toggleChevron(e) {
