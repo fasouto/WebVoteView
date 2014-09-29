@@ -144,3 +144,8 @@ line.cutline {
   bottom:12px;
   display: none;
 }
+
+#sort-label {
+  text-align: right;
+  padding-top: 10px;
+}
