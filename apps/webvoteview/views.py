@@ -18,19 +18,19 @@ def show_rollcall(request, rollcall_id):
     rollcall = rollcalls_col.find_one({'id': rollcall_id})
     return render(request, 'dc_rollcall.html', {'rollcall': rollcall})
 
-
 def download_excel(request):
     """
     Creates an excel report with the roll calls passed as parameter
     Several roll calls could be passed with GET.
     """
-    rollcall_params = request.GET.getlist('rollcall')
-    report = ExcelReport(rollcall_params).create_excel()
-    response = HttpResponse(mimetype='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=rollcalls.xls'
-    report.save(response)
-    return response
-
+    if request.POST:
+        rollcall_params = request.POST.getlist('rollcall')
+        report = ExcelReport(rollcall_params).create_excel()
+        response = HttpResponse(mimetype='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=rollcalls.xls'
+        response['Content-Type'] = 'application/vnd.ms-excel'
+        report.save(response)
+        return response
 
 def ajax_faceted_search(request):
     """
@@ -76,7 +76,7 @@ def ajax_faceted_search(request):
             query['datef'] = {"$lt": datetime(to_year + 1, 1, 1)}
 
     # Sort the results
-    order = request.POST.get('sort', None)
+    order = request.POST.get('sort', 'date-desc')
     if order == 'date-asc':
         sorting = ('datef', 1)
     elif order == 'date-desc':
