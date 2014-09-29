@@ -10,8 +10,10 @@
         <meta name="apple-mobile-web-app-capable" content="yes"/>
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
+        <!-- <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css" media="screen, projection"/> -->
+        <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
 
-        <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css" media="screen, projection"/>
+        <link rel="stylesheet" href="{{ STATIC_URL }}less/custombootstrap.css" media="screen, projection"/>
         <link rel="stylesheet" href="{{ STATIC_URL }}css/base.css" media="screen, projection"/>
         <!--[if lt IE 8]><link rel="stylesheet" href="{{STATIC_URL}}css/ie.css" type="text/css" media="screen, projection"><![endif]-->
         
@@ -28,6 +30,7 @@
         {% block extra_head %}{% endblock extra_head %}
     </head>
     <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}">
+        
         <!--[if lt IE 8]>
             <div class="chromeframe">
                     <p>Hi. It looks like you're using an older browser.<br/>

@@ -149,3 +149,7 @@ line.cutline {
   text-align: right;
   padding-top: 10px;
 }
+
+#brand a {
+  text-decoration: none;
+}

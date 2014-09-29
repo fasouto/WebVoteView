@@ -104,7 +104,7 @@ var xhr = d3.json("/api/getrollcalls/?chamber=" + chamber_param)
                 },
                 function (d) {
                     var rollcallID = getRollcallID(d);
-                    return "<a href='/rollcall/" + rollcallID + "' class='btn btn-default btn-sm'>See vote</a>";
+                    return "<a href='/rollcall/" + rollcallID + "' class='btn btn-primary btn-sm'>See vote</a>";
                 }
             ]);
 
