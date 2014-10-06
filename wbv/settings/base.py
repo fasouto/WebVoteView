@@ -165,9 +165,3 @@ LOGGING = {
 
 # Turn off south during test
 SOUTH_TESTS_MIGRATE = False
-
-# Django compress
-COMPRESS_ENABLED = True
-COMPRESS_JS_FILTERS = [
-    'compressor.filters.template.TemplateFilter',
-]
