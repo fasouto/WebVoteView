@@ -1,5 +1,5 @@
 """
-Project specific views
+Webvoteview specific views
 """
 from django.views.generic.base import TemplateView
 
@@ -28,6 +28,7 @@ class ExploreView(TemplateView):
         context = super(ExploreView, self).get_context_data(**kwargs)
         context['chamber'] = self.chamber
         return context
+
 
 class SearchView(TemplateView):
 

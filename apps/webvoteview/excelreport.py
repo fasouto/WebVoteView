@@ -36,7 +36,7 @@ class ExcelReport(object):
 
     def create_excel(self):
         """
-        Download an excel with the rollcall
+        Main method, create the excel file with the roll call data
         """
         # Roll calls are associated between sheets with a code V1, V2...
         rollcalls = {}
@@ -95,6 +95,5 @@ class ExcelReport(object):
                     sheet_vote.write(row_index, idx_vote, members_matrix[member][rollcall_key] or 0, style=self.default_style)
                 except:
                     sheet_vote.write(row_index, idx_vote, 0, style=self.default_style)
-
 
         return book

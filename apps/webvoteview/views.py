@@ -14,9 +14,13 @@ db = Connection().voteview
 
 
 def show_rollcall(request, rollcall_id):
+    """
+    Display the roll call with the id passed as parameter
+    """
     rollcalls_col = db.voteview_rollcalls
     rollcall = rollcalls_col.find_one({'id': rollcall_id})
     return render(request, 'dc_rollcall.html', {'rollcall': rollcall})
+
 
 def download_excel(request):
     """
@@ -31,6 +35,7 @@ def download_excel(request):
         response['Content-Type'] = 'application/vnd.ms-excel'
         report.save(response)
         return response
+
 
 def ajax_faceted_search(request):
     """
