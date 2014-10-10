@@ -187,6 +187,16 @@ def get_vote(request, rollcall_id):
             content_type='application/json; charset=utf8')
     )
 
+def person_details(request, person_id):
+    """
+    Shows a congress or senate member details
+    """
+    rollcalls_col = db.voteview_rollcalls
+    members_col = db.voteview_members
+    member = members_col.find_one({'id': person_id})
+    member_votes = rollcalls_col.find({"votes." + person_id: {'$exists': True}})
+    return render(request, 'person.html', {'person': member, 'votes': member_votes})
+
 
 ## DEPRECATED USED ONLY TO CHECK IF THE CHARTS ARE LIKE THE OLD ONES
 def get_members(request, session_id):

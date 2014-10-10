@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Person details{% endblock %}
+
+{% block content %}
+
+{% include 'header.html' %}
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-2">
+            <img src="{{ STATIC_URL }}img/bios/img/img{{ person.icpsr|stringformat:'06d' }}.jpg">
+        </div>
+        <div class="col-md-9">
+            <h2>{{ person.fname }}</h2>
+            <h4>{{ person.partyname }}</h4>
+            <h4>{{ person.stateName }}, {{ person.stateAbbr }}</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9 col-md-offset-2">
+            <h3>Vote history</h3>
+                <table class="table table-hover dc-data-table">
+                    <thead>
+                    <tr class="header">
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Link</th>
+                    </tr>
+                    </thead>
+                    {% for vote in votes %}
+                        <tr>
+                            <td>{{ vote.date }}</td>
+                            <td>{{ vote.shortdescription }}</td>
+                            <td><a class="btn btn-primary btn-sm" href="/rollcall/{{vote.id}}">See vote</a></td>
+                        </tr>
+                    {% endfor %}
+                    
+                </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

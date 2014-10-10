@@ -30,6 +30,7 @@
     text-shadow: 0 -1px 8px rgba(0,0,0,0.9);
     font-size: 140%;
 }
+
  #home-header h1 {
     color: white;
     text-shadow: 0 -1px 8px rgba(0,0,0,0.9);
@@ -90,7 +91,6 @@
 
 
 /* Maps and charts */
-
 #loading {
  float: none;
  margin: 0 auto;
@@ -152,4 +152,9 @@ line.cutline {
 
 #brand a {
   text-decoration: none;
+}
+
+.dc-table-label {
+  font-weight: 600;
+  font-size: 130%;
 }

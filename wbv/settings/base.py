@@ -16,7 +16,6 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 # App/Library Paths
 sys.path.append(os.path.join(BASE_DIR, 'apps'))
 
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '-p1x88ky6a$2xsfc=y+0pd))hp8cb15)s&amp;49jph2ofshh9!zh('
 
@@ -128,17 +127,10 @@ COMPRESS_JS_FILTERS = [
 
 # Template Settings
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR, 'templates'),
 )
 
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

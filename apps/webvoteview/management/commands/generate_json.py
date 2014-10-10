@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Migrate data from the original MongoDB database
+Generate a large JSON with the house and senate roll calls
 """
 import sys
 from pyes import *
@@ -10,8 +10,8 @@ from models import Member, RollCall, Party, State
 
 
 class Command(BaseCommand):
-    args = "MongoDB host and port"
-    help = "Import data from a MongoDB database"
+    args = "None"
+    help = "Generate the JSON with the house and senate roll calls"
 
     def __init__(self):
         super(Command, self).__init__()

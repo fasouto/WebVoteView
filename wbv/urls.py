@@ -15,6 +15,9 @@ urlpatterns = patterns('',
     url(r'^explore/senate/$', ExploreView.as_view(chamber="senate"), name='explore-senate'),
     url(r'^download/$', 'webvoteview.views.download_excel', name='download_excel'),
     url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
+    url(r'^data/$', TemplateView.as_view(template_name='data.html'), name='data'),
+    url(r'^research/$', TemplateView.as_view(template_name='research.html'), name='research'),
+    url(r'^person/(?P<person_id>[-\w]+)/$', 'webvoteview.views.person_details', name='person'),
 
     # API urls
     url(r'^api/search/$', 'webvoteview.views.ajax_faceted_search', name='api_search'),
