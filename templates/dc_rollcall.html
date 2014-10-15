@@ -195,7 +195,6 @@ function drawWidgets(error, geodata, data) {
             $.each(atlarge, function(member) {
                 p.members.push(atlarge[member]);
             });
-            // console.log(d);
             p.members.push(d);
             return p;
         },
@@ -310,10 +309,15 @@ function drawWidgets(error, geodata, data) {
 
 
         } else if (chamber == "Senate") {
-                      
+
             /* Initialize tooltip */
-            var senateMapTip = d3.tip().attr('class', 'd3-tip').html(function(d) { 
-               return d.id; 
+            var senateMapTip = d3.tip().attr('class', 'd3-tip').html(function(p, d) {
+              console.log(d);
+              var result = "<p>" + d.key + "</p>";
+              for (var i = 0; i < d.value.members.length; i++) {
+                  result += "<p>" + d.value.members[i].name + " - " + d.value.members[i].vote + " - " + d.value.members[i].party +"</p>";
+              }
+              return result;
             });
 
             var mapTopo = topojson.feature(geodata, geodata.objects.states).features;
@@ -329,32 +333,28 @@ function drawWidgets(error, geodata, data) {
                             }
                         }catch(e){
                        }
-                        return color; 
+                        return color;
                     })
                     .overlayGeoJson(mapTopo, "state", function (d) {
                         return d.id;
                     })
                     .on("postRender", function(c){
+                      console.log(c.data());
                         c.svg()
                           .selectAll("path")
                           .call(senateMapTip)
-                          .on('mouseover',function(d){
-                            console.log("callate!!", d);
+                          .on('mouseover',function(d, i){
+                            var result = $.grep(c.data(), function(e){ return e.key == d.id; });
+
                             senateMapTip.attr('class','d3-tip animate')
-                            .show(d)}
+                            .show(d, result[0])}
                             )
-                          .on('mouseout',function(d){
-                            senateMapTip.attr('class','d3-tip').show(d)
+                          .on('mouseout',function(d, i){
+                            var result = $.grep(c.data(), function(e){ return e.key == d.id; });
+                            senateMapTip.attr('class','d3-tip').show(d, result[0])
                             senateMapTip.hide()
                           })
-                    })
-                    .title(function (d) {
-                        var result = "";
-                        for (var i = 0; i < d.value.members.length; i++) {
-                            result += d.value.members[i].name;
-                        }
-                        return "State: " + d.key + "<p>" + result + "</p>";
-                    });   
+                    });
         }
 
 
