@@ -69,6 +69,7 @@
                   <th>Party</th>
                   <th>Vote</th>
                   <th>State</th>
+                  <th>Profile</th>
               </tr>
               </thead>
           </table>
@@ -279,6 +280,9 @@ function drawWidgets(error, geodata, data) {
                 } else if (chamber == "Senate") {
                     return d.state;
                 }
+            },
+            function (d) {
+              return "<a class='btn btn-primary btn-sm' href='/person/" + d.id + "'>See profile</a>"
             }
         ]);
 
