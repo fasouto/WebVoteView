@@ -6,6 +6,7 @@
     <link href="{{ STATIC_URL }}css/dc.css" media="all" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}css/map.css" media="all" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}css/scatter.css" media="all" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
 {% endblock %}
 
 {% block content %}
@@ -82,6 +83,7 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/dc.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/d3.tip.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/topojson.v1.min.js"></script>
+
 <script type="text/javascript">
 'use strict';
 
@@ -281,7 +283,6 @@ function drawWidgets(error, geodata, data) {
             }
         ]);
 
-        // var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { console.log(); return d; });
         if (chamber == "House") {
             var mapTopo = topojson.feature(geodata, geodata.objects.districts).features;
             mapChart.width(890)
@@ -309,6 +310,12 @@ function drawWidgets(error, geodata, data) {
 
 
         } else if (chamber == "Senate") {
+                      
+            /* Initialize tooltip */
+            var senateMapTip = d3.tip().attr('class', 'd3-tip').html(function(d) { 
+               return d.id; 
+            });
+
             var mapTopo = topojson.feature(geodata, geodata.objects.states).features;
             mapChart.width(890)
                     .height(500)
@@ -326,6 +333,20 @@ function drawWidgets(error, geodata, data) {
                     })
                     .overlayGeoJson(mapTopo, "state", function (d) {
                         return d.id;
+                    })
+                    .on("postRender", function(c){
+                        c.svg()
+                          .selectAll("path")
+                          .call(senateMapTip)
+                          .on('mouseover',function(d){
+                            console.log("callate!!", d);
+                            senateMapTip.attr('class','d3-tip animate')
+                            .show(d)}
+                            )
+                          .on('mouseout',function(d){
+                            senateMapTip.attr('class','d3-tip').show(d)
+                            senateMapTip.hide()
+                          })
                     })
                     .title(function (d) {
                         var result = "";
@@ -394,8 +415,6 @@ function drawOpinionBackground(data) {
   var marginCircle = 25; // Distance of the main circle to the axis
   var circleCenter = { "x": (settings.width + margin) / 2, "y": (settings.width - margin) / 2 };
   var tickLength = 60;
-
-  var tooltip = d3.select("body").append("div").attr("class", "wvv-tooltip");
 
   var svgscatter = d3.select("#svg-bg")
     .attr("xmlns", "http://www.w3.org/2000/svg")
