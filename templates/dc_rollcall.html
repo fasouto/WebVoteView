@@ -286,6 +286,17 @@ function drawWidgets(error, geodata, data) {
         ]);
 
         if (chamber == "House") {
+            /* Initialize tooltip */
+            var houseMapTip = d3.tip().attr('class', 'd3-tip').html(function(p, d) {
+              var result = "<p>" + d.key + "</p>";
+              for (var i = 0; i < d.value.members.length; i++) {
+                 var colorVote = partyColors[d.value.members[i].vote + d.value.members[i].party];
+                  result += "<p>" + d.value.members[i].name + "  -  <span style='color:" + colorVote + "'> " + d.value.members[i].vote + " / " + d.value.members[i].party +"</span></p>";
+              }
+              return result;
+            });
+
+
             var mapTopo = topojson.feature(geodata, geodata.objects.districts).features;
             mapChart.width(890)
                     .height(500)
@@ -305,8 +316,22 @@ function drawWidgets(error, geodata, data) {
                     .overlayGeoJson(mapTopo, "district", function (d) {
                         return d.id;
                     })
-                    .title(function (d) {
-                        return "State: " + d;
+                    .on("postRender", function(c){
+                        c.svg()
+                          .selectAll("path")
+                          .call(houseMapTip)
+                          .on('mouseover',function(d, i){
+                            console.log(d);
+                            var result = $.grep(c.data(), function(e){ return e.key == d.id; });
+
+                            houseMapTip.attr('class','d3-tip animate')
+                            .show(d, result[0])}
+                            )
+                          .on('mouseout',function(d, i){
+                            var result = $.grep(c.data(), function(e){ return e.key == d.id; });
+                            houseMapTip.attr('class','d3-tip').show(d, result[0])
+                            houseMapTip.hide()
+                          })
                     });
 
 
