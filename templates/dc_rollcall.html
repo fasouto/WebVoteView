@@ -6,7 +6,6 @@
     <link href="{{ STATIC_URL }}css/dc.css" media="all" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}css/map.css" media="all" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}css/scatter.css" media="all" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
 {% endblock %}
 
 {% block content %}
@@ -316,10 +315,10 @@ function drawWidgets(error, geodata, data) {
 
             /* Initialize tooltip */
             var senateMapTip = d3.tip().attr('class', 'd3-tip').html(function(p, d) {
-              console.log(d);
               var result = "<p>" + d.key + "</p>";
               for (var i = 0; i < d.value.members.length; i++) {
-                  result += "<p>" + d.value.members[i].name + " - " + d.value.members[i].vote + " - " + d.value.members[i].party +"</p>";
+                 var colorVote = partyColors[d.value.members[i].vote + d.value.members[i].party];
+                  result += "<p>" + d.value.members[i].name + "  -  <span style='color:" + colorVote + "'> " + d.value.members[i].vote + " / " + d.value.members[i].party +"</span></p>";
               }
               return result;
             });
@@ -343,7 +342,6 @@ function drawWidgets(error, geodata, data) {
                         return d.id;
                     })
                     .on("postRender", function(c){
-                      console.log(c.data());
                         c.svg()
                           .selectAll("path")
                           .call(senateMapTip)
