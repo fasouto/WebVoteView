@@ -9,8 +9,9 @@
           beforeSend:function(){
             $('#results-list').html('<div class="loading"><h2>Loading...</h2><img src="{{ STATIC_URL }}img/loading.gif" alt="Loading..." /></div>');
           },
-          success: function(msg) {
-            $("#results-list").html(msg);
+          success: function(res, status, xhr) {
+            $("#results-number").html(xhr.getResponseHeader("rollcall_number") + " rollcalls");
+            $("#results-list").html(res);
            }
           });
           $("#download-btn").hide();

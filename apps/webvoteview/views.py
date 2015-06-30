@@ -39,7 +39,8 @@ def download_excel(request):
 
 def ajax_faceted_search(request):
     """
-    Return a paginated list of rollcalls that match the parameters
+    Return a rendered paginated list of rollcalls that match the search parameters.
+    Also returns the number of rollcalls that matched those parameters.
     """
     query = {}
     if request.POST.get('search-string', ''):
@@ -95,7 +96,9 @@ def ajax_faceted_search(request):
     # Build the template
     context = Context({'rollcalls': rollcalls_page, 'request': request})
     return_str = render_block_to_string('search_list.html', 'results', context)
-    return HttpResponse(return_str)
+    response = HttpResponse(return_str)
+    response['rollcall_number'] = rollcalls.count()
+    return response
 
 
 def api_get_rollcalls(request):
