@@ -157,3 +157,6 @@ LOGGING = {
 
 # Turn off south during test
 SOUTH_TESTS_MIGRATE = False
+
+# Number of rollcalls per page
+ITEMS_PER_PAGE = 15

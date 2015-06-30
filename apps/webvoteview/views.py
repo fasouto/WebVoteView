@@ -4,6 +4,7 @@ from datetime import datetime
 from pymongo.connection import Connection
 from django.template import loader, Context
 from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.conf import settings
 from django.shortcuts import render
 from bson.json_util import dumps
 
@@ -83,15 +84,18 @@ def ajax_faceted_search(request):
 
     # Sort the results
     order = request.POST.get('sort', None)
-    if order == 'date-asc':
-        sorting = ('datef', 1)
-    elif order == 'date-desc':
+    if order == 'date-desc':
         sorting = ('datef', -1)
     elif order == 'session':
         sorting = ('session', -1)
-
+    else:
+        sorting = ('datef', 1)
     rollcalls = db.voteview_rollcalls.find(query).sort(*sorting)
-    rollcalls_page = list(rollcalls[:20])
+
+    # Paginate the results
+    page = int(request.POST.get('page', 1))
+    offset = (page - 1) * settings.ITEMS_PER_PAGE
+    rollcalls_page = list(rollcalls.skip(offset).limit(settings.ITEMS_PER_PAGE))
 
     # Build the template
     context = Context({'rollcalls': rollcalls_page, 'request': request})

@@ -70,6 +70,10 @@
     padding-top: 10px;
 }
 
+#next-page {
+  margin:30px 0;
+}
+
 #wbv-header {
   padding-top: 20px;
   border-bottom:thin solid #DDD;
