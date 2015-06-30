@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf import settings
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 
 from wbv.views import HomePageView, RollcallView, ExploreView, SearchView
@@ -13,11 +13,13 @@ urlpatterns = patterns('',
     url(r'^rollcall/(?P<rollcall_id>[-\w]+)/$', 'webvoteview.views.show_rollcall', name='dc_rollcall_display'),
     url(r'^explore/house/$', ExploreView.as_view(chamber="house"), name='explore-house'),
     url(r'^explore/senate/$', ExploreView.as_view(chamber="senate"), name='explore-senate'),
+    url(r'^person/(?P<person_id>[-\w]+)/$', 'webvoteview.views.person_details', name='person'),
     url(r'^download/$', 'webvoteview.views.download_excel', name='download_excel'),
+
+    # Static pages
     url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
     url(r'^data/$', TemplateView.as_view(template_name='data.html'), name='data'),
     url(r'^research/$', TemplateView.as_view(template_name='research.html'), name='research'),
-    url(r'^person/(?P<person_id>[-\w]+)/$', 'webvoteview.views.person_details', name='person'),
 
     # API urls
     url(r'^api/search/$', 'webvoteview.views.ajax_faceted_search', name='api_search'),

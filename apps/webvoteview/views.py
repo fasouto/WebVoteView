@@ -1,9 +1,8 @@
-import json
 from datetime import datetime
 
 from pymongo.connection import Connection
-from django.template import loader, Context
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.template import Context
+from django.http import HttpResponse
 from django.conf import settings
 from django.shortcuts import render
 from bson.json_util import dumps
@@ -184,16 +183,6 @@ def api_get_votes(request, rollcall_id):
     )
 
 
-def get_vote(request, rollcall_id):
-    """Deprecated"""
-    rollcalls_col = db.voteview_rollcalls
-    rollcall = rollcalls_col.find_one({'id': rollcall_id})
-    return (
-        HttpResponse(
-            dumps(rollcall),
-            content_type='application/json; charset=utf8')
-    )
-
 def person_details(request, person_id):
     """
     Shows a congress or senate member details
@@ -205,7 +194,17 @@ def person_details(request, person_id):
     return render(request, 'person.html', {'person': member, 'votes': member_votes})
 
 
-## DEPRECATED USED ONLY TO CHECK IF THE CHARTS ARE LIKE THE OLD ONES
+## THESE TWO VIEWS ARE DEPRECATED AND USED ONLY TO CHECK IF THE CHARTS ARE LIKE THE OLD ONES
+def get_vote(request, rollcall_id):
+    """Deprecated"""
+    rollcalls_col = db.voteview_rollcalls
+    rollcall = rollcalls_col.find_one({'id': rollcall_id})
+    return (
+        HttpResponse(
+            dumps(rollcall),
+            content_type='application/json; charset=utf8')
+    )
+
 def get_members(request, session_id):
     members_col = db.voteview_members
     members = members_col.find({'session': int(session_id)})
