@@ -78,7 +78,7 @@
 
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/sprintf.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/queue.v1.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/libs/d3.v3.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/d3.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/crossfilter.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/dc.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/libs/d3.tip.js"></script>
@@ -91,7 +91,8 @@
 /* global dc,d3,crossfilter,colorbrewer */
 
 var chamber = "{{ rollcall.chamber }}";
-// Define the colors used for the cloropeth
+
+// TODO: Define the colors used for the cloropeth
 var partyColors = {
     "YeaFederalist": "#0000FF",
     "NayFederalist": "#AAAAFF",
