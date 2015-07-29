@@ -132,8 +132,8 @@ var partyColors = {
     "AbsUnionist": "#A62F01"
 };
 
-var yeaNayChart = dc.pieChart("#yeanay-chart");
-var partyChart = dc.pieChart("#party-chart");
+var yeaNayChart = dc.rowChart("#yeanay-chart");
+var partyChart = dc.rowChart("#party-chart");
 var mapChart = dc.geoChoroplethChart("#map-chart");
 var opinionChart = dc.scatterPlot("#scatter-chart");
 // var composeScatter = dc.compositeChart("#scatter-container");
@@ -238,18 +238,20 @@ function drawWidgets(error, geodata, data) {
         });
 
     yeaNayChart
-        .width(180)
+        .width(320)
         .height(180)
-        .radius(80)
         .dimension(voteDimension)
-        .group(voteGroup);
+        .group(voteGroup)
+        .elasticX(true)
+        .xAxis().ticks(4);
 
     partyChart
-        .width(180)
+        .width(320)
         .height(180)
-        .radius(80)
         .dimension(partyDimension)
-        .group(partyGroup);
+        .group(partyGroup)
+        .elasticX(true)
+        .xAxis().ticks(4);
 
     opinionChart
         .width(600)
