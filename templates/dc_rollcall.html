@@ -29,16 +29,13 @@
           </div>
       </div>
       <div class="col-md-3">
-          <div id="yeanay-chart">
-              <strong>Votes</strong>
-              <a class="reset" href="javascript:yeaNayChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-              <div class="clearfix"></div>
-          </div>
           <div id="party-chart">
-              <strong>Party</strong>
-              <a class="reset" href="javascript:partyChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+              <strong>Votes</strong>
+              <a class="reset" href="javascript:votePartyChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
               <div class="clearfix"></div>
           </div>
+              <div id="bogus-chart">
+              </div>
       </div>
   </div>
 
@@ -132,8 +129,7 @@ var partyColors = {
     "AbsUnionist": "#A62F01"
 };
 
-var yeaNayChart = dc.rowChart("#yeanay-chart");
-var partyChart = dc.rowChart("#party-chart");
+var votePartyChart = dc.rowChart("#party-chart");
 var mapChart = dc.geoChoroplethChart("#map-chart");
 var opinionChart = dc.scatterPlot("#scatter-chart");
 // var composeScatter = dc.compositeChart("#scatter-container");
@@ -163,6 +159,8 @@ function drawWidgets(error, geodata, data) {
     var partyDimension = ndx.dimension(function(d) { return d.party; });
     var partyGroup = partyDimension.group();
 
+    var votePartyDimension = ndx.dimension(function(d) { return d.vote + d.party; });
+    var votePartyGroup = votePartyDimension.group();
 
     var xDimension = ndx.dimension(function(d) { return [d.x, d.y]; });
 
@@ -237,20 +235,15 @@ function drawWidgets(error, geodata, data) {
             return {members: []} ;
         });
 
-    yeaNayChart
+    votePartyChart
         .width(320)
-        .height(180)
-        .dimension(voteDimension)
-        .group(voteGroup)
+        .height(480)
+        .dimension(votePartyDimension)
+        .group(votePartyGroup)
         .elasticX(true)
-        .xAxis().ticks(4);
-
-    partyChart
-        .width(320)
-        .height(180)
-        .dimension(partyDimension)
-        .group(partyGroup)
-        .elasticX(true)
+        .colorCalculator(function (d) { 
+            return partyColors[d.key];
+        })
         .xAxis().ticks(4);
 
     opinionChart
