@@ -95,6 +95,10 @@
 
 
 /* Maps and charts */
+.dc-chart g.row text {
+  fill: black;
+}
+
 #loading {
  float: none;
  margin: 0 auto;

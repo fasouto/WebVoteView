@@ -3,7 +3,6 @@
 {% block title %}Search results{% endblock %}
 
 {% block extra_head %}
-    <link href="{{ STATIC_URL }}css/dc.css" media="all" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}css/map.css" media="all" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}css/scatter.css" media="all" rel="stylesheet" type="text/css" />
 {% endblock %}
@@ -241,7 +240,8 @@ function drawWidgets(error, geodata, data) {
         .dimension(votePartyDimension)
         .group(votePartyGroup)
         .elasticX(true)
-        .colorCalculator(function (d) { 
+        .colorCalculator(function (d) {
+            console.log(d);
             return partyColors[d.key];
         })
         .xAxis().ticks(4);

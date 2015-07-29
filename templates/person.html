@@ -37,6 +37,15 @@
                     {% endfor %}
                     
                 </table>
+            <nav>
+            <ul class="pager">
+                {% if current_page_number != 1 %}
+                    <li class="previous"><a href="?page=1"><span aria-hidden="true">&larr;</span> Previous</a></li>
+                {% endif %}
+
+                    <li class="next"><a href="?page={{ current_page_number|add:1 }}">Next <span aria-hidden="true">&rarr;</span></a></li>
+            </ul>
+            </nav>
         </div>
     </div>
 </div>

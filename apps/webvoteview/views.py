@@ -191,10 +191,17 @@ def person_details(request, person_id):
     members_col = db.voteview_members
     member = members_col.find_one({'id': person_id})
     member_votes = rollcalls_col.find({"votes." + person_id: {'$exists': True}})
-    return render(request, 'person.html', {'person': member, 'votes': member_votes})
+
+    # Paginate the votes
+    page = int(request.GET.get('page', 1))
+    offset = (page - 1) * settings.ITEMS_PER_PAGE
+    members_page = list(member_votes.skip(offset).limit(settings.ITEMS_PER_PAGE))
+    return render(request, 'person.html', {'person': member, 'votes': members_page, 'current_page_number': page})
 
 
-## THESE TWO VIEWS ARE DEPRECATED AND USED ONLY TO CHECK IF THE CHARTS ARE LIKE THE OLD ONES
+#############################################################################################
+##  THESE TWO VIEWS ARE DEPRECATED AND USED ONLY TO CHECK IF THE CHARTS ARE LIKE THE OLD ONES
+#############################################################################################
 def get_vote(request, rollcall_id):
     """Deprecated"""
     rollcalls_col = db.voteview_rollcalls
@@ -204,6 +211,7 @@ def get_vote(request, rollcall_id):
             dumps(rollcall),
             content_type='application/json; charset=utf8')
     )
+
 
 def get_members(request, session_id):
     members_col = db.voteview_members
